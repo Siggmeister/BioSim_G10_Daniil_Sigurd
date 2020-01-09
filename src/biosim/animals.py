@@ -18,6 +18,7 @@ class Herbivore(Animals):
 
     def __init__(self, loc, age=0, parameters, weight=None):
         super().__init__(age, loc)
+        self.fitness = 0
 
         if parameters is None:
             parameters = Herbivore.param_dict
@@ -38,12 +39,11 @@ class Herbivore(Animals):
 
     def fitness_change(self):
         if self.weight > 0:
-            self.fitness = (((1) / (1 + np.exp(self.parameters["phi_age"] *
-                                               (self.age - self.parameters[
-                                                   "a_half"])))) *
-                            ((1) / (1 + np.exp(-self.parameters["phi_weight"] *
-                                               (self.weight - self.parameters[
-                                                   "w_half"])))))
+            self.fitness = ((1 /
+                             (1 + np.exp(self.parameters["phi_age"] *
+                        (self.age - self.parameters["a_half"])))) *
+                        (1 / (1 + np.exp(-self.parameters["phi_weight"] *
+                    (self.weight - self.parameters["w_half"])))))
         else:
             self.fitness = 0
 
@@ -95,7 +95,7 @@ class Herbivore(Animals):
         if self.can_birth_occur(island_dict):
             baby_herb = Herbivore(self.loc)
 
-            weight_loss_by_birth = baby_herb.weight * self.paramterers["xi"]
+            weight_loss_by_birth = baby_herb.weight * self.parameters["xi"]
 
             if weight_loss_by_birth < self.weight:
                 # Append i liste med alle herbivores
