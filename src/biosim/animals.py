@@ -16,18 +16,11 @@ class Animals:
 
 class Herbivore(Animals):
 
-    def __init__(self, loc, age=0, parameters, weight=None):
+    def __init__(self, island, parameters, loc, age=0, weight=None):
         super().__init__(age, loc)
         self.fitness = 0
-
-        if parameters is None:
-            parameters = Herbivore.param_dict
-        # self.parameters = parameters
-
-        for key in parameters:
-            Herbivore.param_dict[key] = parameters[key]
-            self.parameters = Herbivore.param_dict
-
+        self.parameters = parameters
+        self.island = island
         if weight is None:
             self.weight = np.random.normal(self.parameters["w_birth"],
                                            self.parameters["sigma_birth"])
