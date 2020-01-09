@@ -4,9 +4,8 @@ __author__ = 'Daniil Efremov'
 __email__ = 'daniil.vitalevich.efremov@nmbu.no'
 
 
+
 class AnnualCycle:
-    param_dict_jungle = {"f_max": 800}
-    param_dict_savannah = {"f_max": 300, "alpha": 0.3}
 
     def __init__(self, herb_list, carn_list, island_dict):
         pass
