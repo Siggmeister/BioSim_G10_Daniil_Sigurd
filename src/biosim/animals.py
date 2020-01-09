@@ -15,23 +15,8 @@ class Animals:
 
 
 class Herbivore(Animals):
-    param_dict = {"w_birth": 8.0,
-                  "sigma_birth": 1.5,
-                  "beta": 0.9,
-                  "eta": 0.05,
-                  "a_half": 40.0,
-                  "phi_age": 0.2,
-                  "w_half": 10.0,
-                  "phi_weight": 0.1,
-                  "mu": 0.25,
-                  "lambda": 1.0,
-                  "gamma": 0.2,
-                  "zeta": 3.5,
-                  "xi": 1.2,
-                  "omega": 0.4,
-                  "F": 10.0}
 
-    def __init__(self, loc, age=0, parameters=None, weight=None):
+    def __init__(self, loc, age=0, parameters, weight=None):
         super().__init__(age, loc)
 
         if parameters is None:
@@ -61,13 +46,6 @@ class Herbivore(Animals):
                                                    "w_half"])))))
         else:
             self.fitness = 0
-
-    def param_changer(self, parameters):
-
-        for key in parameters:
-            Herbivore.param_dict = parameters[key]
-
-        return Herbivore.param_dict
 
     def fodder_eaten(self, island_dict):
 
