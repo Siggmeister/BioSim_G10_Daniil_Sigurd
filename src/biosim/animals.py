@@ -40,9 +40,9 @@ class Herbivore(Animals):
         else:
             self.fitness = 0
 
-    def fodder_eaten(self, island_dict):
+    def fodder_eaten(self):
 
-        available_fodder = island_dict[self.loc]["Fodder"]
+        available_fodder = self.island.island_dict[self.loc]["Fodder"]
         optimal_fodder = self.parameters["F"]
         fodder_eaten = 0
 
@@ -55,21 +55,28 @@ class Herbivore(Animals):
         elif available_fodder == 0:
             fodder_eaten = 0
 
-        island_dict[self.loc]["Fodder"] -= fodder_eaten
+        self.island.island_dict[self.loc]["Fodder"] -= fodder_eaten
 
         return fodder_eaten
 
     def weight_gain(self, consumption):
         self.weight += consumption * self.parameters["beta"]
 
-    def feed(self, island_dict):
-        consumed_fodder = self.fodder_eaten(island_dict)
+    def feed(self):
+        consumed_fodder = self.fodder_eaten()
         self.weight_gain(consumed_fodder)
         self.fitness_change()
 
-    def can_birth_occur(self, island_dict):
+    def count_all_herb_in_current_loc(self, herb_pop_list):
+        counter = 0
+        for herb in herb_pop_list:
+            if herb.loc == self.loc:
+                counter += 1
+        return counter
+
+    def can_birth_occur(self, herb_pop_list):
         num_prob = min(1, self.parameters["gamma"] * self.fitness *
-                       (island_dict[self.loc]["Herb_pop"] - 1))
+                       (self.count_all_herb_in_current_loc(herb_pop_list) - 1))
         # Sjekk dictionary herb-ammount
 
         weight_prob = (self.parameters["zeta"] *
@@ -84,15 +91,14 @@ class Herbivore(Animals):
         else:
             return False
 
-    def birth(self, island_dict):
-        if self.can_birth_occur(island_dict):
-            baby_herb = Herbivore(self.loc)
+    def birth(self, herb_pop_list):
+        if self.can_birth_occur(herb_pop_list):
+            baby_herb = Herbivore(self.island, self.parameters, self.loc)
 
             weight_loss_by_birth = baby_herb.weight * self.parameters["xi"]
 
             if weight_loss_by_birth < self.weight:
-                # Append i liste med alle herbivores
-                pass
+                herb_pop_list.append(baby_herb)
 
     def death(self):
 
