@@ -10,15 +10,15 @@ class Animals:
         self.age = age
         self.loc = loc
 
-    def age(self):
+    def aging(self):
         self.age += 1
 
 
 class Herbivore(Animals):
 
     def __init__(self, island, parameters, loc, age=0, weight=None):
-        super().__init__(age, loc)
-        self.fitness = 0
+        super().__init__(loc, age)
+        self.fitness = None
         self.parameters = parameters
         self.island = island
 
