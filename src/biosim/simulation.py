@@ -162,7 +162,7 @@ if __name__ == '__main__':
             "loc": (10, 10),
             "pop": [
                 {"species": "Herbivore", "age": 5, "weight": 20}
-                for _ in range(79)
+                for _ in range(10)
             ],
         }
     ]
@@ -171,7 +171,8 @@ if __name__ == '__main__':
     print(s.island.island_dict[(10, 10)]["Fodder"])
     s.simulate(1)
     print(s.island.island_dict[(10, 10)]["Fodder"])
-    ##s.island.fodder_annual_refill()
+    print(len(s.herb_list))
+    s.simulate(300)
     print(s.island.island_dict[(10, 10)]["Fodder"])
     print(len(s.herb_list))
 
