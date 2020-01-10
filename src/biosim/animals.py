@@ -43,7 +43,7 @@ class Herbivore(Animals):
 
     def fodder_eaten(self):
 
-        available_fodder = self.island.island_dict[self.loc]["Fodder"]
+        available_fodder = self.island.get_fodder_on_loc(self.loc)
         optimal_fodder = self.parameters["F"]
         fodder_eaten = 0
 
@@ -56,7 +56,7 @@ class Herbivore(Animals):
         elif available_fodder == 0:
             fodder_eaten = 0
 
-        self.island.island_dict[self.loc]["Fodder"] -= fodder_eaten
+        self.island.herb_eats_fodder(self.loc, fodder_eaten)
 
         return fodder_eaten
 
