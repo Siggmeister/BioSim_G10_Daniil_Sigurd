@@ -78,7 +78,6 @@ class Herbivore(Animals):
     def can_birth_occur(self, herb_pop_list):
         num_prob = min(1, self.parameters["gamma"] * self.fitness *
                        (self.count_all_herb_in_current_loc(herb_pop_list) - 1))
-        # Sjekk dictionary herb-ammount
 
         weight_prob = (self.parameters["zeta"] *
                        (self.parameters["w_birth"] + self.parameters[
