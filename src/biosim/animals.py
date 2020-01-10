@@ -28,17 +28,23 @@ class Herbivore(Animals):
 
         else:
             self.weight = weight
+            #Sett i Method for seg selv
 
         self.fitness_change()
 
     def fitness_change(self):
+        phi_age_param = self.parameters["phi_age"]
+        a_half_param = self.parameters["a_half"]
+        phi_weight_param = self.parameters["phi_weight"]
+        w_half_param = self.parameters["w_half"]
+
         if self.weight > 0:
             self.fitness = ((1 /
-                             (1 + np.exp(self.parameters["phi_age"] *
-                        (self.age - self.parameters["a_half"])))) *
-                        (1 / (1 + np.exp(-self.parameters["phi_weight"] *
-                    (self.weight - self.parameters["w_half"])))))
-        else:
+                            (1 + np.exp(phi_age_param *
+                            (self.age - a_half_param)))) *
+                            (1 / (1 + np.exp(-(phi_weight_param *
+                            (self.weight - w_half_param))))))
+        else: # Legg i variabler for å gjøre det finere
             self.fitness = 0
 
     def fodder_eaten(self):
@@ -55,6 +61,7 @@ class Herbivore(Animals):
 
         elif available_fodder == 0:
             fodder_eaten = 0
+            #Raise Value Error hvis negativ
 
         self.island.herb_eats_fodder(self.loc, fodder_eaten)
 
