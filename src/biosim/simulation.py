@@ -112,7 +112,8 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
-        annual_cycle.
+        Cycle = annual_cycle.AnnualCycle(self.herb_list, [], self.island)
+        Cycle.cycle(num_years)
 
     def add_population(self, population):
         """
@@ -161,16 +162,17 @@ if __name__ == '__main__':
             "loc": (10, 10),
             "pop": [
                 {"species": "Herbivore", "age": 5, "weight": 20}
-                for _ in range(150)
+                for _ in range(79)
             ],
         }
     ]
 
     s = BioSim(geogr, ini_herbs)
+    print(s.island.island_dict[(10, 10)]["Fodder"])
+    s.simulate(1)
+    print(s.island.island_dict[(10, 10)]["Fodder"])
+    ##s.island.fodder_annual_refill()
+    print(s.island.island_dict[(10, 10)]["Fodder"])
     print(len(s.herb_list))
-    print(s.herb_list[0].age)
-    print("")
 
-    i = island.Island(geogr, s.landscape_parameters)
-    a = animals.Herbivore(i, s.animal_parameters["Herbivore"], (0,0), 3)
-    print(a.fitness)
+    print(s.island.island_dict[(10,10)]["Type"])

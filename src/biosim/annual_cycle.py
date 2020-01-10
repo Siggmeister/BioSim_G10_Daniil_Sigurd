@@ -37,14 +37,14 @@ class AnnualCycle:
     def animal_death(self):
         for herb in self.herb_pop_list:
             if herb.death():
-                del herb
+                self.herb_pop_list.remove(herb)
 
     def cycle(self, num_years):
         for _ in range(num_years):
             self.fodder_growth()
             self.herb_feeding()
             self.carn_feeding()
-            self.procreation()
+            #self.procreation()
             self.aging()
             self.weight_loss()
             self.animal_death()
