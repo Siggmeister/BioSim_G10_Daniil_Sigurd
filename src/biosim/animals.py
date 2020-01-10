@@ -21,10 +21,12 @@ class Herbivore(Animals):
         self.fitness = None
         self.parameters = parameters
         self.island = island
+        w_birth_param = self.parameters["w_birth"]
+        sigma_birth_param = self.parameters["sigma_birth"]
 
         if weight is None:
-            self.weight = np.random.normal(self.parameters["w_birth"],
-                                           self.parameters["sigma_birth"])
+            self.weight = np.random.normal(w_birth_param,
+                                           sigma_birth_param)
 
         else:
             self.weight = weight
@@ -68,7 +70,9 @@ class Herbivore(Animals):
         return fodder_eaten
 
     def weight_gain(self, consumption):
-        self.weight += consumption * self.parameters["beta"]
+        beta_param = self.parameters["beta"]
+
+        self.weight += consumption * beta_param
 
     def feed(self):
         consumed_fodder = self.fodder_eaten()
@@ -83,12 +87,16 @@ class Herbivore(Animals):
         return counter
 
     def can_birth_occur(self, herb_pop_list):
-        num_prob = min(1, self.parameters["gamma"] * self.fitness *
+        gamma_param = self.parameters["gamma"]
+        zeta_param = self.parameters["zeta"]
+        w_birth_param = self.parameters["w_birth"]
+        sigma_birth_param = self.parameters["sigma_birth"]
+        
+        num_prob = min(1, gamma_param * self.fitness *
                        (self.count_all_herb_in_current_loc(herb_pop_list) - 1))
 
-        weight_prob = (self.parameters["zeta"] *
-                       (self.parameters["w_birth"] + self.parameters[
-                           "sigma_birth"]))
+        weight_prob = (zeta_param *
+                       (w_birth_param + sigma_birth_param))
 
         if num_prob == 0 or weight_prob > self.weight:
             return False
@@ -99,20 +107,24 @@ class Herbivore(Animals):
             return False
 
     def birth(self, herb_pop_list):
+        xi_param = self.parameters["xi"]
+
         if self.can_birth_occur(herb_pop_list):
             baby_herb = Herbivore(self.island, self.parameters, self.loc)
 
-            weight_loss_by_birth = baby_herb.weight * self.parameters["xi"]
+            weight_loss_by_birth = baby_herb.weight * xi_param
 
             if weight_loss_by_birth < self.weight:
                 herb_pop_list.append(baby_herb)
 
     def annual_weight_loss(self):
-        self.weight -= self.parameters["eta"] * self.weight
+        eta_param = self.parameters["eta"]
+
+        self.weight -= eta_param * self.weight
 
     def death(self):
-
-        death_prob = self.parameters["omega"] * (1 - self.fitness)
+        omega_param = self.parameters["omega"]
+        death_prob = omega_param * (1 - self.fitness)
 
         if self.fitness == 0:
             return True
