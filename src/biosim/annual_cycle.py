@@ -3,8 +3,6 @@
 __author__ = 'Daniil Efremov'
 __email__ = 'daniil.vitalevich.efremov@nmbu.no'
 
-import animals
-import island
 
 class AnnualCycle:
 
@@ -38,7 +36,7 @@ class AnnualCycle:
 
     def animal_death(self):
         for herb in self.herb_pop_list:
-            if herb.death()
+            if herb.death():
                 del herb
 
     def cycle(self, num_years):
@@ -51,4 +49,3 @@ class AnnualCycle:
             self.weight_loss()
             self.animal_death()
             self.num_cycles += 1
-
