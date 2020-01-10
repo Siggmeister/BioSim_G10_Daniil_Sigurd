@@ -3,7 +3,7 @@
 __author__ = 'Daniil Efremov'
 __email__ = 'daniil.vitalevich.efremov@nmbu.no'
 
-from biosim import animals
+from biosim.animals import *
 
 class TestAnimals:
     pass
