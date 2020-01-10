@@ -8,6 +8,7 @@ __email__ = ""
 
 import island
 import animals
+import annual_cycle
 
 class BioSim:
     def __init__(
@@ -71,10 +72,10 @@ class BioSim:
         herb_pop_list = []
         for loc_dict in animal_spec_list:
             for animal in loc_dict["pop"]:
-                a = animals.Herbivore(island, self.animal_parameters["Herbivore"],
-                                   loc_dict["loc"],
-                                   animal["age"],
-                                   animal["weight"])
+                a = animals.Herbivore(island=island, parameters=self.animal_parameters["Herbivore"],
+                                   loc=loc_dict["loc"],
+                                   age=animal["age"],
+                                   weight=animal["weight"])
                 herb_pop_list.append(a)
         return herb_pop_list
 
@@ -111,6 +112,7 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
+        annual_cycle.
 
     def add_population(self, population):
         """
@@ -166,3 +168,9 @@ if __name__ == '__main__':
 
     s = BioSim(geogr, ini_herbs)
     print(len(s.herb_list))
+    print(s.herb_list[0].age)
+    print("")
+
+    i = island.Island(geogr, s.landscape_parameters)
+    a = animals.Herbivore(i, s.animal_parameters["Herbivore"], (0,0), 3)
+    print(a.fitness)
