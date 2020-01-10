@@ -44,7 +44,7 @@ class AnnualCycle:
             self.fodder_growth()
             self.herb_feeding()
             self.carn_feeding()
-            #self.procreation()
+            self.procreation()
             self.aging()
             self.weight_loss()
             self.animal_death()
