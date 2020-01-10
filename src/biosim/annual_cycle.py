@@ -28,7 +28,7 @@ class AnnualCycle:
 
     def aging(self):
         for herb in self.herb_pop_list:
-            herb.age()
+            herb.aging()
 
     def weight_loss(self):
         for herb in self.herb_pop_list:
