@@ -100,6 +100,9 @@ class Herbivore(Animals):
             if weight_loss_by_birth < self.weight:
                 herb_pop_list.append(baby_herb)
 
+    def annual_weight_loss(self):
+        self.weight -= self.parameters["eta"] * self.weight
+
     def death(self):
 
         death_prob = self.parameters["omega"] * (1 - self.fitness)
