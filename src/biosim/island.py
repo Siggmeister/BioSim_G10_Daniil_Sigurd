@@ -34,6 +34,12 @@ class Island:
                     current_fodder = f_max_savannah
             self.island_dict[loc]["Fodder"] = current_fodder
 
+    def get_fodder_on_loc(self, loc):
+        return self.island_dict[loc]["Fodder"]
+
+    def herb_eats_fodder(self, loc, fodder_eaten):
+        self.island_dict[loc]["Fodder"] -= fodder_eaten
+
 
     @staticmethod
     def _island_dict_maker(geo_string):
