@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import textwrap
+
 
 class Island:
 
@@ -43,6 +45,7 @@ class Island:
 
     @staticmethod
     def _island_dict_maker(geo_string):
+        geo_string = textwrap.dedent(geo_string)
         geo_list = [list(line) for line in geo_string.splitlines()]
         island_dict = {}
 

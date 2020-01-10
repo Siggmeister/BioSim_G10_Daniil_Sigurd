@@ -6,13 +6,15 @@
 __author__ = ""
 __email__ = ""
 
+import island
+import animals
 
 class BioSim:
     def __init__(
         self,
         island_map,
         ini_pop,
-        seed,
+        seed=None,
         ymax_animals=None,
         cmax_animals=None,
         img_base=None,
@@ -61,6 +63,21 @@ class BioSim:
                                                  "xi": 1.2,
                                                  "omega": 0.4,
                                                  "F": 10.0}}
+        self.island = island.Island(island_map, self.landscape_parameters)
+        self.herb_list = self.ini_pop_maker(ini_pop, self.island)
+        self.carn_list = []
+
+    def ini_pop_maker(self, animal_spec_list, island):
+        herb_pop_list = []
+        for loc_dict in animal_spec_list:
+            for animal in loc_dict["pop"]:
+                a = animals.Herbivore(island, self.animal_parameters["Herbivore"],
+                                   loc_dict["loc"],
+                                   animal["age"],
+                                   animal["weight"])
+                herb_pop_list.append(a)
+        return herb_pop_list
+
 
 
     def set_animal_parameters(self, species, params):
@@ -120,3 +137,32 @@ class BioSim:
 
     def make_movie(self):
         """Create MPEG4 movie from visualization images saved."""
+
+if __name__ == '__main__':
+    geogr = """\
+                   OOOOOOOOOOOOOOOOOOOOO
+                   OOOOOOOOSMMMMJJJJJJJO
+                   OSSSSSJJJJMMJJJJJJJOO
+                   OSSSSSSSSSMMJJJJJJOOO
+                   OSSSSSJJJJJJJJJJJJOOO
+                   OSSSSSJJJDDJJJSJJJOOO
+                   OSSJJJJJDDDJJJSSSSOOO
+                   OOSSSSJJJDDJJJSOOOOOO
+                   OSSSJJJJJDDJJJJJJJOOO
+                   OSSSSJJJJDDJJJJOOOOOO
+                   OOSSSSJJJJJJJJOOOOOOO
+                   OOOSSSSJJJJJJJOOOOOOO
+                   OOOOOOOOOOOOOOOOOOOOO"""
+
+    ini_herbs = [
+        {
+            "loc": (10, 10),
+            "pop": [
+                {"species": "Herbivore", "age": 5, "weight": 20}
+                for _ in range(150)
+            ],
+        }
+    ]
+
+    s = BioSim(geogr, ini_herbs)
+    print(len(s.herb_list))
