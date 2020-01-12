@@ -16,7 +16,7 @@ class Island:
         for loc in self.island_dict:
             geo_type = self.island_dict[loc]["Type"]
             if geo_type == "J":
-                self.island_dict[loc]["Fodder"] = f_max_jungle
+                self.island_dict[loc]["Fodder"] = f_max_jungle #Sjekk
             elif geo_type == "S":
                 self.island_dict[loc]["Fodder"] = f_max_savannah
 
@@ -54,5 +54,3 @@ class Island:
                 island_dict[(i, j)] = {"Type": landscape_code, "Fodder": 0}
 
         return island_dict
-
-
