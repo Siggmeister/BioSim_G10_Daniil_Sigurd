@@ -169,7 +169,7 @@ if __name__ == '__main__':
 
     s = BioSim(geogr, ini_herbs)
     print(s.island.island_dict[(10, 10)]["Fodder"])
-    s.simulate(1)
+    s.simulate(5)
     print(s.island.island_dict[(10, 10)]["Fodder"])
     print(len(s.herb_list))
     s.simulate(300)

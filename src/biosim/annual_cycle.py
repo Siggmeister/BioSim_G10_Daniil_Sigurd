@@ -49,3 +49,5 @@ class AnnualCycle:
             self.weight_loss()
             self.animal_death()
             self.num_cycles += 1
+
+#Legg til fitness sorter
