@@ -63,10 +63,9 @@ class Herbivore(Animals):
 
         elif available_fodder == 0:
             fodder_eaten = 0
-            #Raise Value Error hvis negativ
             
-        elif available_fodder < 0:  # sjekk
-            raise ValueError('Can not have negative Fodder!')
+        else:
+            raise ValueError
 
         self.island.herb_eats_fodder(self.loc, fodder_eaten)
 
