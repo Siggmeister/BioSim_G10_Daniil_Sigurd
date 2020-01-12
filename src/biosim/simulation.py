@@ -177,3 +177,4 @@ if __name__ == '__main__':
     print(len(s.herb_list))
 
     print(s.island.island_dict[(10,10)]["Type"])
+    print(s.island.island_dict)
