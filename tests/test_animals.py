@@ -9,6 +9,7 @@ from unittest import TestCase
 import pytest
 
 
+
 class TestAnimals:
 
     def test_aging(self):
@@ -44,7 +45,24 @@ class TestHerbivore(TestCase):
                                            "zeta": 3.5,
                                            "xi": 1.2,
                                            "omega": 0.4,
-                                           "F": 10.0}}
+                                           "F": 10.0},
+
+                                  "Carnivore": {"w_birth": 6.0,
+                                           "sigma_birth": 1.0,
+                                           "beta": 0.75,
+                                           "eta": 0.0125,
+                                           "a_half": 60.0,
+                                           "phi_age": 0.4,
+                                           "w_half": 4.0,
+                                           "phi_weight": 0.4,
+                                           "mu": 0.4,
+                                           "lambda": 1.0,
+                                           "gamma": 0.8,
+                                           "zeta": 3.5,
+                                           "xi": 1.1,
+                                           "omega": 0.9,
+                                           "F": 50.0,
+                                            "DeltaPhiMax": 10.0}}
 
         self.geogr = """\
                            OOOOOOOOOOOOOOOOOOOOO
@@ -85,11 +103,11 @@ class TestHerbivore(TestCase):
         jungle_loc = (2,7)
         savannah_loc = (2,1)
         ocean_loc = (0,0)
-        j_sim = Herbivore(self.island, self.herb_params, jungle_loc)
+        j_sim = Herbivore(self.island, jungle_loc)
         j_sim.fodder_eaten()
-        s_sim = Herbivore(self.island, self.herb_params, savannah_loc)
+        s_sim = Herbivore(self.island, savannah_loc)
         s_sim.fodder_eaten()
-        o_sim = Herbivore(self.island, self.herb_params, ocean_loc)
+        o_sim = Herbivore(self.island, ocean_loc)
         o_sim.fodder_eaten()
 
         assert j_sim.fodder_eaten() == 10
@@ -98,17 +116,17 @@ class TestHerbivore(TestCase):
 
     def test_fodder_eaten_only_eat_available_fodder(self):
         jungle_loc = (2,7)
-        self.landscape_parameters["J"]["f_max"] = 5
-        i_sim = Island(self.geogr, self.landscape_parameters)
-        s_1 = Herbivore(i_sim, self.herb_params, jungle_loc)
+        Island.param_changer("J", {"f_max" : 5})
+        i_sim = Island(self.geogr)
+        s_1 = Herbivore(i_sim, jungle_loc)
 
         assert s_1.fodder_eaten() == 5
 
     def test_fodder_eaten_raises_error(self):
         jungle_loc = (2, 7)
-        self.landscape_parameters["J"]["f_max"] = -100
-        i_sim = Island(self.geogr, self.landscape_parameters)
-        s_1 = Herbivore(i_sim, self.herb_params, jungle_loc)
+        Island.param_changer("J", {"f_max" : -100})
+        i_sim = Island(self.geogr)
+        s_1 = Herbivore(i_sim, jungle_loc)
         #s_1.fodder_eaten() SJEKK UT
 
         self.assertRaises(ValueError, s_1.fodder_eaten)
@@ -116,13 +134,12 @@ class TestHerbivore(TestCase):
     def test_weight_gain_properly(self):
         jungle_loc = (2,7)
         chosen_weight = 5
-        i = Herbivore(self.island, self.herb_params, jungle_loc,
-                      weight = chosen_weight)
-        fodder_eaten = self.herb_params["F"]
-
+        i = Herbivore(self.island, jungle_loc, weight = chosen_weight)
+        fodder_eaten = Animals.animal_parameters["Herbivore"]["F"]
+        beta = Animals.animal_parameters["Herbivore"]["beta"]
         i.weight_gain(fodder_eaten)
 
-        assert i.weight == chosen_weight+fodder_eaten*self.herb_params["beta"]
+        assert i.weight == chosen_weight+fodder_eaten*beta
 
     def test_feed_changes_fitness(self):
 
@@ -135,8 +152,8 @@ class TestHerbivore(TestCase):
     def test_count_all_herb_in_current_loc_gives_correct_amount(self):
         loc_1 = (2,7)
         loc_2 = (1, 1)
-        herb_loc_1 = Herbivore(self.island, self.herb_params, loc_1)
-        herb_loc_2 = Herbivore(self.island, self.herb_params, loc_2)
+        herb_loc_1 = Herbivore(self.island, loc_1)
+        herb_loc_2 = Herbivore(self.island, loc_2)
         herb_list = [herb_loc_1 for _ in range(3)]
 
 
@@ -147,3 +164,9 @@ class TestHerbivore(TestCase):
         herb_list_len_1 = [self.stnd_herb]
 
         assert self.stnd_herb.can_birth_occur(herb_list_len_1) == False
+
+    def test_can_birth_occur_with_5_herbivores(self, mocker):
+        mocker.patch('random.random', return_value=0.1)
+        herb_list = [self.stnd_herb for _ in range(5)]
+
+        assert self.stnd_herb.can_birth_occur(herb_list) == True
