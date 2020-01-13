@@ -15,6 +15,9 @@ class AnnualCycle:
     def fodder_growth(self):
         self.island.fodder_annual_refill()
 
+    def sort_by_fitness(self):
+        pass
+
     def herb_feeding(self):
         for herb in self.herb_pop_list:
             herb.feed()
@@ -42,6 +45,7 @@ class AnnualCycle:
     def cycle(self, num_years):
         for _ in range(num_years):
             self.fodder_growth()
+            self.sort_by_fitness()
             self.herb_feeding()
             self.carn_feeding()
             self.procreation()
@@ -49,5 +53,3 @@ class AnnualCycle:
             self.weight_loss()
             self.animal_death()
             self.num_cycles += 1
-
-#Legg til fitness sorter
