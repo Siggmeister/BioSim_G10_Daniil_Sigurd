@@ -5,7 +5,6 @@ __email__ = 'daniil.vitalevich.efremov@nmbu.no'
 
 from src.biosim.animals import *
 from src.biosim.island import *
-from unittest import TestCase
 import pytest
 
 
@@ -24,9 +23,10 @@ class TestAnimals:
 
         assert s.age == 5
 
-class TestHerbivore(TestCase):
+class TestHerbivore:
 
-    def setUp(self):
+    @pytest.fixture(autouse=True)
+    def setup(self):
         self.landscape_parameters = {"J": {"f_max": 800.0},
                                      "S": {"f_max": 300.0,
                                            "alpha": 0.3}}
@@ -129,7 +129,8 @@ class TestHerbivore(TestCase):
         s_1 = Herbivore(i_sim, jungle_loc)
         #s_1.fodder_eaten() SJEKK UT
 
-        self.assertRaises(ValueError, s_1.fodder_eaten)
+        with pytest.raises(ValueError):
+            s_1.fodder_eaten()
 
     def test_weight_gain_properly(self):
         jungle_loc = (2,7)
@@ -163,10 +164,10 @@ class TestHerbivore(TestCase):
     def test_can_birth_occur_with_1_herbivore(self):
         herb_list_len_1 = [self.stnd_herb]
 
-        assert self.stnd_herb.can_birth_occur(herb_list_len_1) == False
+        assert not self.stnd_herb.can_birth_occur(herb_list_len_1)
 
     def test_can_birth_occur_with_5_herbivores(self, mocker):
         mocker.patch('random.random', return_value=0.1)
         herb_list = [self.stnd_herb for _ in range(5)]
 
-        assert self.stnd_herb.can_birth_occur(herb_list) == True
+        assert self.stnd_herb.can_birth_occur(herb_list)
