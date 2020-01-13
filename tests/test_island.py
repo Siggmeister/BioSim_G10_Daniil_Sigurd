@@ -18,7 +18,7 @@ class TestIsland(TestCase):
                 OJSMO
                 OOOOO
                 """
-        self.island = Island(geo_string, TestIsland.landscape_parameters)
+        self.island = Island(geo_string)
 
     def test_island_instance(self):
 
