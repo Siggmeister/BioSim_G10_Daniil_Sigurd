@@ -13,7 +13,7 @@ class TestIsland(TestCase):
                                   "alpha": 0.3}}
 
     def setUp(self):
-        geo_string = """
+        geo_string = """\
                 OOOOO
                 OJSMO
                 OOOOO
@@ -65,7 +65,5 @@ class TestIsland(TestCase):
         savannah_max_fodder = TestIsland.landscape_parameters["S"]["f_max"]
         self.island.island_dict[savannah_loc]["Fodder"] = savannah_max_fodder + 10
         self.island.fodder_annual_refill()
-        
 
-
-
+        assert self.island.island_dict[savannah_loc]["Type"] == "S"
