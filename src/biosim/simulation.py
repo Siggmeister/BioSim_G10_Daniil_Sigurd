@@ -53,7 +53,7 @@ class BioSim:
         herb_pop_list = []
         for loc_dict in animal_spec_list:
             for animal in loc_dict["pop"]:
-                a = animals.Herbivore(island=island, parameters=self.animal_parameters["Herbivore"],
+                a = animals.Herbivore(island=island,
                                    loc=loc_dict["loc"],
                                    age=animal["age"],
                                    weight=animal["weight"])
@@ -69,8 +69,8 @@ class BioSim:
         :param species: String, name of animal species
         :param params: Dict with valid parameter specification for species
         """
-        for key in params:
-            self.animal_parameters[species][key] = params[key]
+
+        animals.Animals.param_changer(species, params)
 
     def set_landscape_parameters(self, landscape, params):
         """
@@ -80,8 +80,7 @@ class BioSim:
         :param params: Dict with valid parameter specification for landscape
         """
 
-        for key in params:
-            self.landscape_parameters[landscape][key] = params[key]
+        island.Island.param_changer(landscape, params)
 
     def simulate(self, num_years, vis_years=1, img_years=None):
         """
