@@ -62,16 +62,16 @@ class TestHerbivore(TestCase):
                            OOOOOOOOOOOOOOOOOOOOO"""
 
         self.herb_params = self.animal_parameters["Herbivore"]
-        self.island = Island(self.geogr, self.landscape_parameters)
+        self.island = Island(self.geogr)
         jungle_loc = (2,7)
-        self.stnd_herb = Herbivore(self.island, self.herb_params, jungle_loc)
+        self.stnd_herb = Herbivore(self.island, jungle_loc)
 
 
     def test_fitness_change_for_set_weight(self):
         jungle_loc = (2,7)
-        s_1 = Herbivore(self.island, self.herb_params, jungle_loc, weight=3)
-        s_2 = Herbivore(self.island, self.herb_params, jungle_loc, weight=5)
-        s_3 = Herbivore(self.island, self.herb_params, jungle_loc, weight=7)
+        s_1 = Herbivore(self.island, jungle_loc, weight=3)
+        s_2 = Herbivore(self.island, jungle_loc, weight=5)
+        s_3 = Herbivore(self.island, jungle_loc, weight=7)
         s_1.fitness_change()
         s_2.fitness_change()
         s_3.fitness_change()

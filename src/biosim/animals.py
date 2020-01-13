@@ -42,8 +42,8 @@ class Herbivore(Animals):
         self.fitness = None
         self.parameters = None
         self.island = island
-        w_birth_param = self.parameters["w_birth"]
-        sigma_birth_param = self.parameters["sigma_birth"]
+        w_birth_param = Herbivore.animal_parameters["Herbivore"]["w_birth"]
+        sigma_birth_param = Herbivore.animal_parameters["Herbivore"]["sigma_birth"]
 
         if weight is None:
             self.weight = np.random.normal(w_birth_param,
