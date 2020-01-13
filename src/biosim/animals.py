@@ -6,6 +6,7 @@ import random
 
 
 class Animals:
+
     animal_parameters = {"Herbivore": {"w_birth": 8.0,
                                         "sigma_birth": 1.5,
                                         "beta": 0.9,
