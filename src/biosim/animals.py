@@ -74,7 +74,9 @@ class Herbivore(Animals):
     def fodder_eaten(self):
 
         available_fodder = self.island.get_fodder_on_loc(self.loc)
+
         optimal_fodder = Animals.animal_parameters["Herbivore"]["F"]
+
         fodder_eaten = 0
 
         if optimal_fodder <= available_fodder:
