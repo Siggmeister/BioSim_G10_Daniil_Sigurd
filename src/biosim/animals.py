@@ -43,8 +43,8 @@ class Herbivore(Animals):
         self.fitness = None
         self.parameters = None
         self.island = island
-        w_birth_param = Herbivore.animal_parameters["Herbivore"]["w_birth"]
-        sigma_birth_param = Herbivore.animal_parameters["Herbivore"]["sigma_birth"]
+        w_birth_param = Animals.animal_parameters["Herbivore"]["w_birth"]
+        sigma_birth_param = Animals.animal_parameters["Herbivore"]["sigma_birth"]
 
         if weight is None:
             self.weight = np.random.normal(w_birth_param,
@@ -57,10 +57,10 @@ class Herbivore(Animals):
         self.fitness_change()
 
     def fitness_change(self):
-        phi_age_param = Herbivore.animal_parameters["Herbivore"]["phi_age"]
-        a_half_param = Herbivore.animal_parameters["Herbivore"]["a_half"]
-        phi_weight_param = Herbivore.animal_parameters["Herbivore"]["phi_weight"]
-        w_half_param = Herbivore.animal_parameters["Herbivore"]["w_half"]
+        phi_age_param = Animals.animal_parameters["Herbivore"]["phi_age"]
+        a_half_param = Animals.animal_parameters["Herbivore"]["a_half"]
+        phi_weight_param = Animals.animal_parameters["Herbivore"]["phi_weight"]
+        w_half_param = Animals.animal_parameters["Herbivore"]["w_half"]
 
         if self.weight > 0:
             self.fitness = ((1 /
@@ -74,7 +74,7 @@ class Herbivore(Animals):
     def fodder_eaten(self):
 
         available_fodder = self.island.get_fodder_on_loc(self.loc)
-        optimal_fodder = self.parameters["F"]
+        optimal_fodder = Animals.animal_parameters["Herbivore"]["F"]
         fodder_eaten = 0
 
         if optimal_fodder <= available_fodder:
@@ -94,7 +94,7 @@ class Herbivore(Animals):
         return fodder_eaten
 
     def weight_gain(self, consumption):
-        beta_param = Herbivore.animal_parameters["Herbivore"]["beta"]
+        beta_param = Animals.animal_parameters["Herbivore"]["beta"]
 
         self.weight += consumption * beta_param
 
@@ -111,10 +111,10 @@ class Herbivore(Animals):
         return counter
 
     def can_birth_occur(self, herb_pop_list):
-        gamma_param = Herbivore.animal_parameters["Herbivore"]["gamma"]
-        zeta_param = Herbivore.animal_parameters["Herbivore"]["zeta"]
-        w_birth_param = Herbivore.animal_parameters["Herbivore"]["w_birth"]
-        sigma_birth_param = Herbivore.animal_parameters["Herbivore"]["sigma_birth"]
+        gamma_param = Animals.animal_parameters["Herbivore"]["gamma"]
+        zeta_param = Animals.animal_parameters["Herbivore"]["zeta"]
+        w_birth_param = Animals.animal_parameters["Herbivore"]["w_birth"]
+        sigma_birth_param = Animals.animal_parameters["Herbivore"]["sigma_birth"]
         
         num_prob = min(1, gamma_param * self.fitness *
                        (self.count_all_herb_in_current_loc(herb_pop_list) - 1))
@@ -131,7 +131,7 @@ class Herbivore(Animals):
             return False
 
     def birth(self, herb_pop_list):
-        xi_param = Herbivore.animal_parameters["Herbivore"]["xi"]
+        xi_param = Animals.animal_parameters["Herbivore"]["xi"]
 
         if self.can_birth_occur(herb_pop_list):
             baby_herb = Herbivore(self.island, self.loc)
@@ -142,12 +142,12 @@ class Herbivore(Animals):
                 herb_pop_list.append(baby_herb)
 
     def annual_weight_loss(self):
-        eta_param = Herbivore.animal_parameters["Herbivore"]["eta"]
+        eta_param = Animals.animal_parameters["Herbivore"]["eta"]
 
         self.weight -= eta_param * self.weight
 
     def death(self):
-        omega_param = Herbivore.animal_parameters["Herbivore"]["omega"]
+        omega_param = Animals.animal_parameters["Herbivore"]["omega"]
         death_prob = omega_param * (1 - self.fitness)
 
         if self.fitness == 0:
