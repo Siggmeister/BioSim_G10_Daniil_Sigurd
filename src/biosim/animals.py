@@ -5,23 +5,41 @@ import numpy as np
 import random
 
 
+
 class Animals:
 
     animal_parameters = {"Herbivore": {"w_birth": 8.0,
-                                        "sigma_birth": 1.5,
-                                        "beta": 0.9,
-                                        "eta": 0.05,
-                                        "a_half": 40.0,
-                                        "phi_age": 0.2,
-                                        "w_half": 10.0,
-                                        "phi_weight": 0.1,
-                                        "mu": 0.25,
-                                        "lambda": 1.0,
-                                        "gamma": 0.2,
-                                        "zeta": 3.5,
-                                        "xi": 1.2,
-                                         "omega": 0.4,
-                                         "F": 10.0}}
+                                            "sigma_birth": 1.5,
+                                            "beta": 0.9,
+                                            "eta": 0.05,
+                                            "a_half": 40.0,
+                                            "phi_age": 0.2,
+                                            "w_half": 10.0,
+                                            "phi_weight": 0.1,
+                                            "mu": 0.25,
+                                            "lambda": 1.0,
+                                            "gamma": 0.2,
+                                            "zeta": 3.5,
+                                            "xi": 1.2,
+                                            "omega": 0.4,
+                                            "F": 10.0},
+
+                              "Carnivore": {"w_birth": 6.0,
+                                            "sigma_birth": 1.0,
+                                            "beta": 0.75,
+                                            "eta": 0.0125,
+                                            "a_half": 60.0,
+                                            "phi_age": 0.4,
+                                            "w_half": 4.0,
+                                            "phi_weight": 0.4,
+                                            "mu": 0.4,
+                                            "lambda": 1.0,
+                                            "gamma": 0.8,
+                                            "zeta": 3.5,
+                                            "xi": 1.1,
+                                            "omega": 0.9,
+                                            "F": 50.0,
+                                            "DeltaPhiMax": 10.0}}
 
     def __init__(self, loc, age=0):
         self.age = age
@@ -41,14 +59,12 @@ class Herbivore(Animals):
     def __init__(self, island, loc, age=0, weight=None):
         super().__init__(loc, age)
         self.fitness = None
-        self.parameters = None
         self.island = island
-        w_birth_param = Animals.animal_parameters["Herbivore"]["w_birth"]
-        sigma_birth_param = Animals.animal_parameters["Herbivore"]["sigma_birth"]
+        w_birth = Animals.animal_parameters["Herbivore"]["w_birth"]
+        sigma_birth = Animals.animal_parameters["Herbivore"]["sigma_birth"]
 
         if weight is None:
-            self.weight = np.random.normal(w_birth_param,
-                                           sigma_birth_param)
+            self.weight = np.random.normal(w_birth, sigma_birth)
 
         else:
             self.weight = weight
@@ -57,17 +73,17 @@ class Herbivore(Animals):
         self.fitness_change()
 
     def fitness_change(self):
-        phi_age_param = Animals.animal_parameters["Herbivore"]["phi_age"]
-        a_half_param = Animals.animal_parameters["Herbivore"]["a_half"]
-        phi_weight_param = Animals.animal_parameters["Herbivore"]["phi_weight"]
-        w_half_param = Animals.animal_parameters["Herbivore"]["w_half"]
+        phi_age = Animals.animal_parameters["Herbivore"]["phi_age"]
+        a_half = Animals.animal_parameters["Herbivore"]["a_half"]
+        phi_weight = Animals.animal_parameters["Herbivore"]["phi_weight"]
+        w_half = Animals.animal_parameters["Herbivore"]["w_half"]
 
         if self.weight > 0:
             self.fitness = ((1 /
-                            (1 + np.exp(phi_age_param *
-                            (self.age - a_half_param)))) *
-                            (1 / (1 + np.exp(-(phi_weight_param *
-                            (self.weight - w_half_param))))))
+                            (1 + np.exp(phi_age *
+                            (self.age - a_half)))) *
+                            (1 / (1 + np.exp(-(phi_weight *
+                            (self.weight - w_half))))))
         else: # Legg i variabler for å gjøre det finere
             self.fitness = 0
 
@@ -96,9 +112,9 @@ class Herbivore(Animals):
         return fodder_eaten
 
     def weight_gain(self, consumption):
-        beta_param = Animals.animal_parameters["Herbivore"]["beta"]
+        beta = Animals.animal_parameters["Herbivore"]["beta"]
 
-        self.weight += consumption * beta_param
+        self.weight += consumption * beta
 
     def feed(self):
         consumed_fodder = self.fodder_eaten()
@@ -113,16 +129,15 @@ class Herbivore(Animals):
         return counter
 
     def can_birth_occur(self, herb_pop_list):
-        gamma_param = Animals.animal_parameters["Herbivore"]["gamma"]
-        zeta_param = Animals.animal_parameters["Herbivore"]["zeta"]
-        w_birth_param = Animals.animal_parameters["Herbivore"]["w_birth"]
-        sigma_birth_param = Animals.animal_parameters["Herbivore"]["sigma_birth"]
+        gamma = Animals.animal_parameters["Herbivore"]["gamma"]
+        zeta = Animals.animal_parameters["Herbivore"]["zeta"]
+        w_birth = Animals.animal_parameters["Herbivore"]["w_birth"]
+        sigma_birth = Animals.animal_parameters["Herbivore"]["sigma_birth"]
         
-        num_prob = min(1, gamma_param * self.fitness *
+        num_prob = min(1, gamma * self.fitness *
                        (self.count_all_herb_in_current_loc(herb_pop_list) - 1))
 
-        weight_prob = (zeta_param *
-                       (w_birth_param + sigma_birth_param))
+        weight_prob = (zeta * (w_birth + sigma_birth))
 
         if num_prob == 0 or weight_prob > self.weight:
             return False
@@ -133,24 +148,24 @@ class Herbivore(Animals):
             return False
 
     def birth(self, herb_pop_list):
-        xi_param = Animals.animal_parameters["Herbivore"]["xi"]
+        xi = Animals.animal_parameters["Herbivore"]["xi"]
 
         if self.can_birth_occur(herb_pop_list):
             baby_herb = Herbivore(self.island, self.loc)
 
-            weight_loss_by_birth = baby_herb.weight * xi_param
+            weight_loss_by_birth = baby_herb.weight * xi
 
             if weight_loss_by_birth < self.weight:
                 herb_pop_list.append(baby_herb)
 
     def annual_weight_loss(self):
-        eta_param = Animals.animal_parameters["Herbivore"]["eta"]
+        eta = Animals.animal_parameters["Herbivore"]["eta"]
 
-        self.weight -= eta_param * self.weight
+        self.weight -= eta * self.weight
 
     def death(self):
-        omega_param = Animals.animal_parameters["Herbivore"]["omega"]
-        death_prob = omega_param * (1 - self.fitness)
+        omega = Animals.animal_parameters["Herbivore"]["omega"]
+        death_prob = omega * (1 - self.fitness)
 
         if self.fitness == 0:
             return True
@@ -160,3 +175,4 @@ class Herbivore(Animals):
 
         else:
             return False
+

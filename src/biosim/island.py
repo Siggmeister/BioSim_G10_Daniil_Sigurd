@@ -79,4 +79,3 @@ class Island:
     def param_changer(cls, landscape, new_params):
         for key in new_params:
             Island.landscape_parameters[landscape][key] = new_params[key]
-
