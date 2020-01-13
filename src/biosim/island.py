@@ -4,14 +4,34 @@ import textwrap
 
 class Island:
 
-    def __init__(self, geo_string, params):
+    landscape_parameters = {"J": {"f_max": 800.0},
+                                 "S": {"f_max": 300.0,
+                                       "alpha": 0.3}}
+
+    default_geogr = """\
+               OOOOOOOOOOOOOOOOOOOOO
+               OOOOOOOOSMMMMJJJJJJJO
+               OSSSSSJJJJMMJJJJJJJOO
+               OSSSSSSSSSMMJJJJJJOOO
+               OSSSSSJJJJJJJJJJJJOOO
+               OSSSSSJJJDDJJJSJJJOOO
+               OSSJJJJJDDDJJJSSSSOOO
+               OOSSSSJJJDDJJJSOOOOOO
+               OSSSJJJJJDDJJJJJJJOOO
+               OSSSSJJJJDDJJJJOOOOOO
+               OOSSSSJJJJJJJJOOOOOOO
+               OOOSSSSJJJJJJJOOOOOOO
+               OOOOOOOOOOOOOOOOOOOOO"""
+
+    def __init__(self, geo_string):
+        if geo_string is None:
+            geo_string = Island.default_geogr
         self.island_dict = self._island_dict_maker(geo_string)
-        self.params = params
         self.initial_fodder()
 
     def initial_fodder(self):
-        f_max_jungle = self.params["J"]["f_max"]
-        f_max_savannah = self.params["S"]["f_max"]
+        f_max_jungle = Island.landscape_parameters["J"]["f_max"]
+        f_max_savannah = Island.landscape_parameters["S"]["f_max"]
 
         for loc in self.island_dict:
             geo_type = self.island_dict[loc]["Type"]
@@ -21,9 +41,9 @@ class Island:
                 self.island_dict[loc]["Fodder"] = f_max_savannah
 
     def fodder_annual_refill(self):
-        f_max_jungle = self.params["J"]["f_max"]
-        f_max_savannah = self.params["S"]["f_max"]
-        alpha = self.params["S"]["alpha"]
+        f_max_jungle = Island.landscape_parameters["J"]["f_max"]
+        f_max_savannah = Island.landscape_parameters["S"]["f_max"]
+        alpha = Island.landscape_parameters["S"]["alpha"]
 
         for loc in self.island_dict:
             current_fodder = self.island_dict[loc]["Fodder"]
@@ -54,3 +74,9 @@ class Island:
                 island_dict[(i, j)] = {"Type": landscape_code, "Fodder": 0}
 
         return island_dict
+
+    @classmethod
+    def param_changer(cls, landscape, new_params):
+        for key in new_params:
+            Island.landscape_parameters[landscape][key] = new_params[key]
+
