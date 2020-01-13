@@ -79,25 +79,54 @@ class TestHerbivore(TestCase):
         assert s_3.fitness == pytest.approx(0.425, 0.01)
         #Sjekk med sannsynlighet
 
+    def test_fodder_eaten_for_full_landscapes(self):
+        jungle_loc = (2,7)
+        savannah_loc = (2,1)
+        ocean_loc = (0,0)
+        j_sim = Herbivore(self.island, self.herb_params, jungle_loc)
+        j_sim.fodder_eaten()
+        s_sim = Herbivore(self.island, self.herb_params, savannah_loc)
+        s_sim.fodder_eaten()
+        o_sim = Herbivore(self.island, self.herb_params, ocean_loc)
+        o_sim.fodder_eaten()
 
+        assert j_sim.fodder_eaten() == 10
+        assert s_sim.fodder_eaten() == 10
+        assert o_sim.fodder_eaten() == 0
+
+    def test_fodder_eaten_only_eat_available_fodder(self):
+        jungle_loc = (2,7)
+        self.landscape_parameters["J"]["f_max"] = 5
+        i_sim = Island(self.geogr, self.landscape_parameters)
+        s_1 = Herbivore(i_sim, self.herb_params, jungle_loc)
+
+        assert s_1.fodder_eaten() == 5
 
     def test_fodder_eaten_raises_error(self):
         jungle_loc = (2, 7)
+        self.landscape_parameters["J"]["f_max"] = -100
         i_sim = Island(self.geogr, self.landscape_parameters)
-        i_sim.island_dict[jungle_loc]["Fodder"] = -100#sjekk
-        #i_sim.get_fodder_on_loc() = -100  # sjekk
-        s_1 = Herbivore(self.island, self.herb_params, jungle_loc)
-        s_1.fodder_eaten()
+        s_1 = Herbivore(i_sim, self.herb_params, jungle_loc)
+        #s_1.fodder_eaten() SJEKK UT
 
-        self.assertRaises(ValueError, s_1.fodder_eaten())
-        #assert s_1.fodder_eaten() == i_sim.get_fodder_on_loc(jungle_loc)
+        self.assertRaises(ValueError, s_1.fodder_eaten)
 
+    def test_weight_gain_properly(self):
+        jungle_loc = (2,7)
+        chosen_weight = 5
+        i = Herbivore(self.island, self.herb_params, jungle_loc,
+                      weight = chosen_weight)
+        fodder_eaten = self.herb_params["F"]
 
+        i.weight_gain(fodder_eaten)
 
+        assert i.weight == chosen_weight+fodder_eaten*self.herb_params["beta"]
 
+    def test_feed_changes_fitness(self):
+        jungle_loc = (2, 7)
+        i = Herbivore(self.island, self.herb_params, jungle_loc)
+        start_fitness = i.fitness
+        i.feed()
+        changed_fitness = i.fitness
 
-
-
-
-
-
+        assert start_fitness != changed_fitness
