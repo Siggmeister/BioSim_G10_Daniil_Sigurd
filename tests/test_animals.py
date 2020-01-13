@@ -63,6 +63,8 @@ class TestHerbivore(TestCase):
 
         self.herb_params = self.animal_parameters["Herbivore"]
         self.island = Island(self.geogr, self.landscape_parameters)
+        jungle_loc = (2,7)
+        self.stnd_herb = Herbivore(self.island, self.herb_params, jungle_loc)
 
 
     def test_fitness_change_for_set_weight(self):
@@ -123,10 +125,25 @@ class TestHerbivore(TestCase):
         assert i.weight == chosen_weight+fodder_eaten*self.herb_params["beta"]
 
     def test_feed_changes_fitness(self):
-        jungle_loc = (2, 7)
-        i = Herbivore(self.island, self.herb_params, jungle_loc)
-        start_fitness = i.fitness
-        i.feed()
-        changed_fitness = i.fitness
+
+        start_fitness = self.stnd_herb.fitness
+        self.stnd_herb.feed()
+        changed_fitness = self.stnd_herb.fitness
 
         assert start_fitness != changed_fitness
+
+    def test_count_all_herb_in_current_loc_gives_correct_amount(self):
+        loc_1 = (2,7)
+        loc_2 = (1, 1)
+        herb_loc_1 = Herbivore(self.island, self.herb_params, loc_1)
+        herb_loc_2 = Herbivore(self.island, self.herb_params, loc_2)
+        herb_list = [herb_loc_1 for _ in range(3)]
+
+
+        assert herb_loc_1.count_all_herb_in_current_loc(herb_list) == 3
+        assert herb_loc_2.count_all_herb_in_current_loc(herb_list) == 0
+
+    def test_can_birth_occur_with_1_herbivore(self):
+        herb_list_len_1 = [self.stnd_herb]
+
+        assert self.stnd_herb.can_birth_occur(herb_list_len_1) == False
