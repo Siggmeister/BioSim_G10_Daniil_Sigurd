@@ -62,7 +62,7 @@ class TestHerbivore:
                                            "xi": 1.1,
                                            "omega": 0.9,
                                            "F": 50.0,
-                                            "DeltaPhiMax": 10.0}}
+                                           "DeltaPhiMax": 10.0}}
 
         self.geogr = """\
                            OOOOOOOOOOOOOOOOOOOOO
@@ -131,6 +131,7 @@ class TestHerbivore:
 
         with pytest.raises(ValueError):
             s_1.fodder_eaten()
+        Island.param_changer("J", {"f_max": 800})
 
     def test_weight_gain_properly(self):
         jungle_loc = (2,7)
@@ -143,10 +144,11 @@ class TestHerbivore:
         assert i.weight == chosen_weight+fodder_eaten*beta
 
     def test_feed_changes_fitness(self):
-
-        start_fitness = self.stnd_herb.fitness
-        self.stnd_herb.feed()
-        changed_fitness = self.stnd_herb.fitness
+        loc = (2,1)
+        i_sim = Herbivore(self.island, loc)
+        start_fitness = i_sim.fitness
+        i_sim.feed()
+        changed_fitness = i_sim.fitness
 
         assert start_fitness != changed_fitness
 
@@ -167,7 +169,10 @@ class TestHerbivore:
         assert not self.stnd_herb.can_birth_occur(herb_list_len_1)
 
     def test_can_birth_occur_with_5_herbivores(self, mocker):
-        mocker.patch('random.random', return_value=0.1)
-        herb_list = [self.stnd_herb for _ in range(5)]
+        mocker.patch('random.random', return_value=0)
+        loc = (1,1)
+        i_sim = Herbivore(self.island, loc, weight = 100)
+        herb_list = [i_sim for _ in range(5)]
 
-        assert self.stnd_herb.can_birth_occur(herb_list)
+        assert i_sim.can_birth_occur(herb_list)
+
