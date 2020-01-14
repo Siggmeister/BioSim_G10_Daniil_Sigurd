@@ -218,11 +218,12 @@ class TestHerbivore:
         loc = (2, 7)
         i_sim = Island()
         a_sim = Herbivore(i_sim, loc, weight=100)
-        herb_pop_list = [a_sim, a_sim]
+        herb_pop_list = [Herbivore(i_sim, loc, weight=100), Herbivore(i_sim, loc, weight=100)]
         #for _ in range(3):
         a_sim.birth(herb_pop_list)
-        a = AnnualCycle(herb_pop_list, [], i_sim)
+        #a = AnnualCycle(herb_pop_list, [], i_sim)
+
 
         #assert i_sim.get_herb_pop_on_loc(loc) == 5
-        #assert len(herb_pop_list) == 3
-        assert len(a.herb_pop_list) == 3
+        assert i_sim.get_num_herb_on_loc(loc) == 3
+        #assert len(a.herb_pop_list) == 3
