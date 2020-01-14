@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import textwrap
+from landscape import *
+import numpy as np
 
 
 class Island:
@@ -23,44 +25,38 @@ class Island:
                OOOSSSSJJJJJJJOOOOOOO
                OOOOOOOOOOOOOOOOOOOOO"""
 
-    def __init__(self, geo_string):
+    def __init__(self, geo_string=None):
         if geo_string is None:
             geo_string = Island.default_geogr
+        self._check_geo_string(geo_string)
         self.island_dict = self._island_dict_maker(geo_string)
-        self.initial_fodder()
 
-    def initial_fodder(self):
-        f_max_jungle = Island.landscape_parameters["J"]["f_max"]
-        f_max_savannah = Island.landscape_parameters["S"]["f_max"]
-
-        for loc in self.island_dict:
-            geo_type = self.island_dict[loc]["Type"]
-            if geo_type == "J":
-                self.island_dict[loc]["Fodder"] = f_max_jungle #Sjekk
-            elif geo_type == "S":
-                self.island_dict[loc]["Fodder"] = f_max_savannah
 
     def fodder_annual_refill(self):
-        f_max_jungle = Island.landscape_parameters["J"]["f_max"]
-        f_max_savannah = Island.landscape_parameters["S"]["f_max"]
-        alpha = Island.landscape_parameters["S"]["alpha"]
-
         for loc in self.island_dict:
-            current_fodder = self.island_dict[loc]["Fodder"]
-            geo_type = self.island_dict[loc]["Type"]
-            if geo_type == "J":
-                current_fodder = f_max_jungle
-            elif geo_type == "S":
-                current_fodder += (alpha * (f_max_savannah-current_fodder))
-                if current_fodder > f_max_savannah:
-                    current_fodder = f_max_savannah
-            self.island_dict[loc]["Fodder"] = current_fodder
+            self.island_dict[loc].fodder_annual_refill()
 
     def get_fodder_on_loc(self, loc):
-        return self.island_dict[loc]["Fodder"]
+        return self.island_dict[loc].get_fodder()
 
-    def herb_eats_fodder(self, loc, fodder_eaten):
-        self.island_dict[loc]["Fodder"] -= fodder_eaten
+    @staticmethod
+    def _check_geo_string(geo_string):
+        geo_string = textwrap.dedent(geo_string)
+        geo_list = [list(line) for line in geo_string.splitlines()]
+        for line in geo_list:
+            if len(line) != len(geo_list[0]):
+                raise ValueError("The map string has to be of rectangular shape!")
+
+        geo_matrix = np.array(geo_list)
+        top_slice = geo_matrix[0, :]
+        bottom_slice = geo_matrix[-1, :]
+        left_slice = geo_matrix[:, 0]
+        right_slice = geo_matrix[:, -1]
+        whole_frame_array = np.concatenate((top_slice, bottom_slice, left_slice, right_slice), axis=None)
+
+        for geo in whole_frame_array:
+            if geo != "O":
+                raise ValueError("The edges of the map must be all ocean type!")
 
 
     @staticmethod
@@ -71,11 +67,22 @@ class Island:
 
         for i, line in enumerate(geo_list):
             for j, landscape_code in enumerate(line):
-                island_dict[(i, j)] = {"Type": landscape_code, "Fodder": 0}
+                if landscape_code == "O":
+                    geo = Ocean()
+                elif landscape_code == "J":
+                    geo = Jungle()
+                elif landscape_code == "M":
+                    geo = Mountain()
+                elif landscape_code == "S":
+                    geo = Savannah()
+                elif landscape_code == "D":
+                    geo = Desert()
+                island_dict[(i, j)] = geo
 
         return island_dict
 
-    @classmethod
-    def param_changer(cls, landscape, new_params):
-        for key in new_params:
-            Island.landscape_parameters[landscape][key] = new_params[key]
+
+i = Island()
+
+
+
