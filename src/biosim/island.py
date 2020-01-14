@@ -39,6 +39,21 @@ class Island:
     def get_fodder_on_loc(self, loc):
         return self.island_dict[loc].get_fodder()
 
+    def get_herb_pop_on_loc(self, loc):
+        return self.island_dict[loc].get_herb_pop()
+
+    def get_carn_pop_on_loc(self, loc):
+        return self.island_dict[loc].get_carn_pop()
+
+    def add_pop_on_loc(self, loc, animal):
+        self.island_dict[loc].add_pop(animal)
+
+    def remove_pop_on_loc(self, loc, animal):
+        self.island_dict[loc].remove_pop(animal)
+
+    def herb_eats_fodder_on_loc(self, loc, fodder_eaten):
+        self.island_dict[loc].herb_eats_fodder(fodder_eaten)
+
     @staticmethod
     def _check_geo_string(geo_string):
         geo_string = textwrap.dedent(geo_string)
