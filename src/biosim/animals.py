@@ -132,7 +132,7 @@ class Herbivore(Animals):
         zeta = Animals.animal_parameters["Herbivore"]["zeta"]
         w_birth = Animals.animal_parameters["Herbivore"]["w_birth"]
         sigma_birth = Animals.animal_parameters["Herbivore"]["sigma_birth"]
-        
+
         num_prob = min(1, gamma * self.fitness *
                        (self.island.get_herb_pop_on_loc(self.loc) - 1))
 
