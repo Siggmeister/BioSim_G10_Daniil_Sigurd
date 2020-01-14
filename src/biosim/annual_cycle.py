@@ -41,6 +41,7 @@ class AnnualCycle:
         for herb in self.herb_pop_list:
             if herb.death():
                 self.herb_pop_list.remove(herb)
+                self.island.remove_pop_on_loc(herb.get_loc(), herb)
 
     def cycle(self, num_years):
         for _ in range(num_years):

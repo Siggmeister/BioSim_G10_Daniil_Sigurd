@@ -139,7 +139,7 @@ if __name__ == '__main__':
 
     ini_herbs = [
         {
-            "loc": (10, 10),
+            "loc": (6, 8),
             "pop": [
                 {"species": "Herbivore", "age": 5, "weight": 20}
                 for _ in range(10)
@@ -148,13 +148,7 @@ if __name__ == '__main__':
     ]
 
     s = BioSim(geogr, ini_herbs)
-    print(s.island.island_dict[(10, 10)]["Fodder"])
-    s.simulate(5)
-    print(s.island.island_dict[(10, 10)]["Fodder"])
-    print(len(s.herb_list))
-    s.simulate(300)
-    print(s.island.island_dict[(10, 10)]["Fodder"])
-    print(len(s.herb_list))
-
-    print(s.island.island_dict[(10,10)]["Type"])
-    print(s.island.island_dict)
+    for _ in range(50):
+        s.simulate(1)
+        print(len(s.herb_list))
+    print(s.island.island_dict[(6,8)].__class__.__name__)

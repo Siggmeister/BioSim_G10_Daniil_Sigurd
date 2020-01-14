@@ -35,6 +35,12 @@ class Landscape:
         if self.fodder is not None:
             self.fodder -= fodder_eaten
 
+    def get_herb_pop(self):
+        return self.herb_pop
+
+    def get_carn_pop(self):
+        return self.carn_pop
+
     @classmethod
     def param_changer(cls, landscape, new_param):
         for key in new_param:
@@ -72,6 +78,7 @@ class Desert(Landscape):
     def __init__(self):
         super().__init__()
         self.available = True
+        self.fodder = 0
 
 
 class Mountain(Landscape):
