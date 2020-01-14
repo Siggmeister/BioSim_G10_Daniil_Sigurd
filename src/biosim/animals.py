@@ -70,7 +70,7 @@ class Herbivore(Animals):
         super().__init__(island, loc, age)
 
         if weight is None:
-            self.weight = self._set_weight()
+            self.weight = self._set_birth_weight()
 
         else:
             self.weight = weight
@@ -78,7 +78,7 @@ class Herbivore(Animals):
         self.fitness_change()
 
     @staticmethod
-    def _set_weight():
+    def _set_birth_weight():
         w_birth = Animals.animal_parameters["Herbivore"]["w_birth"]
         sigma_birth = Animals.animal_parameters["Herbivore"]["sigma_birth"]
 
@@ -138,7 +138,7 @@ class Herbivore(Animals):
         sigma_birth = Animals.animal_parameters["Herbivore"]["sigma_birth"]
 
         num_prob = min(1, gamma * self.fitness *
-                       (self.island.get_herb_pop_on_loc(self.loc) - 1))
+                       (self.island.get_num_herb_on_loc(self.loc) - 1))
 
         weight_prob = (zeta * (w_birth + sigma_birth))
 
@@ -183,4 +183,92 @@ class Herbivore(Animals):
 class Carnivore(Animals):
 
     def __init__(self, island, loc, age=0, weight=None):
-        pass
+        super().__init__(island, loc, age)
+
+        if weight is None:
+            self.weight = self._set_birth_weight()
+
+        else:
+            self.weight = weight
+
+        self.fitness_change()
+
+    @staticmethod
+    def _set_birth_weight():
+        w_birth = Animals.animal_parameters["Carnivore"]["w_birth"]
+        sigma_birth = Animals.animal_parameters["Carnivore"]["sigma_birth"]
+
+        return np.random.normal(w_birth, sigma_birth)
+
+    def fitness_change(self):
+        phi_age = Animals.animal_parameters["Carnivore"]["phi_age"]
+        a_half = Animals.animal_parameters["Carnivore"]["a_half"]
+        phi_weight = Animals.animal_parameters["Carnivore"]["phi_weight"]
+        w_half = Animals.animal_parameters["Carnivore"]["w_half"]
+
+        if self.weight > 0:
+            self.fitness = ((1 /
+                            (1 + np.exp(phi_age *
+                            (self.age - a_half)))) *
+                            (1 / (1 + np.exp(-(phi_weight *
+                            (self.weight - w_half))))))
+        else:
+            self.fitness = 0
+
+    def weight_gain(self, consumption):
+        beta = Animals.animal_parameters["Carnivore"]["beta"]
+
+        self.weight += consumption * beta
+
+    def annual_weight_loss(self):
+        eta = Animals.animal_parameters["Carnivore"]["eta"]
+
+        self.weight -= eta * self.weight
+
+    def can_birth_occur(self):
+        gamma = Animals.animal_parameters["Carnivore"]["gamma"]
+        zeta = Animals.animal_parameters["Carnivore"]["zeta"]
+        w_birth = Animals.animal_parameters["Carnivore"]["w_birth"]
+        sigma_birth = Animals.animal_parameters["Carnivore"]["sigma_birth"]
+
+        num_prob = min(1, gamma * self.fitness *
+                       (self.island.get_num_carn_on_loc(self.loc) - 1))
+
+        weight_prob = (zeta * (w_birth + sigma_birth))
+
+        if num_prob == 0 or weight_prob > self.weight:
+            return False
+
+        if random.random() <= num_prob:
+            return True
+        else:
+            return False
+
+    def birth(self, carn_pop_list):
+        xi = Animals.animal_parameters["Carnivore"]["xi"]
+
+        if self.can_birth_occur():
+            baby_carn = Carnivore(self.island, self.loc)
+
+            weight_loss_by_birth = baby_carn.weight * xi
+
+            if weight_loss_by_birth < self.weight:
+                carn_pop_list.append(baby_carn)
+                self.island.add_pop_on_loc(self.loc, baby_carn)
+
+
+    def death(self):
+        omega = Animals.animal_parameters["Carnivore"]["omega"]
+        death_prob = omega * (1 - self.fitness)
+
+        if self.fitness == 0:
+            return True
+
+        elif random.random() <= death_prob:
+            return True
+
+        else:
+            return False
+
+
+

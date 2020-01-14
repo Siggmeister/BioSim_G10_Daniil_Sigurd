@@ -26,17 +26,25 @@ class AnnualCycle:
     def carn_feeding(self):
         pass
 
-    def procreation(self):
+    def procreation_herb(self):
         for herb in self.herb_pop_list:
             herb.birth(self.herb_pop_list)
+
+    def procreation_carn(self):
+        for carn in self.carn_pop_list:
+            carn.birth(self.carn_pop_list)
+
+    def procreation_all(self):
+        self.procreation_herb()
+        self.procreation_carn()
 
     def aging(self):
         for animal in self.herb_pop_list + self.carn_pop_list:
             animal.aging()
 
     def weight_loss(self):
-        for herb in self.herb_pop_list:
-            herb.annual_weight_loss()
+        for animal in self.herb_pop_list + self.carn_pop_list:
+            animal.annual_weight_loss()
 
     def animal_death(self):
         for animal in self.herb_pop_list + self.carn_pop_list:
@@ -50,7 +58,7 @@ class AnnualCycle:
             self.sort_by_fitness()
             self.herb_feeding()
             self.carn_feeding()
-            self.procreation()
+            self.procreation_all()
             self.aging()
             self.weight_loss()
             self.animal_death()

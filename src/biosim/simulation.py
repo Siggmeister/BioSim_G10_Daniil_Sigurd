@@ -148,7 +148,8 @@ if __name__ == '__main__':
     ]
 
     s = BioSim(geogr, ini_herbs)
-    for _ in range(50):
+    for _ in range(10):
         s.simulate(1)
         print(len(s.herb_list))
+        print(s.island.get_herb_list_on_loc((6,8)))
     print(s.island.island_dict[(6,8)].__class__.__name__)

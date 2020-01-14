@@ -5,22 +5,22 @@ class Landscape:
                                   "alpha": 0.3}}
 
     def __init__(self):
-        self.herb_pop = 0
-        self.carn_pop = 0
+        self.herb_pop_list = []
+        self.carn_pop_list = []
         self.available = None
         self.fodder = 0
 
     def add_pop(self, animal):
         if animal.__class__.__name__ == "Herbivore":
-            self.herb_pop += 1
+            self.herb_pop_list.append(animal)
         elif animal.__class__.__name__ == "Carnivore":
-            self.carn_pop += 1
+            self.carn_pop_list.append(animal)
 
     def remove_pop(self, animal):
         if animal.__class__.__name__ == "Herbivore":
-            self.herb_pop -= 1
+            self.herb_pop_list.remove(animal)
         elif animal.__class__.__name__ == "Carnivore":
-            self.carn_pop -= 1
+            self.carn_pop_list.remove(animal)
 
     def fodder_annual_refill(self):
         pass
@@ -34,11 +34,17 @@ class Landscape:
     def herb_eats_fodder(self, fodder_eaten):
         self.fodder -= fodder_eaten
 
-    def get_herb_pop(self):
-        return self.herb_pop
+    def get_herb_pop_list(self):
+        return self.herb_pop_list
 
-    def get_carn_pop(self):
-        return self.carn_pop
+    def get_carn_pop_list(self):
+        return self.carn_pop_list
+
+    def get_num_herb(self):
+        return len(self.herb_pop_list)
+
+    def get_num_carn(self):
+        return len(self.carn_pop_list)
 
     @classmethod
     def param_changer(cls, landscape, new_param):
