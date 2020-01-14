@@ -16,7 +16,8 @@ class AnnualCycle:
         self.island.fodder_annual_refill()
 
     def sort_by_fitness(self):
-        pass
+        self.herb_pop_list.sort(key=lambda herb: herb.fitness, reverse=True)
+        self.carn_pop_list.sort(key=lambda carn: carn.fitness, reverse=True)
 
     def herb_feeding(self):
         for herb in self.herb_pop_list:
@@ -30,18 +31,18 @@ class AnnualCycle:
             herb.birth(self.herb_pop_list)
 
     def aging(self):
-        for herb in self.herb_pop_list:
-            herb.aging()
+        for animal in self.herb_pop_list + self.carn_pop_list:
+            animal.aging()
 
     def weight_loss(self):
         for herb in self.herb_pop_list:
             herb.annual_weight_loss()
 
     def animal_death(self):
-        for herb in self.herb_pop_list:
-            if herb.death():
-                self.herb_pop_list.remove(herb)
-                self.island.remove_pop_on_loc(herb.get_loc(), herb)
+        for animal in self.herb_pop_list + self.carn_pop_list:
+            if animal.death():
+                self.herb_pop_list.remove(animal)
+                self.island.remove_pop_on_loc(animal.get_loc(), animal)
 
     def cycle(self, num_years):
         for _ in range(num_years):
