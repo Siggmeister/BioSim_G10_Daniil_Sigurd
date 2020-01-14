@@ -5,6 +5,7 @@ __email__ = 'daniil.vitalevich.efremov@nmbu.no'
 
 from src.biosim.animals import *
 from src.biosim.island import *
+from src.biosim.landscape import *
 import pytest
 
 
@@ -12,7 +13,8 @@ import pytest
 class TestAnimals:
 
     def test_aging(self):
-        s = Animals(loc=(0,0))
+        i = Island()
+        s = Animals(island=i, loc=(0, 0))
         s.aging()
 
         assert s.age == 1
@@ -109,14 +111,16 @@ class TestHerbivore:
         s_sim.fodder_eaten()
         o_sim = Herbivore(self.island, ocean_loc)
         o_sim.fodder_eaten()
+        optimal_fodder = self.animal_parameters["Herbivore"]["F"]
 
-        assert j_sim.fodder_eaten() == 10
-        assert s_sim.fodder_eaten() == 10
+        assert j_sim.fodder_eaten() == optimal_fodder
+        assert s_sim.fodder_eaten() == optimal_fodder
         assert o_sim.fodder_eaten() == 0
+
 
     def test_fodder_eaten_only_eat_available_fodder(self):
         jungle_loc = (2,7)
-        Island.param_changer("J", {"f_max" : 5})
+        Island._param_changer("J", {"f_max" : 5})
         i_sim = Island(self.geogr)
         s_1 = Herbivore(i_sim, jungle_loc)
 
@@ -124,14 +128,14 @@ class TestHerbivore:
 
     def test_fodder_eaten_raises_error(self):
         jungle_loc = (2, 7)
-        Island.param_changer("J", {"f_max" : -100})
+        Island._param_changer("J", {"f_max" : -100})
         i_sim = Island(self.geogr)
         s_1 = Herbivore(i_sim, jungle_loc)
-        #s_1.fodder_eaten() SJEKK UT
+        #s_1.fodder_eaten() #SJEKK UT
 
         with pytest.raises(ValueError):
             s_1.fodder_eaten()
-        Island.param_changer("J", {"f_max": 800})
+        #Island.param_changer("J", {"f_max": 800})
 
     def test_weight_gain_properly(self):
         jungle_loc = (2,7)
@@ -152,27 +156,22 @@ class TestHerbivore:
 
         assert start_fitness != changed_fitness
 
-    def test_count_all_herb_in_current_loc_gives_correct_amount(self):
-        loc_1 = (2,7)
-        loc_2 = (1, 1)
-        herb_loc_1 = Herbivore(self.island, loc_1)
-        herb_loc_2 = Herbivore(self.island, loc_2)
-        herb_list = [herb_loc_1 for _ in range(3)]
-
-
-        assert herb_loc_1.count_all_herb_in_current_loc(herb_list) == 3
-        assert herb_loc_2.count_all_herb_in_current_loc(herb_list) == 0
-
     def test_can_birth_occur_with_1_herbivore(self):
-        herb_list_len_1 = [self.stnd_herb]
+        loc = (2,7)
+        i_sim = Island()
+        a_sim = Herbivore(i_sim, loc)
+        i_sim.add_pop_on_loc(loc, a_sim)
 
-        assert not self.stnd_herb.can_birth_occur(herb_list_len_1)
+        assert not self.stnd_herb.can_birth_occur()
 
     def test_can_birth_occur_with_5_herbivores(self, mocker):
         mocker.patch('random.random', return_value=0)
-        loc = (1,1)
-        i_sim = Herbivore(self.island, loc, weight = 100)
-        herb_list = [i_sim for _ in range(5)]
+        loc = (2, 7)
+        i_sim = Island()
+        a_sim = Herbivore(i_sim, loc, weight = 100)
+        for _ in range(5):
+            i_sim.add_pop_on_loc(loc, a_sim)
 
-        assert i_sim.can_birth_occur(herb_list)
+        assert a_sim.can_birth_occur()
+
 

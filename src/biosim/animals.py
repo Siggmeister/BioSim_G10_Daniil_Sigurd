@@ -68,17 +68,21 @@ class Herbivore(Animals):
 
     def __init__(self, island, loc, age=0, weight=None):
         super().__init__(island, loc, age)
-        w_birth = Animals.animal_parameters["Herbivore"]["w_birth"]
-        sigma_birth = Animals.animal_parameters["Herbivore"]["sigma_birth"]
 
         if weight is None:
-            self.weight = np.random.normal(w_birth, sigma_birth)
+            self.weight = self._set_weight()
 
         else:
             self.weight = weight
-            #Sett i Method for seg selv
 
         self.fitness_change()
+
+    @staticmethod
+    def _set_weight():
+        w_birth = Animals.animal_parameters["Herbivore"]["w_birth"]
+        sigma_birth = Animals.animal_parameters["Herbivore"]["sigma_birth"]
+
+        return np.random.normal(w_birth, sigma_birth)
 
     def fitness_change(self):
         phi_age = Animals.animal_parameters["Herbivore"]["phi_age"]
@@ -92,7 +96,7 @@ class Herbivore(Animals):
                             (self.age - a_half)))) *
                             (1 / (1 + np.exp(-(phi_weight *
                             (self.weight - w_half))))))
-        else: # Legg i variabler for å gjøre det finere
+        else:
             self.fitness = 0
 
     def fodder_eaten(self):

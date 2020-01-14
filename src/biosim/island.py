@@ -6,10 +6,6 @@ import numpy as np
 
 class Island:
 
-    landscape_parameters = {"J": {"f_max": 800.0},
-                                 "S": {"f_max": 300.0,
-                                       "alpha": 0.3}}
-
     default_geogr = """\
                OOOOOOOOOOOOOOOOOOOOO
                OOOOOOOOSMMMMJJJJJJJO
@@ -96,8 +92,10 @@ class Island:
 
         return island_dict
 
+    @staticmethod
+    def _param_changer(landscape, new_param):
+        Landscape.param_changer(landscape, new_param)
 
-i = Island()
 
 
 

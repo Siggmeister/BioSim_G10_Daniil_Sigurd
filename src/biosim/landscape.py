@@ -8,7 +8,7 @@ class Landscape:
         self.herb_pop = 0
         self.carn_pop = 0
         self.available = None
-        self.fodder = None
+        self.fodder = 0
 
     def add_pop(self, animal):
         if animal.__class__.__name__ == "Herbivore":
@@ -32,8 +32,7 @@ class Landscape:
         return self.available
 
     def herb_eats_fodder(self, fodder_eaten):
-        if self.fodder is not None:
-            self.fodder -= fodder_eaten
+        self.fodder -= fodder_eaten
 
     def get_herb_pop(self):
         return self.herb_pop
@@ -78,7 +77,6 @@ class Desert(Landscape):
     def __init__(self):
         super().__init__()
         self.available = True
-        self.fodder = 0
 
 
 class Mountain(Landscape):
