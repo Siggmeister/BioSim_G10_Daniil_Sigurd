@@ -176,3 +176,7 @@ class Herbivore(Animals):
         else:
             return False
 
+class Carnivore(Animals):
+
+    def __init__(self, island, loc, age=0, weight=None):
+        pass
