@@ -10,46 +10,75 @@ import pytest
 
 class TestAnimals:
 
-    def test_aging(self):
+    @pytest.fixture(autouse=True)
+    def setup(self):
         i = Island()
-        s = Animals(island=i, loc=(0, 0))
-        s.aging()
+        self.loc = (0,0)
+        stnd_herb = Herbivore(island=i, loc=self.loc)
+        stnd_carn = Carnivore(island=i, loc=self.loc)
+        self.stnd_a_list = [stnd_herb, stnd_carn]
 
-        assert s.age == 1
-        s.age = 0
+        self.herb_w_0 = Herbivore(island=i, loc=self.loc, weight = 0)
+        self.herb_w_5 = Herbivore(island=i, loc=self.loc, weight = 5)
+        herb_w_7 = Herbivore(island=i, loc=self.loc, weight=7)
+        herb_w_100 = Herbivore(island=i, loc=self.loc, weight=100)
 
-        for _ in range(5):
-            s.aging()
+        self.carn_w_0 = Carnivore(island=i, loc=self.loc, weight=0)
+        self.carn_w_5 = Carnivore(island=i, loc=self.loc, weight=5)
+        carn_w_7 = Carnivore(island=i, loc=self.loc, weight=7)
+        carn_w_100 = Carnivore(island=i, loc=self.loc, weight=100)
 
-        assert s.age == 5
+        self.a_list_w_0 = [self.herb_w_0, self.carn_w_0]
+        self.a_list_w_5 = [self.herb_w_5, self.carn_w_5]
+
+
+
+
+    def test_aging(self):
+        for a in self.stnd_a_list:
+            a.aging()
+
+            assert a.age == 1
+            a.age = 0
+
+            for _ in range(5):
+                a.aging()
+
+            assert a.age == 5
 
     def test_get_loc_returns_loc(self):
-        i = Island()
-        loc = (1,1)
-        s = Animals(i, loc)
+        for a in self.stnd_a_list:
 
-        assert s.get_loc() == loc
+            assert a.get_loc() == self.loc
 
     def test_get_fitness_returns_fitness(self):
-        i = Island()
-        loc = (1,1)
-        s_1 = Herbivore(i, loc, weight = 0)
-        s_2 = Herbivore(i, loc, weight = 5)
+        for a in self.a_list_w_0:
+            assert a.get_fitness() == 0
 
-
-        assert s_1.get_fitness() == 0
-        assert s_2.get_fitness() == pytest.approx(0.377, 0.01)
+        assert self.herb_w_5.get_fitness() == pytest.approx(0.377, 0.01)
+        assert self.carn_w_5.get_fitness() == pytest.approx(0.598, 0.01)
 
     def test_param_changer_changes_correctly(self):
         i = Island()
         loc = (1, 1)
-        s = Animals(i, loc)
-        old_param = s.animal_parameters["Herbivore"]["F"]
+        s = Herbivore(i, loc)
+        old_param = s.parameters["F"]
         s.param_changer("Herbivore", {"F" : 20})
-        new_param = s.animal_parameters["Herbivore"]["F"]
+        new_param = s.parameters["F"]
 
         assert old_param != new_param
         s.param_changer("Herbivore", {"F": 10})
+
+    def test_fitness_change_for_set_weight(self):
+        self.herb_w_5.fitness_change()
+        self.carn_w_5.fitness_change()
+        self.herb_w_0.fitness_change()
+        self.carn_w_0.fitness_change()
+
+        assert self.herb_w_5.fitness == pytest.approx(0.377, 0.01)
+        assert self.carn_w_5.fitness == pytest.approx(0.598, 0.01)
+        assert self.herb_w_0.fitness == 0
+        assert self.carn_w_0.fitness == 0
 
 class TestHerbivore:
 
@@ -59,7 +88,7 @@ class TestHerbivore:
                                      "S": {"f_max": 300.0,
                                            "alpha": 0.3}}
 
-        self.animal_parameters = {"Herbivore": {"w_birth": 8.0,
+        self.parameters =  {"w_birth": 8.0,
                                            "sigma_birth": 1.5,
                                            "beta": 0.9,
                                            "eta": 0.05,
@@ -73,24 +102,7 @@ class TestHerbivore:
                                            "zeta": 3.5,
                                            "xi": 1.2,
                                            "omega": 0.4,
-                                           "F": 10.0},
-
-                                  "Carnivore": {"w_birth": 6.0,
-                                           "sigma_birth": 1.0,
-                                           "beta": 0.75,
-                                           "eta": 0.0125,
-                                           "a_half": 60.0,
-                                           "phi_age": 0.4,
-                                           "w_half": 4.0,
-                                           "phi_weight": 0.4,
-                                           "mu": 0.4,
-                                           "lambda": 1.0,
-                                           "gamma": 0.8,
-                                           "zeta": 3.5,
-                                           "xi": 1.1,
-                                           "omega": 0.9,
-                                           "F": 50.0,
-                                           "DeltaPhiMax": 10.0}}
+                                           "F": 10.0}
 
         self.geogr = """\
                            OOOOOOOOOOOOOOOOOOOOO
@@ -269,38 +281,22 @@ class TestCarnivore:
                                      "S": {"f_max": 300.0,
                                            "alpha": 0.3}}
 
-        self.animal_parameters = {"Herbivore": {"w_birth": 8.0,
-                                                "sigma_birth": 1.5,
-                                                "beta": 0.9,
-                                                "eta": 0.05,
-                                                "a_half": 40.0,
-                                                "phi_age": 0.2,
-                                                "w_half": 10.0,
-                                                "phi_weight": 0.1,
-                                                "mu": 0.25,
-                                                "lambda": 1.0,
-                                                "gamma": 0.2,
-                                                "zeta": 3.5,
-                                                "xi": 1.2,
-                                                "omega": 0.4,
-                                                "F": 10.0},
-
-                                  "Carnivore": {"w_birth": 6.0,
-                                                "sigma_birth": 1.0,
-                                                "beta": 0.75,
-                                                "eta": 0.0125,
-                                                "a_half": 60.0,
-                                                "phi_age": 0.4,
-                                                "w_half": 4.0,
-                                                "phi_weight": 0.4,
-                                                "mu": 0.4,
-                                                "lambda": 1.0,
-                                                "gamma": 0.8,
-                                                "zeta": 3.5,
-                                                "xi": 1.1,
-                                                "omega": 0.9,
-                                                "F": 50.0,
-                                                "DeltaPhiMax": 10.0}}
+        self.parameters = {"w_birth": 6.0,
+                                           "sigma_birth": 1.0,
+                                           "beta": 0.75,
+                                           "eta": 0.0125,
+                                           "a_half": 60.0,
+                                           "phi_age": 0.4,
+                                           "w_half": 4.0,
+                                           "phi_weight": 0.4,
+                                           "mu": 0.4,
+                                           "lambda": 1.0,
+                                           "gamma": 0.8,
+                                           "zeta": 3.5,
+                                           "xi": 1.1,
+                                           "omega": 0.9,
+                                           "F": 50.0,
+                                           "DeltaPhiMax": 10.0}
 
         self.geogr = """\
                               OOOOOOOOOOOOOOOOOOOOO
