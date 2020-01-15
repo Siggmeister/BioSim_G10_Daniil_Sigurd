@@ -6,6 +6,7 @@ __email__ = 'daniil.vitalevich.efremov@nmbu.no'
 from src.biosim.animals import *
 from src.biosim.island import *
 from src.biosim.landscape import *
+from src.biosim.annual_cycle import *
 import pytest
 
 
@@ -24,6 +25,34 @@ class TestAnimals:
             s.aging()
 
         assert s.age == 5
+
+    def test_get_loc_returns_loc(self):
+        i = Island()
+        loc = (1,1)
+        s = Animals(i, loc)
+
+        assert s.get_loc() == loc
+
+    def test_get_fitness_returns_fitness(self):
+        i = Island()
+        loc = (1,1)
+        s_1 = Herbivore(i, loc, weight = 0)
+        s_2 = Herbivore(i, loc, weight = 5)
+
+
+        assert s_1.get_fitness() == 0
+        assert s_2.get_fitness() == pytest.approx(0.377, 0.01)
+
+    def test_param_changer_changes_correctly(self):
+        i = Island()
+        loc = (1, 1)
+        s = Animals(i, loc)
+        old_param = s.animal_parameters["Herbivore"]["F"]
+        s.param_changer("Herbivore", {"F" : 20})
+        new_param = s.animal_parameters["Herbivore"]["F"]
+
+        assert old_param != new_param
+        s.param_changer("Herbivore", {"F": 10})
 
 class TestHerbivore:
 
@@ -164,7 +193,7 @@ class TestHerbivore:
 
         assert not self.stnd_herb.can_birth_occur()
 
-    def test_can_birth_occur_with_5_herbivores(self, mocker):
+    def test_can_birth_occur_with_5_herbivores_with_1_prob(self, mocker):
         mocker.patch('random.random', return_value=0)
         loc = (2, 7)
         i_sim = Island()
@@ -174,4 +203,27 @@ class TestHerbivore:
 
         assert a_sim.can_birth_occur()
 
+    def test_can_birth_occur_with_5_herbivores_with_0_prob(self, mocker):
+        mocker.patch('random.random', return_value=1)
+        loc = (2, 7)
+        i_sim = Island()
+        a_sim = Herbivore(i_sim, loc, weight=100)
+        for _ in range(5):
+            i_sim.add_pop_on_loc(loc, a_sim)
 
+        assert not a_sim.can_birth_occur()
+
+    def test_birth_adds_to_pop_list(self, mocker):
+        mocker.patch('random.random', return_value=0)
+        loc = (2, 7)
+        i_sim = Island()
+        a_sim = Herbivore(i_sim, loc, weight=100)
+        herb_pop_list = [Herbivore(i_sim, loc, weight=100), Herbivore(i_sim, loc, weight=100)]
+        #for _ in range(3):
+        a_sim.birth(herb_pop_list)
+        #a = AnnualCycle(herb_pop_list, [], i_sim)
+
+
+        #assert i_sim.get_herb_pop_on_loc(loc) == 5
+        assert i_sim.get_num_herb_on_loc(loc) == 3
+        #assert len(a.herb_pop_list) == 3
