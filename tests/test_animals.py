@@ -83,11 +83,11 @@ class TestAnimals:
         loc = (1, 1)
         s = Herbivore(i, loc)
         old_param = s.parameters["F"]
-        s.param_changer("Herbivore", {"F" : 20})
+        s.param_changer({"F" : 20})
         new_param = s.parameters["F"]
 
         assert old_param != new_param
-        s.param_changer("Herbivore", {"F": 10})
+        s.param_changer({"F": 10})
 
     def test_fitness_change_for_set_weight(self):
         self.herb_w_5.fitness_change()
