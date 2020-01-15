@@ -141,15 +141,18 @@ if __name__ == '__main__':
         {
             "loc": (6, 8),
             "pop": [
-                {"species": "Herbivore", "age": 5, "weight": 20}
+                {"species": "Herbivore", "age": 5, "weight": 50}
                 for _ in range(10)
             ],
         }
     ]
 
     s = BioSim(geogr, ini_herbs)
-    for _ in range(10):
+    for _ in range(1):
         s.simulate(1)
         print(len(s.herb_list))
         print(s.island.get_herb_list_on_loc((6,8)))
     print(s.island.island_dict[(6,8)].__class__.__name__)
+    print("------------")
+    print(len(s.herb_list))
+    print(s.island.get_num_herb_on_loc((6,8)))

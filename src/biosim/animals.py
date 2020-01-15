@@ -160,7 +160,8 @@ class Herbivore(Animals):
 
             if weight_loss_by_birth < self.weight:
                 herb_pop_list.append(baby_herb)
-                self.island.add_pop_on_loc(self.loc, baby_herb)
+            else:
+                self.island.remove_pop_on_loc(self.loc, baby_herb)
 
     def annual_weight_loss(self):
         eta = Animals.animal_parameters["Herbivore"]["eta"]

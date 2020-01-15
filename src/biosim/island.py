@@ -27,7 +27,6 @@ class Island:
         self._check_geo_string(geo_string)
         self.island_dict = self._island_dict_maker(geo_string)
 
-
     def fodder_annual_refill(self):
         for loc in self.island_dict:
             self.island_dict[loc].fodder_annual_refill()
