@@ -271,5 +271,8 @@ class Carnivore(Animals):
         else:
             return False
 
+    def kill_herb(self):
+        pass
+
 
 
