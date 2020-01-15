@@ -34,10 +34,8 @@ class Animals:
         return self.fitness
 
     @classmethod
-    def param_changer(cls, species, new_params):
-        for key in new_params:
-            species.animal_parameters[key] = new_params[key]
-    #SJEKK
+    def param_changer(cls, new_params):
+         cls.parameters.update(new_params)
 
     def set_birth_weight(self):
         w_birth = self.parameters["w_birth"]

@@ -6,9 +6,9 @@
 __author__ = ""
 __email__ = ""
 
-import island
-import animals
-import annual_cycle
+from island import *
+from animals import *
+from annual_cycle import *
 
 class BioSim:
     def __init__(
@@ -45,7 +45,7 @@ class BioSim:
         img_base should contain a path and beginning of a file name.
         """
 
-        self.island = island.Island(island_map)
+        self.island = Island(island_map)
         self.add_population(ini_pop)
 
     def set_animal_parameters(self, species, params):
@@ -56,7 +56,10 @@ class BioSim:
         :param params: Dict with valid parameter specification for species
         """
 
-        animals.Animals.param_changer(species, params)
+        if species == "Herbivore":
+            Herbivore.param_changer(params)
+        elif species == "Carnivore"
+            Carnivore.param_changer(params)
 
     def set_landscape_parameters(self, landscape, params):
         """
