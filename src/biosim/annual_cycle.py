@@ -6,9 +6,7 @@ __email__ = 'daniil.vitalevich.efremov@nmbu.no'
 
 class AnnualCycle:
 
-    def __init__(self, herb_pop_list, carn_pop_list, island):
-        self.herb_pop_list = herb_pop_list
-        self.carn_pop_list = carn_pop_list
+    def __init__(self, island):
         self.island = island
         self.num_cycles = 0
 
@@ -16,43 +14,44 @@ class AnnualCycle:
         self.island.fodder_annual_refill()
 
     def sort_by_fitness(self):
-        self.herb_pop_list.sort(key=lambda herb: herb.fitness, reverse=True)
-        self.carn_pop_list.sort(key=lambda carn: carn.fitness, reverse=True)
+        self.island.sort_all_animals_by_fitness()
 
     def herb_feeding(self):
-        for herb in self.herb_pop_list:
-            herb.feed()
+        for loc in self.island.island_dict:
+            for herb in self.island.get_herb_list_on_loc(loc):
+                herb.feed()
 
     def carn_feeding(self):
         pass
 
     def procreation_herb(self):
-        for herb in self.herb_pop_list:
-            herb.birth(self.herb_pop_list)
+        for loc in self.island.island_dict:
+            for herb in self.island.get_herb_list_on_loc(loc):
+                herb.birth()
 
     def procreation_carn(self):
-        for carn in self.carn_pop_list:
-            carn.birth(self.carn_pop_list)
+        for loc in self.island.island_dict:
+            for herb in self.island.get_herb_list_on_loc(loc):
+                herb.birth()
 
     def procreation_all(self):
         self.procreation_herb()
         self.procreation_carn()
 
     def aging(self):
-        for animal in self.herb_pop_list + self.carn_pop_list:
+        for animal in self.island.get_all_herb_list() + self.island.get_all_carn_list():
             animal.aging()
 
     def weight_loss(self):
-        for animal in self.herb_pop_list + self.carn_pop_list:
+        for animal in self.island.get_all_herb_list() + self.island.get_all_carn_list():
             animal.annual_weight_loss()
 
     def animal_death(self):
-        for animal in self.herb_pop_list + self.carn_pop_list:
+        for animal in self.island.get_all_herb_list() + self.island.get_all_carn_list():
             if animal.death():
-                self.herb_pop_list.remove(animal)
                 self.island.remove_pop_on_loc(animal.get_loc(), animal)
 
-    def cycle(self, num_years):
+    def run_cycle(self, num_years):
         for _ in range(num_years):
             self.fodder_growth()
             self.sort_by_fitness()

@@ -55,6 +55,25 @@ class Island:
     def herb_eats_fodder_on_loc(self, loc, fodder_eaten):
         self.island_dict[loc].herb_eats_fodder(fodder_eaten)
 
+    def sort_all_animals_by_fitness(self):
+        for loc in self.island_dict:
+            self.island_dict[loc].sort_pop_by_fitness()
+
+    def get_all_herb_list(self):
+        all_herb_list = []
+        for loc in self.island_dict:
+            all_herb_list.extend(self.get_herb_list_on_loc(loc))
+        return all_herb_list
+
+    def get_all_carn_list(self):
+        all_carn_list = []
+        for loc in self.island_dict:
+            all_carn_list.extend(self.get_carn_list_on_loc(loc))
+        return all_carn_list
+
+    def get_all_carn_list(self):
+        pass
+
     @staticmethod
     def _check_geo_string(geo_string):
         geo_string = textwrap.dedent(geo_string)

@@ -46,10 +46,14 @@ class Landscape:
     def get_num_carn(self):
         return len(self.carn_pop_list)
 
+    def sort_pop_by_fitness(self):
+        self.herb_pop_list.sort(key=lambda herb: herb.fitness, reverse=True)
+        self.carn_pop_list.sort(key=lambda carn: carn.fitness, reverse=True)
+
     @classmethod
     def param_changer(cls, landscape, new_param):
-        for key in new_param:
-            Landscape.landscape_parameters[landscape][key] = new_param[key]
+
+        Landscape.landscape_parameters[landscape].update(new_param)
 
 
 class Jungle(Landscape):

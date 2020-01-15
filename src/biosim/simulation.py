@@ -46,21 +46,7 @@ class BioSim:
         """
 
         self.island = island.Island(island_map)
-        self.herb_list = self.ini_pop_maker(ini_pop, self.island)
-        self.carn_list = []
-
-    def ini_pop_maker(self, animal_spec_list, island):
-        herb_pop_list = []
-        for loc_dict in animal_spec_list:
-            for animal in loc_dict["pop"]:
-                a = animals.Herbivore(island=island,
-                                   loc=loc_dict["loc"],
-                                   age=animal["age"],
-                                   weight=animal["weight"])
-                herb_pop_list.append(a)
-        return herb_pop_list
-
-
+        self.add_population(ini_pop)
 
     def set_animal_parameters(self, species, params):
         """
@@ -92,8 +78,8 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
-        Cycle = annual_cycle.AnnualCycle(self.herb_list, [], self.island)
-        Cycle.cycle(num_years)
+        cycle = annual_cycle.AnnualCycle(self.island)
+        cycle.run_cycle(num_years)
 
     def add_population(self, population):
         """
@@ -101,6 +87,16 @@ class BioSim:
 
         :param population: List of dictionaries specifying population
         """
+
+        for loc_dict in animal_spec_list:
+            for animal_dict in loc_dict["pop"]:
+                loc = loc_dict["loc"]
+                age = loc_dict["age"]
+                weight = loc_dict["weight"]
+                if animal_dict["Species"] == "Herbivore":
+                    animals.Herbivore(self.island, loc, age, weight)
+                elif animal_dict["Species"] == "Herbivore":
+                    animals.Carnivore(self.island, loc, age, weight)
 
     @property
     def year(self):
@@ -139,7 +135,7 @@ if __name__ == '__main__':
 
     ini_herbs = [
         {
-            "loc": (6, 8),
+            "loc": (2, 7),
             "pop": [
                 {"species": "Herbivore", "age": 5, "weight": 50}
                 for _ in range(10)
@@ -148,11 +144,10 @@ if __name__ == '__main__':
     ]
 
     s = BioSim(geogr, ini_herbs)
-    for _ in range(1):
+    for _ in range(1000):
         s.simulate(1)
         print(len(s.herb_list))
-        print(s.island.get_herb_list_on_loc((6,8)))
-    print(s.island.island_dict[(6,8)].__class__.__name__)
+    print(s.island.island_dict[(2,7)].__class__.__name__)
     print("------------")
     print(len(s.herb_list))
-    print(s.island.get_num_herb_on_loc((6,8)))
+    print(s.island.get_num_herb_on_loc((2,7)))
