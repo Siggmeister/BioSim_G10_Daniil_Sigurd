@@ -180,27 +180,27 @@ class TestAnimals:
 
         assert not a_sim.can_birth_occur()
 
-    def test_birth_adds_to_pop_list(self, mocker):
+    def test_birth_adds_to_num_herb_on_loc(self, mocker):
         mocker.patch('random.random', return_value=0)
         loc = (2, 7)
         i_sim = Island()
-        for _ in range(3):
-            a_sim = Herbivore(i_sim, loc, weight=100)
+        a_sim_1 = Herbivore(i_sim, loc, weight=100)
+        a_sim_2 = Herbivore(i_sim, loc, weight=100)
 
+        a_sim_1.birth()
 
-        a_sim.birth()
-
-        assert len(i_sim.get_herb_list_on_loc(loc)) == 3
+        assert i_sim.get_num_herb_on_loc(loc) == 3
 
     def test_birth_does_not_happen_if_prob_0(self, mocker):
         mocker.patch('random.random', return_value=1)
         loc = (2, 7)
         i_sim = Island()
-        a_sim = Herbivore(i_sim, loc, weight=100)
-        herb_pop_list = [Herbivore(i_sim, loc, weight=100)]
-        a_sim.birth()
+        a_sim_1 = Herbivore(i_sim, loc, weight=100)
+        a_sim_2 = Herbivore(i_sim, loc, weight=100)
 
-        assert len(i_sim.get_herb_list_on_loc(loc)) == 2
+        a_sim_1.birth()
+
+        assert i_sim.get_num_herb_on_loc(loc) == 2
 
     def test_annual_weight_loss_decreases_properly(self):
         loc = (2,7)
