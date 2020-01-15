@@ -200,6 +200,7 @@ class Carnivore(Animals):
         sigma_birth = Animals.animal_parameters["Carnivore"]["sigma_birth"]
 
         return np.random.normal(w_birth, sigma_birth)
+    #Kan vi kalle på denne funksjonen?
 
     def fitness_change(self):
         phi_age = Animals.animal_parameters["Carnivore"]["phi_age"]
@@ -255,7 +256,8 @@ class Carnivore(Animals):
 
             if weight_loss_by_birth < self.weight:
                 carn_pop_list.append(baby_carn)
-                self.island.add_pop_on_loc(self.loc, baby_carn)
+            else:
+                self.island.remove_pop_on_loc(self.loc, baby_carn)
 
 
     def death(self):
