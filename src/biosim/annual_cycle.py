@@ -39,15 +39,21 @@ class AnnualCycle:
         self.procreation_carn()
 
     def aging(self):
-        for animal in self.island.get_all_herb_list() + self.island.get_all_carn_list():
+        all_herb = self.island.get_all_herb_list()
+        all_carn = self.island.get_all_carn_list()
+        for animal in all_herb + all_carn:
             animal.aging()
 
     def weight_loss(self):
-        for animal in self.island.get_all_herb_list() + self.island.get_all_carn_list():
+        all_herb = self.island.get_all_herb_list()
+        all_carn = self.island.get_all_carn_list()
+        for animal in all_herb + all_carn:
             animal.annual_weight_loss()
 
     def animal_death(self):
-        for animal in self.island.get_all_herb_list() + self.island.get_all_carn_list():
+        all_herb = self.island.get_all_herb_list()
+        all_carn = self.island.get_all_carn_list()
+        for animal in all_herb + all_carn:
             if animal.death():
                 self.island.remove_pop_on_loc(animal.get_loc(), animal)
 

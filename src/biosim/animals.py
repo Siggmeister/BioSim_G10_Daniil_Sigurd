@@ -61,7 +61,7 @@ class Animals:
             self.fitness = 0
 
     def weight_gain(self, consumption):
-        beta = parameters["beta"]
+        beta = self.parameters["beta"]
 
         self.weight += consumption * beta
 
@@ -88,16 +88,16 @@ class Animals:
         xi = self.parameters["xi"]
 
         if self.can_birth_occur():
-            if animal.__class__.__name__ == "Herbivore":
+            if self.__class__.__name__ == "Herbivore":
                 baby_animal = Herbivore(self.island, self.loc)
-            elif animal.__class__.__name__ == "Carnivore":
+            elif self.__class__.__name__ == "Carnivore":
                 baby_animal = Carnivore(self.island, self.loc)
 
             try:
                 weight_loss_by_birth = baby_animal.weight * xi
 
             except NameError:
-                raise NameError("Animal must be of type Herbivore or Carnivore")
+                raise NameError("Animal must be of type Herbivore or Carnivore!")
 
             if weight_loss_by_birth >= self.weight:
                 self.island.remove_pop_on_loc(self.loc, baby_animal)
@@ -123,20 +123,20 @@ class Animals:
 
 class Herbivore(Animals):
     parameters = {"w_birth": 8.0,
-                                            "sigma_birth": 1.5,
-                                            "beta": 0.9,
-                                            "eta": 0.05,
-                                            "a_half": 40.0,
-                                            "phi_age": 0.2,
-                                            "w_half": 10.0,
-                                            "phi_weight": 0.1,
-                                            "mu": 0.25,
-                                            "lambda": 1.0,
-                                            "gamma": 0.2,
-                                            "zeta": 3.5,
-                                            "xi": 1.2,
-                                            "omega": 0.4,
-                                            "F": 10.0}
+                  "sigma_birth": 1.5,
+                  "beta": 0.9,
+                  "eta": 0.05,
+                  "a_half": 40.0,
+                  "phi_age": 0.2,
+                  "w_half": 10.0,
+                  "phi_weight": 0.1,
+                  "mu": 0.25,
+                  "lambda": 1.0,
+                  "gamma": 0.2,
+                  "zeta": 3.5,
+                  "xi": 1.2,
+                  "omega": 0.4,
+                  "F": 10.0}
 
     def __init__(self, island, loc, age=0, weight=None):
         super().__init__(island, loc, age, weight)

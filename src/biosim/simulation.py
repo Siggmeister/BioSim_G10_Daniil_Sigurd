@@ -66,7 +66,7 @@ class BioSim:
         :param params: Dict with valid parameter specification for landscape
         """
 
-        island.Island.param_changer(landscape, params)
+        self.island._param_changer(landscape, params)
 
     def simulate(self, num_years, vis_years=1, img_years=None):
         """
@@ -88,14 +88,14 @@ class BioSim:
         :param population: List of dictionaries specifying population
         """
 
-        for loc_dict in animal_spec_list:
+        for loc_dict in population:
             for animal_dict in loc_dict["pop"]:
                 loc = loc_dict["loc"]
-                age = loc_dict["age"]
-                weight = loc_dict["weight"]
-                if animal_dict["Species"] == "Herbivore":
+                age = animal_dict["age"]
+                weight = animal_dict["weight"]
+                if animal_dict["species"] == "Herbivore":
                     animals.Herbivore(self.island, loc, age, weight)
-                elif animal_dict["Species"] == "Herbivore":
+                elif animal_dict["species"] == "Herbivore":
                     animals.Carnivore(self.island, loc, age, weight)
 
     @property
@@ -135,19 +135,18 @@ if __name__ == '__main__':
 
     ini_herbs = [
         {
-            "loc": (2, 7),
+            "loc": (1, 8),
             "pop": [
                 {"species": "Herbivore", "age": 5, "weight": 50}
                 for _ in range(10)
             ],
-        }
+        },
     ]
 
     s = BioSim(geogr, ini_herbs)
     for _ in range(1000):
         s.simulate(1)
-        print(len(s.herb_list))
+        print(len(s.island.get_all_herb_list()))
     print(s.island.island_dict[(2,7)].__class__.__name__)
     print("------------")
-    print(len(s.herb_list))
     print(s.island.get_num_herb_on_loc((2,7)))

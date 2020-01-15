@@ -71,9 +71,6 @@ class Island:
             all_carn_list.extend(self.get_carn_list_on_loc(loc))
         return all_carn_list
 
-    def get_all_carn_list(self):
-        pass
-
     @staticmethod
     def _check_geo_string(geo_string):
         geo_string = textwrap.dedent(geo_string)
