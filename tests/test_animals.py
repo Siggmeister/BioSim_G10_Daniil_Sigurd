@@ -12,6 +12,21 @@ class TestAnimals:
 
     @pytest.fixture(autouse=True)
     def setup(self):
+        self.geogr = """\
+                                   OOOOOOOOOOOOOOOOOOOOO
+                                   OOOOOOOOSMMMMJJJJJJJO
+                                   OSSSSSJJJJMMJJJJJJJOO
+                                   OSSSSSSSSSMMJJJJJJOOO
+                                   OSSSSSJJJJJJJJJJJJOOO
+                                   OSSSSSJJJDDJJJSJJJOOO
+                                   OSSJJJJJDDDJJJSSSSOOO
+                                   OOSSSSJJJDDJJJSOOOOOO
+                                   OSSSJJJJJDDJJJJJJJOOO
+                                   OSSSSJJJJDDJJJJOOOOOO
+                                   OOSSSSJJJJJJJJOOOOOOO
+                                   OOOSSSSJJJJJJJOOOOOOO
+                                   OOOOOOOOOOOOOOOOOOOOO"""
+
         i = Island()
         self.loc = (0,0)
         stnd_herb = Herbivore(island=i, loc=self.loc)
@@ -20,19 +35,24 @@ class TestAnimals:
 
         self.herb_w_0 = Herbivore(island=i, loc=self.loc, weight = 0)
         self.herb_w_5 = Herbivore(island=i, loc=self.loc, weight = 5)
-        herb_w_7 = Herbivore(island=i, loc=self.loc, weight=7)
-        herb_w_100 = Herbivore(island=i, loc=self.loc, weight=100)
 
         self.carn_w_0 = Carnivore(island=i, loc=self.loc, weight=0)
         self.carn_w_5 = Carnivore(island=i, loc=self.loc, weight=5)
-        carn_w_7 = Carnivore(island=i, loc=self.loc, weight=7)
-        carn_w_100 = Carnivore(island=i, loc=self.loc, weight=100)
 
         self.a_list_w_0 = [self.herb_w_0, self.carn_w_0]
         self.a_list_w_5 = [self.herb_w_5, self.carn_w_5]
 
+    def test_get_right_params_herb(self):
+        assert Herbivore.parameters["beta"] == 0.9
+        assert Herbivore.parameters["a_half"] == 40.0
+        assert Herbivore.parameters["lambda"] == 1.0
+        assert Herbivore.parameters["F"] == 10.0
 
-
+    def test_get_right_params_carn(self):
+        assert Carnivore.parameters["beta"] == 0.75
+        assert Carnivore.parameters["a_half"] == 60.0
+        assert Carnivore.parameters["lambda"] == 1.0
+        assert Carnivore.parameters["F"] == 50.0
 
     def test_aging(self):
         for a in self.stnd_a_list:
@@ -80,81 +100,22 @@ class TestAnimals:
         assert self.herb_w_0.fitness == 0
         assert self.carn_w_0.fitness == 0
 
-class TestHerbivore:
-
-    @pytest.fixture(autouse=True)
-    def setup(self):
-        self.landscape_parameters = {"J": {"f_max": 800.0},
-                                     "S": {"f_max": 300.0,
-                                           "alpha": 0.3}}
-
-        self.parameters =  {"w_birth": 8.0,
-                                           "sigma_birth": 1.5,
-                                           "beta": 0.9,
-                                           "eta": 0.05,
-                                           "a_half": 40.0,
-                                           "phi_age": 0.2,
-                                           "w_half": 10.0,
-                                           "phi_weight": 0.1,
-                                           "mu": 0.25,
-                                           "lambda": 1.0,
-                                           "gamma": 0.2,
-                                           "zeta": 3.5,
-                                           "xi": 1.2,
-                                           "omega": 0.4,
-                                           "F": 10.0}
-
-        self.geogr = """\
-                           OOOOOOOOOOOOOOOOOOOOO
-                           OOOOOOOOSMMMMJJJJJJJO
-                           OSSSSSJJJJMMJJJJJJJOO
-                           OSSSSSSSSSMMJJJJJJOOO
-                           OSSSSSJJJJJJJJJJJJOOO
-                           OSSSSSJJJDDJJJSJJJOOO
-                           OSSJJJJJDDDJJJSSSSOOO
-                           OOSSSSJJJDDJJJSOOOOOO
-                           OSSSJJJJJDDJJJJJJJOOO
-                           OSSSSJJJJDDJJJJOOOOOO
-                           OOSSSSJJJJJJJJOOOOOOO
-                           OOOSSSSJJJJJJJOOOOOOO
-                           OOOOOOOOOOOOOOOOOOOOO"""
-
-        self.herb_params = self.animal_parameters["Herbivore"]
-        self.island = Island(self.geogr)
-        jungle_loc = (2,7)
-        self.stnd_herb = Herbivore(self.island, jungle_loc)
-
-
-    def test_fitness_change_for_set_weight(self):
-        jungle_loc = (2,7)
-        s_1 = Herbivore(self.island, jungle_loc, weight=3)
-        s_2 = Herbivore(self.island, jungle_loc, weight=5)
-        s_3 = Herbivore(self.island, jungle_loc, weight=7)
-        s_1.fitness_change()
-        s_2.fitness_change()
-        s_3.fitness_change()
-
-        assert s_1.fitness == pytest.approx(0.331, 0.01)
-        assert s_2.fitness == pytest.approx(0.377, 0.01)
-        assert s_3.fitness == pytest.approx(0.425, 0.01)
-        #Sjekk med sannsynlighet
-
     def test_fodder_eaten_for_full_landscapes(self):
         jungle_loc = (2,7)
         savannah_loc = (2,1)
         ocean_loc = (0,0)
-        j_sim = Herbivore(self.island, jungle_loc)
+        i = Island()
+        j_sim = Herbivore(i, jungle_loc)
         j_sim.fodder_eaten()
-        s_sim = Herbivore(self.island, savannah_loc)
+        s_sim = Herbivore(i, savannah_loc)
         s_sim.fodder_eaten()
-        o_sim = Herbivore(self.island, ocean_loc)
+        o_sim = Herbivore(i, ocean_loc)
         o_sim.fodder_eaten()
-        optimal_fodder = self.animal_parameters["Herbivore"]["F"]
+        optimal_fodder = Herbivore.parameters["F"]
 
         assert j_sim.fodder_eaten() == optimal_fodder
         assert s_sim.fodder_eaten() == optimal_fodder
         assert o_sim.fodder_eaten() == 0
-
 
     def test_fodder_eaten_only_eat_available_fodder(self):
         jungle_loc = (2,7)
@@ -174,23 +135,22 @@ class TestHerbivore:
             s_1.fodder_eaten()
 
     def test_weight_gain_properly(self):
-        jungle_loc = (2,7)
-        chosen_weight = 5
-        i = Herbivore(self.island, jungle_loc, weight = chosen_weight)
-        fodder_eaten = Animals.animal_parameters["Herbivore"]["F"]
-        beta = Animals.animal_parameters["Herbivore"]["beta"]
-        i.weight_gain(fodder_eaten)
+        fodder_eaten = Herbivore.parameters["F"]
+        beta = Herbivore.parameters["beta"]
+        self.herb_w_5.weight_gain(fodder_eaten)
 
-        assert i.weight == chosen_weight+fodder_eaten*beta
+        assert self.herb_w_5.weight == 5+(fodder_eaten*beta)
 
     def test_feed_changes_fitness(self):
         loc = (2,1)
-        i_sim = Herbivore(self.island, loc)
+        i = Island()
+        i_sim = Herbivore(i, loc)
         start_fitness = i_sim.fitness
         i_sim.feed()
         changed_fitness = i_sim.fitness
 
         assert start_fitness != changed_fitness
+
 
     def test_can_birth_occur_with_1_herbivore(self):
         loc = (2,7)
@@ -198,7 +158,7 @@ class TestHerbivore:
         a_sim = Herbivore(i_sim, loc)
         i_sim.add_pop_on_loc(loc, a_sim)
 
-        assert not self.stnd_herb.can_birth_occur()
+        assert not a_sim.can_birth_occur()
 
     def test_can_birth_occur_with_2_herbivores_with_1_prob(self, mocker):
         mocker.patch('random.random', return_value=0)
@@ -224,9 +184,11 @@ class TestHerbivore:
         mocker.patch('random.random', return_value=0)
         loc = (2, 7)
         i_sim = Island()
-        a_sim = Herbivore(i_sim, loc, weight=100)
-        herb_pop_list = [Herbivore(i_sim, loc, weight=100)]
-        a_sim.birth(herb_pop_list)
+        for _ in range(3):
+            a_sim = Herbivore(i_sim, loc, weight=100)
+
+
+        a_sim.birth()
 
         assert len(i_sim.get_herb_list_on_loc(loc)) == 3
 
@@ -236,7 +198,7 @@ class TestHerbivore:
         i_sim = Island()
         a_sim = Herbivore(i_sim, loc, weight=100)
         herb_pop_list = [Herbivore(i_sim, loc, weight=100)]
-        a_sim.birth(herb_pop_list)
+        a_sim.birth()
 
         assert len(i_sim.get_herb_list_on_loc(loc)) == 2
 
@@ -274,60 +236,10 @@ class TestHerbivore:
         assert not a_sim.death()
 
 
+class TestHerbivore:
+    pass
+
+
+
 class TestCarnivore:
-    @pytest.fixture(autouse=True)
-    def setup(self):
-        self.landscape_parameters = {"J": {"f_max": 800.0},
-                                     "S": {"f_max": 300.0,
-                                           "alpha": 0.3}}
-
-        self.parameters = {"w_birth": 6.0,
-                                           "sigma_birth": 1.0,
-                                           "beta": 0.75,
-                                           "eta": 0.0125,
-                                           "a_half": 60.0,
-                                           "phi_age": 0.4,
-                                           "w_half": 4.0,
-                                           "phi_weight": 0.4,
-                                           "mu": 0.4,
-                                           "lambda": 1.0,
-                                           "gamma": 0.8,
-                                           "zeta": 3.5,
-                                           "xi": 1.1,
-                                           "omega": 0.9,
-                                           "F": 50.0,
-                                           "DeltaPhiMax": 10.0}
-
-        self.geogr = """\
-                              OOOOOOOOOOOOOOOOOOOOO
-                              OOOOOOOOSMMMMJJJJJJJO
-                              OSSSSSJJJJMMJJJJJJJOO
-                              OSSSSSSSSSMMJJJJJJOOO
-                              OSSSSSJJJJJJJJJJJJOOO
-                              OSSSSSJJJDDJJJSJJJOOO
-                              OSSJJJJJDDDJJJSSSSOOO
-                              OOSSSSJJJDDJJJSOOOOOO
-                              OSSSJJJJJDDJJJJJJJOOO
-                              OSSSSJJJJDDJJJJOOOOOO
-                              OOSSSSJJJJJJJJOOOOOOO
-                              OOOSSSSJJJJJJJOOOOOOO
-                              OOOOOOOOOOOOOOOOOOOOO"""
-
-        self.carn_params = self.animal_parameters["Carnivore"]
-        self.island = Island(self.geogr)
-        self.loc = (2, 7)
-
-
-    def test_fitness_change_for_set_weight(self):
-
-        s_1 = Carnivore(self.island, self.loc, weight=3)
-        s_2 = Carnivore(self.island, self.loc, weight=5)
-        s_3 = Carnivore(self.island, self.loc, weight=7)
-        s_1.fitness_change()
-        s_2.fitness_change()
-        s_3.fitness_change()
-
-        assert s_1.fitness == pytest.approx(0.401, 0.01)
-        assert s_2.fitness == pytest.approx(0.598, 0.01)
-        assert s_3.fitness == pytest.approx(0.768, 0.01)
-        # Sjekk med sannsynlighet
+    pass

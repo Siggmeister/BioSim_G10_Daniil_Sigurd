@@ -90,7 +90,7 @@ class Animals:
         if self.can_birth_occur():
             if self.__class__.__name__ == "Herbivore":
                 baby_animal = Herbivore(self.island, self.loc)
-            elif self.__class__.__name__ == "Carnivore":
+            elif Animals.__class__.__name__ == "Carnivore":
                 baby_animal = Carnivore(self.island, self.loc)
 
             try:
