@@ -6,13 +6,16 @@
 __author__ = ""
 __email__ = ""
 
+from island import *
+from animals import *
+from annual_cycle import *
 
 class BioSim:
     def __init__(
         self,
         island_map,
         ini_pop,
-        seed,
+        seed=None,
         ymax_animals=None,
         cmax_animals=None,
         img_base=None,
@@ -42,6 +45,9 @@ class BioSim:
         img_base should contain a path and beginning of a file name.
         """
 
+        self.island = Island(island_map)
+        self.add_population(ini_pop)
+
     def set_animal_parameters(self, species, params):
         """
         Set parameters for animal species.
@@ -50,6 +56,11 @@ class BioSim:
         :param params: Dict with valid parameter specification for species
         """
 
+        if species == "Herbivore":
+            Herbivore.param_changer(params)
+        elif species == "Carnivore":
+            Carnivore.param_changer(params)
+
     def set_landscape_parameters(self, landscape, params):
         """
         Set parameters for landscape type.
@@ -57,6 +68,8 @@ class BioSim:
         :param landscape: String, code letter for landscape
         :param params: Dict with valid parameter specification for landscape
         """
+
+        self.island._param_changer(landscape, params)
 
     def simulate(self, num_years, vis_years=1, img_years=None):
         """
@@ -68,6 +81,8 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
+        cycle = AnnualCycle(self.island)
+        cycle.run_cycle(num_years)
 
     def add_population(self, population):
         """
@@ -75,6 +90,16 @@ class BioSim:
 
         :param population: List of dictionaries specifying population
         """
+
+        for loc_dict in population:
+            for animal_dict in loc_dict["pop"]:
+                loc = loc_dict["loc"]
+                age = animal_dict["age"]
+                weight = animal_dict["weight"]
+                if animal_dict["species"] == "Herbivore":
+                    Herbivore(self.island, loc, age, weight)
+                elif animal_dict["species"] == "Carnivore":
+                    Carnivore(self.island, loc, age, weight)
 
     @property
     def year(self):
@@ -94,3 +119,54 @@ class BioSim:
 
     def make_movie(self):
         """Create MPEG4 movie from visualization images saved."""
+
+if __name__ == '__main__':
+    geogr = """\
+                   OOOOOOOOOOOOOOOOOOOOO
+                   OOOOOOOOSMMMMJJJJJJJO
+                   OSSSSSJJJJMMJJJJJJJOO
+                   OSSSSSSSSSMMJJJJJJOOO
+                   OSSSSSJJJJJJJJJJJJOOO
+                   OSSSSSJJJDDJJJSJJJOOO
+                   OSSJJJJJDDDJJJSSSSOOO
+                   OOSSSSJJJDDJJJSOOOOOO
+                   OSSSJJJJJDDJJJJJJJOOO
+                   OSSSSJJJJDDJJJJOOOOOO
+                   OOSSSSJJJJJJJJOOOOOOO
+                   OOOSSSSJJJJJJJOOOOOOO
+                   OOOOOOOOOOOOOOOOOOOOO"""
+
+    ini_herbs = [
+        {
+            "loc": (2, 7),
+            "pop": [
+                {"species": "Herbivore", "age": 5, "weight": 200}
+                for _ in range(150)
+            ],
+        },
+
+    ]
+
+    carn_pop = [{
+            "loc": (2, 7),
+            "pop": [
+                {"species": "Carnivore", "age": 5, "weight": 20}
+                for _ in range(20)
+            ],
+        }]
+
+    s = BioSim(geogr, ini_herbs)
+    for _ in range(100):
+        s.simulate(1)
+        print(len(s.island.get_all_herb_list()))
+        print("-----------------")
+        print(len(s.island.get_all_carn_list()))
+        print("")
+    s.add_population(carn_pop)
+    for _ in range(200):
+        s.simulate(1)
+        print(len(s.island.get_all_herb_list()))
+        print("-----------------")
+        print(len(s.island.get_all_carn_list()))
+        print("")
+    print(s.island.island_dict[(2,7)].__class__.__name__)
