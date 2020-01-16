@@ -71,6 +71,12 @@ class Island:
             all_carn_list.extend(self.get_carn_list_on_loc(loc))
         return all_carn_list
 
+    def get_total_herb_weight_on_loc(self, loc):
+        return self.island_dict[loc].get_total_herb_weight()
+
+    def get_cell_type(self, loc):
+        return self.island_dict[loc].__class__.__name__
+
     @staticmethod
     def _check_geo_string(geo_string):
         geo_string = textwrap.dedent(geo_string)

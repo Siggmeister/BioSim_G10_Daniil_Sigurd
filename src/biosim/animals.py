@@ -62,6 +62,7 @@ class Animals:
         beta = self.parameters["beta"]
 
         self.weight += consumption * beta
+        self.fitness_change()
 
     def can_birth_occur(self):
         gamma = self.parameters["gamma"]
@@ -104,6 +105,7 @@ class Animals:
         eta = self.parameters["eta"]
 
         self.weight -= eta * self.weight
+        self.fitness_change()
 
     def death(self):
         omega = self.parameters["omega"]
@@ -112,11 +114,94 @@ class Animals:
         if self.fitness == 0:
             return True
 
-        elif random.random() <= death_prob:
+        elif random.random() <= death_prob: #SJEKK ALLE SANNSYNLIGHETER, om <= blir riktig
             return True
 
         else:
             return False
+
+    def will_move(self):
+        mu = self.parameters["mu"]
+
+        if random.random() <= mu * self.fitness:
+            return True
+        else:
+            return False
+
+    def get_relevant_fodder(self, loc):
+        if self.__class__.__name__ == "Herbivore":
+            return self.island.get_fodder_on_loc(loc)
+        elif self.__class__.__name__ == "Carnivore":
+            return self.island.get_total_herb_weight_on_loc(loc)
+
+    def get_num_same_species(self, loc):
+        if self.__class__.__name__ == "Herbivore":
+            return self.island.get_num_herb_on_loc(loc)
+        elif self.__class__.__name__ == "Carnivore":
+            return self.island.get_num_carn_on_loc(loc)
+
+    def relative_abundance(self, loc):
+        F = self.parameters["F"]
+        num_same_species = self.get_num_same_species(loc)
+        relative_fodder = self.get_relevant_fodder(loc)
+        relative_abundance = relative_fodder/((num_same_species + 1) * F)
+        return relative_abundance
+
+    def propensity(self, loc):
+        lambda_ = self.parameters["lambda"]
+        relative_abundance = self.relative_abundance(loc)
+        cell_type = self.island.get_cell_type(loc)
+
+        if cell_type == "Mountain" or cell_type == "Ocean":
+            return 0
+        else:
+            return np.exp(lambda_ * relative_abundance)
+
+    def get_potential_coordinates(self):
+        loc_1 = (self.loc[0] + 1, self.loc[1])
+        loc_2 = (self.loc[0] - 1, self.loc[1])
+        loc_3 = (self.loc[0], self.loc[1] + 1)
+        loc_4 = (self.loc[0], self.loc[1] - 1)
+        return [loc_1, loc_2, loc_3, loc_4]
+
+    def total_propensity(self, loc_list):
+        total_propensity = 0
+        for loc in loc_list:
+            total_propensity += self.propensity(loc)
+        return total_propensity
+
+    def probabilities(self, loc_list):
+        probability_list = []
+        total_propensity = self.total_propensity(loc_list)
+        if total_propensity == 0:
+            return None
+        for loc in loc_list:
+            propensity = self.propensity(loc)
+            probability = propensity/total_propensity
+            probability_list.append(probability)
+        return probability_list
+
+
+    def destination(self, loc_list):
+        prob_list = self.probabilities(loc_list)
+        if prob_list is None:
+            return None
+        else:
+            destination_index = np.random.choice(range(len(loc_list)), p=prob_list)
+            destination = loc_list[destination_index]
+            return destination
+
+    def migrate(self):
+        if self.will_move():
+            loc_list = self.get_potential_coordinates()
+            destination = self.destination(loc_list)
+            if destination is None:
+                pass
+            else:
+                self.island.remove_pop_on_loc(self.loc, self)
+                self.island.add_pop_on_loc(destination, self)
+                self.loc = destination
+
 
 
 class Herbivore(Animals):
@@ -140,7 +225,7 @@ class Herbivore(Animals):
         super().__init__(island, loc, age, weight)
 
     def eaten(self):
-        self.fitness = 0
+        self.island.remove_pop_on_loc(self.loc, self)
 
     def fodder_eaten(self):
 
@@ -168,7 +253,6 @@ class Herbivore(Animals):
         consumed_fodder = self.fodder_eaten()
         self.island.herb_eats_fodder_on_loc(self.loc, consumed_fodder)
         self.weight_gain(consumed_fodder)
-        self.fitness_change()
 
 
 class Carnivore(Animals):
@@ -213,17 +297,16 @@ class Carnivore(Animals):
         herbs_in_loc = self.island.get_herb_list_on_loc(self.loc)
         herbs_in_loc.reverse()
         desired_weight = self.parameters["F"]
-        eaten_weight = 0
+        killed_weight = 0
         index = 0
 
-        while eaten_weight < desired_weight and index < len(herbs_in_loc):
+        while killed_weight < desired_weight and index < len(herbs_in_loc):
             herb = herbs_in_loc[index]
             if self.kill_herb(herb):
-                kill_weight = herb.weight
-                eaten_weight += kill_weight
-                appetite_weight = self.appetite_checker(eaten_weight, desired_weight, kill_weight)
+                last_kill = herb.weight
+                appetite_weight = self.appetite_checker(killed_weight, desired_weight, last_kill)
+                killed_weight += last_kill
                 self.weight_gain(appetite_weight)
-                self.fitness_change()
                 herb.eaten()
             index += 1
 

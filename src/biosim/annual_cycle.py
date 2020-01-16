@@ -59,6 +59,12 @@ class AnnualCycle:
             if animal.death():
                 self.island.remove_pop_on_loc(animal.get_loc(), animal)
 
+    def migration(self):
+        all_herb = self.island.get_all_herb_list()
+        all_carn = self.island.get_all_carn_list()
+        for animal in all_herb + all_carn:
+            animal.migrate()
+
     def run_cycle(self, num_years):
         for _ in range(num_years):
             self.fodder_growth()
@@ -66,6 +72,7 @@ class AnnualCycle:
             self.herb_feeding()
             self.carn_feeding()
             self.procreation_all()
+            self.migration()
             self.aging()
             self.weight_loss()
             self.animal_death()

@@ -138,26 +138,35 @@ if __name__ == '__main__':
 
     ini_herbs = [
         {
-            "loc": (2, 8),
-            "pop": [
-                {"species": "Herbivore", "age": 5, "weight": 50}
-                for _ in range(20)
-            ],
-        },
-        {
             "loc": (2, 7),
             "pop": [
-                {"species": "Carnivore", "age": 5, "weight": 50}
-                for _ in range(7)
+                {"species": "Herbivore", "age": 5, "weight": 200}
+                for _ in range(150)
             ],
-        }
+        },
+
     ]
 
+    carn_pop = [{
+            "loc": (2, 7),
+            "pop": [
+                {"species": "Carnivore", "age": 5, "weight": 20}
+                for _ in range(20)
+            ],
+        }]
+
     s = BioSim(geogr, ini_herbs)
-    for _ in range(800):
+    for _ in range(100):
         s.simulate(1)
         print(len(s.island.get_all_herb_list()))
+        print("-----------------")
+        print(len(s.island.get_all_carn_list()))
+        print("")
+    s.add_population(carn_pop)
+    for _ in range(100):
+        s.simulate(1)
+        print(len(s.island.get_all_herb_list()))
+        print("-----------------")
+        print(len(s.island.get_all_carn_list()))
+        print("")
     print(s.island.island_dict[(2,7)].__class__.__name__)
-    print("------------")
-    print(s.island.get_num_herb_on_loc((2,7)))
-    print(s.island.get_num_carn_on_loc((2,7)))

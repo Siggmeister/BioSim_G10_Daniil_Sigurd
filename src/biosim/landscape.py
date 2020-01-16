@@ -50,6 +50,12 @@ class Landscape:
         self.herb_pop_list.sort(key=lambda herb: herb.fitness, reverse=True)
         self.carn_pop_list.sort(key=lambda carn: carn.fitness, reverse=True)
 
+    def get_total_herb_weight(self):
+        total_weight = 0
+        for herb in self.get_herb_pop_list():
+            total_weight += herb.weight
+        return total_weight
+
     @classmethod
     def param_changer(cls, landscape, new_param):
 
