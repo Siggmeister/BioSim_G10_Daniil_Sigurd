@@ -163,7 +163,7 @@ if __name__ == '__main__':
         print(len(s.island.get_all_carn_list()))
         print("")
     s.add_population(carn_pop)
-    for _ in range(100):
+    for _ in range(200):
         s.simulate(1)
         print(len(s.island.get_all_herb_list()))
         print("-----------------")

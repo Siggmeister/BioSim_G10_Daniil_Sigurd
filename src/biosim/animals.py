@@ -203,7 +203,6 @@ class Animals:
                 self.loc = destination
 
 
-
 class Herbivore(Animals):
     parameters = {"w_birth": 8.0,
                   "sigma_birth": 1.5,
@@ -294,7 +293,7 @@ class Carnivore(Animals):
 
     def feed(self):
         herbs_in_loc = self.island.get_herb_list_on_loc(self.loc)
-        herbs_in_loc.reverse()
+        herbs_in_loc.sort(key=lambda herb: herb.fitness) # Tries to kill the herbivore with the lowest fitness first
         desired_weight = self.parameters["F"]
         killed_weight = 0
         index = 0
