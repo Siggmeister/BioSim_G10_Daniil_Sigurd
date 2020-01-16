@@ -38,6 +38,7 @@ class TestAnimals:
 
         self.carn_w_0 = Carnivore(island=i, loc=self.loc, weight=0)
         self.carn_w_5 = Carnivore(island=i, loc=self.loc, weight=5)
+        self.carn_w_7 = Carnivore(island=i, loc=self.loc, weight=7)
 
         self.a_list_w_0 = [self.herb_w_0, self.carn_w_0]
         self.a_list_w_5 = [self.herb_w_5, self.carn_w_5]
@@ -92,11 +93,13 @@ class TestAnimals:
     def test_fitness_change_for_set_weight(self):
         self.herb_w_5.fitness_change()
         self.carn_w_5.fitness_change()
+        self.carn_w_7.fitness_change()
         self.herb_w_0.fitness_change()
         self.carn_w_0.fitness_change()
 
         assert self.herb_w_5.fitness == pytest.approx(0.377, 0.01)
         assert self.carn_w_5.fitness == pytest.approx(0.598, 0.01)
+        assert self.carn_w_7.fitness == pytest.approx(0.768, 0.01)
         assert self.herb_w_0.fitness == 0
         assert self.carn_w_0.fitness == 0
 
@@ -234,7 +237,6 @@ class TestAnimals:
         a_sim = Herbivore(i_sim, loc)
 
         assert not a_sim.death()
-
 
 class TestHerbivore:
     pass
