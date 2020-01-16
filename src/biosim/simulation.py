@@ -58,7 +58,7 @@ class BioSim:
 
         if species == "Herbivore":
             Herbivore.param_changer(params)
-        elif species == "Carnivore"
+        elif species == "Carnivore":
             Carnivore.param_changer(params)
 
     def set_landscape_parameters(self, landscape, params):
@@ -81,7 +81,7 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
-        cycle = annual_cycle.AnnualCycle(self.island)
+        cycle = AnnualCycle(self.island)
         cycle.run_cycle(num_years)
 
     def add_population(self, population):
@@ -97,9 +97,9 @@ class BioSim:
                 age = animal_dict["age"]
                 weight = animal_dict["weight"]
                 if animal_dict["species"] == "Herbivore":
-                    animals.Herbivore(self.island, loc, age, weight)
-                elif animal_dict["species"] == "Herbivore":
-                    animals.Carnivore(self.island, loc, age, weight)
+                    Herbivore(self.island, loc, age, weight)
+                elif animal_dict["species"] == "Carnivore":
+                    Carnivore(self.island, loc, age, weight)
 
     @property
     def year(self):
@@ -138,18 +138,26 @@ if __name__ == '__main__':
 
     ini_herbs = [
         {
-            "loc": (1, 8),
+            "loc": (2, 8),
             "pop": [
                 {"species": "Herbivore", "age": 5, "weight": 50}
-                for _ in range(10)
+                for _ in range(20)
             ],
         },
+        {
+            "loc": (2, 7),
+            "pop": [
+                {"species": "Carnivore", "age": 5, "weight": 50}
+                for _ in range(7)
+            ],
+        }
     ]
 
     s = BioSim(geogr, ini_herbs)
-    for _ in range(1000):
+    for _ in range(800):
         s.simulate(1)
         print(len(s.island.get_all_herb_list()))
     print(s.island.island_dict[(2,7)].__class__.__name__)
     print("------------")
     print(s.island.get_num_herb_on_loc((2,7)))
+    print(s.island.get_num_carn_on_loc((2,7)))

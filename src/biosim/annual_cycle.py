@@ -17,22 +17,24 @@ class AnnualCycle:
         self.island.sort_all_animals_by_fitness()
 
     def herb_feeding(self):
-        for loc in self.island.island_dict:
-            for herb in self.island.get_herb_list_on_loc(loc):
-                herb.feed()
+        all_herb = self.island.get_all_herb_list()
+        for herb in all_herb:
+            herb.feed()
 
     def carn_feeding(self):
-        pass
+        all_carn = self.island.get_all_carn_list()
+        for carn in all_carn:
+            carn.feed()
 
     def procreation_herb(self):
-        for loc in self.island.island_dict:
-            for herb in self.island.get_herb_list_on_loc(loc):
-                herb.birth()
+        all_herb = self.island.get_all_herb_list()
+        for herb in all_herb:
+            herb.birth()
 
     def procreation_carn(self):
-        for loc in self.island.island_dict:
-            for herb in self.island.get_herb_list_on_loc(loc):
-                herb.birth()
+        all_carn = self.island.get_all_carn_list()
+        for carn in all_carn:
+            carn.birth()
 
     def procreation_all(self):
         self.procreation_herb()

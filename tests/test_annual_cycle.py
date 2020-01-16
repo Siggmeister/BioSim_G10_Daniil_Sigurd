@@ -3,7 +3,14 @@
 __author__ = 'Daniil Efremov'
 __email__ = 'daniil.vitalevich.efremov@nmbu.no'
 
-from unittest import TestCase
+from island import *
+from animals import *
+from annual_cycle import *
 
-class TestAnnaulCycle(TestCase):
-    pass
+
+class TestAnnualCycle:
+
+    def test_weight_loss(self):
+        i = Island()
+                
+

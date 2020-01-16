@@ -139,7 +139,8 @@ class Herbivore(Animals):
     def __init__(self, island, loc, age=0, weight=None):
         super().__init__(island, loc, age, weight)
 
-
+    def eaten(self):
+        self.fitness = 0
 
     def fodder_eaten(self):
 
@@ -191,3 +192,56 @@ class Carnivore(Animals):
 
     def __init__(self, island, loc, age=0, weight=None):
         super().__init__(island, loc, age, weight)
+
+    def kill_herb(self, herb):
+        DeltaPhiMax = self.parameters["DeltaPhiMax"]
+        herb_fitness = herb.get_fitness()
+        fitness_diff = self.fitness - herb_fitness
+        if self.fitness <= herb_fitness:
+            kill_prob = 0
+        elif 0 < fitness_diff < DeltaPhiMax:
+            kill_prob = (self.fitness - herb_fitness)/DeltaPhiMax
+        else:
+            kill_prob = 1
+
+        if random.random() <= kill_prob:
+            return True
+        else:
+            return False
+
+    def feed(self):
+        herbs_in_loc = self.island.get_herb_list_on_loc(self.loc)
+        herbs_in_loc.reverse()
+        desired_weight = self.parameters["F"]
+        eaten_weight = 0
+        index = 0
+
+        while eaten_weight < desired_weight and index < len(herbs_in_loc):
+            herb = herbs_in_loc[index]
+            if self.kill_herb(herb):
+                kill_weight = herb.weight
+                eaten_weight += kill_weight
+                appetite_weight = self.appetite_checker(eaten_weight, desired_weight, kill_weight)
+                self.weight_gain(appetite_weight)
+                self.fitness_change()
+                herb.eaten()
+            index += 1
+
+    @staticmethod
+    def appetite_checker(eaten_weight, desired_weight, kill_weight):
+        if eaten_weight + kill_weight > desired_weight:
+            appetite_weight = desired_weight - eaten_weight
+            return appetite_weight
+        else:
+            return kill_weight
+
+
+
+
+
+
+
+
+
+
+
