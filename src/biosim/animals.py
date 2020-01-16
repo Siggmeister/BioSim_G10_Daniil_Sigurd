@@ -148,11 +148,10 @@ class Herbivore(Animals):
 
         optimal_fodder = self.parameters["F"]
 
-
         if optimal_fodder <= available_fodder:
             fodder_eaten = optimal_fodder
 
-        elif available_fodder > 0 and available_fodder < optimal_fodder:
+        elif 0 < available_fodder < optimal_fodder:
             fodder_eaten = available_fodder
 
         elif available_fodder == 0:
