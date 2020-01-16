@@ -181,7 +181,6 @@ class Animals:
             probability_list.append(probability)
         return probability_list
 
-
     def destination(self, loc_list):
         prob_list = self.probabilities(loc_list)
         if prob_list is None:
@@ -315,14 +314,3 @@ class Carnivore(Animals):
             return appetite_weight
         else:
             return kill_weight
-
-
-
-
-
-
-
-
-
-
-

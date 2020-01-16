@@ -12,20 +12,6 @@ class TestAnimals:
 
     @pytest.fixture(autouse=True)
     def setup(self):
-        self.geogr = """\
-                                   OOOOOOOOOOOOOOOOOOOOO
-                                   OOOOOOOOSMMMMJJJJJJJO
-                                   OSSSSSJJJJMMJJJJJJJOO
-                                   OSSSSSSSSSMMJJJJJJOOO
-                                   OSSSSSJJJJJJJJJJJJOOO
-                                   OSSSSSJJJDDJJJSJJJOOO
-                                   OSSJJJJJDDDJJJSSSSOOO
-                                   OOSSSSJJJDDJJJSOOOOOO
-                                   OSSSJJJJJDDJJJJJJJOOO
-                                   OSSSSJJJJDDJJJJOOOOOO
-                                   OOSSSSJJJJJJJJOOOOOOO
-                                   OOOSSSSJJJJJJJOOOOOOO
-                                   OOOOOOOOOOOOOOOOOOOOO"""
 
         i = Island()
         self.loc = (0,0)
@@ -102,40 +88,6 @@ class TestAnimals:
         assert self.carn_w_7.fitness == pytest.approx(0.768, 0.01)
         assert self.herb_w_0.fitness == 0
         assert self.carn_w_0.fitness == 0
-
-    def test_fodder_eaten_for_full_landscapes(self):
-        jungle_loc = (2,7)
-        savannah_loc = (2,1)
-        ocean_loc = (0,0)
-        i = Island()
-        j_sim = Herbivore(i, jungle_loc)
-        j_sim.fodder_eaten()
-        s_sim = Herbivore(i, savannah_loc)
-        s_sim.fodder_eaten()
-        o_sim = Herbivore(i, ocean_loc)
-        o_sim.fodder_eaten()
-        optimal_fodder = Herbivore.parameters["F"]
-
-        assert j_sim.fodder_eaten() == optimal_fodder
-        assert s_sim.fodder_eaten() == optimal_fodder
-        assert o_sim.fodder_eaten() == 0
-
-    def test_fodder_eaten_only_eat_available_fodder(self):
-        jungle_loc = (2,7)
-        Island._param_changer("J", {"f_max" : 5})
-        i_sim = Island(self.geogr)
-        s_1 = Herbivore(i_sim, jungle_loc)
-
-        assert s_1.fodder_eaten() == 5
-
-    def test_fodder_eaten_raises_error(self):
-        jungle_loc = (2, 7)
-        Island._param_changer("J", {"f_max" : -100})
-        i_sim = Island(self.geogr)
-        s_1 = Herbivore(i_sim, jungle_loc)
-
-        with pytest.raises(ValueError):
-            s_1.fodder_eaten()
 
     def test_weight_gain_properly(self):
         fodder_eaten = Herbivore.parameters["F"]
@@ -239,8 +191,49 @@ class TestAnimals:
         assert not a_sim.death()
 
 class TestHerbivore:
-    pass
 
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        pass
+
+    def test_fodder_eaten_for_full_landscapes(self):
+        jungle_loc = (2,7)
+        savannah_loc = (2,1)
+        ocean_loc = (0,0)
+        i = Island()
+        j_sim = Herbivore(i, jungle_loc)
+        j_sim.fodder_eaten()
+        s_sim = Herbivore(i, savannah_loc)
+        s_sim.fodder_eaten()
+        o_sim = Herbivore(i, ocean_loc)
+        o_sim.fodder_eaten()
+        optimal_fodder = Herbivore.parameters["F"]
+
+        assert j_sim.fodder_eaten() == optimal_fodder
+        assert s_sim.fodder_eaten() == optimal_fodder
+        assert o_sim.fodder_eaten() == 0
+
+    def test_fodder_eaten_only_eat_available_fodder(self):
+        jungle_loc = (2,7)
+        Island._param_changer("J", {"f_max" : 5})
+        i_sim = Island()
+        s_1 = Herbivore(i_sim, jungle_loc)
+
+        assert s_1.fodder_eaten() == 5
+
+    def test_fodder_eaten_raises_error(self):
+        jungle_loc = (2, 7)
+        Island._param_changer("J", {"f_max" : -100})
+        i_sim = Island()
+        s_1 = Herbivore(i_sim, jungle_loc)
+
+        with pytest.raises(ValueError):
+            s_1.fodder_eaten()
+
+    def test_eaten_removes_herb_properly(self):
+        i = Island()
+        loc = (2, 7)
+        a = Herbivore(i, loc)
 
 
 class TestCarnivore:

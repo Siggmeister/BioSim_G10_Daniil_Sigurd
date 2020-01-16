@@ -58,7 +58,6 @@ class Landscape:
 
     @classmethod
     def param_changer(cls, landscape, new_param):
-
         Landscape.landscape_parameters[landscape].update(new_param)
 
 
