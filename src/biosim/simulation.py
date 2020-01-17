@@ -92,10 +92,15 @@ class BioSim:
         """
 
         for loc_dict in population:
+            loc = loc_dict["loc"]
+            cell_type = self.island.get_cell_type(loc)
+            if cell_type == "Ocean" or cell_type == "Mountain":
+                raise ValueError("Animal can not be placed in mountain or ocean!")
+
             for animal_dict in loc_dict["pop"]:
-                loc = loc_dict["loc"]
                 age = animal_dict["age"]
                 weight = animal_dict["weight"]
+
                 if animal_dict["species"] == "Herbivore":
                     Herbivore(self.island, loc, age, weight)
                 elif animal_dict["species"] == "Carnivore":
