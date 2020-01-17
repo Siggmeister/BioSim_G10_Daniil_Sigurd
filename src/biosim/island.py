@@ -122,7 +122,3 @@ class Island:
     @staticmethod
     def _param_changer(landscape, new_param):
         Landscape.param_changer(landscape, new_param)
-
-
-
-
