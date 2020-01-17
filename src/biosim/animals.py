@@ -159,7 +159,8 @@ class Animals:
         loc_2 = (self.loc[0] - 1, self.loc[1])
         loc_3 = (self.loc[0], self.loc[1] + 1)
         loc_4 = (self.loc[0], self.loc[1] - 1)
-        return [loc_1, loc_2, loc_3, loc_4]
+        loc_list = [loc_1, loc_2, loc_3, loc_4]
+        return loc_list
 
     def total_propensity(self, loc_list):
         total_propensity = 0

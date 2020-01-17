@@ -286,10 +286,38 @@ class TestAnimals:
         self_calculated_abundance = 0.5
         assert c.relative_abundance(jungle_loc) == self_calculated_abundance
 
+    def test_propensity_0_if_mountain_or_ocean(self):
+        ocean_loc = (0,0)
+        mountain_loc = (1,9)
+        i = Island()
+        h = Herbivore(i, mountain_loc)
 
+        assert h.propensity(ocean_loc) == 0
+        assert h.propensity(mountain_loc) == 0
 
+    def test_propensity_return_correct_value_desert(self):
+        i = Island()
+        des_loc = (5,9)
+        h = Herbivore(i, des_loc)
 
+        assert h.propensity(des_loc) == 1
 
+    def test_get_potential_coordinates_gives_neighbour_coord(self):
+        loc = (2, 2)
+        neighbour_coord = [(3, 2), (1, 2), (2, 3), (2, 1)]
+        h = Herbivore(self.i, loc)
+
+        assert h.get_potential_coordinates() == neighbour_coord
+
+    def test_total_propensity_surrounded_by_desert(self):
+        loc= (6,9)
+        h = Herbivore(self.i, loc)
+        loc_list = h.get_potential_coordinates()
+
+        assert h.total_propensity(loc_list) == 4
+
+    def test_probabilities_returns_none_surrounded_by_ocean(self):
+        pass
 class TestHerbivore:
 
     @pytest.fixture(autouse=True)
@@ -334,6 +362,11 @@ class TestHerbivore:
         i = Island()
         loc = (2, 7)
         a = Herbivore(i, loc)
+        ini_pop = a.get_num_same_species(loc)
+        a.eaten()
+        new_pop = a.get_num_same_species(loc)
+
+        assert ini_pop != new_pop
 
 
 class TestCarnivore:
