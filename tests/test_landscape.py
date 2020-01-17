@@ -68,8 +68,48 @@ class Test_Landscape:
         land.param_changer(landscape, new_param)
         assert land.landscape_parameters[landscape]["f_max"] == new_param["f_max"]
 
+    def test_sort_pop_by_fitness(self):
+        land = Landscape()
+        herb_list = []
+        carn_list = []
+        for _ in range(3):
+            herb = Herbivore(Island(), (0,0))
+            carn = Carnivore(Island(), (0,0))
+            herb_list.append(herb)
+            carn_list.append(carn)
+            land.add_pop(herb)
+            land.add_pop(carn)
 
+        herb_list.sort(key=lambda herb: herb.fitness, reverse=True)
+        carn_list.sort(key=lambda carn: carn.fitness, reverse=True)
+        land.sort_pop_by_fitness()
 
+        assert land.get_herb_pop_list() == herb_list
+        assert land.get_carn_pop_list() == carn_list
 
+    def test_get_total_herb_weight(self):
+        land = Landscape()
+        assert land.get_total_herb_weight() == 0
+        herb_1 = Herbivore(Island(), (0,0))
+        land.add_pop(herb_1)
+        assert land.get_total_herb_weight() == herb_1.weight
+        herb_2 = Herbivore(Island(), (0,0))
+        land.add_pop(herb_2)
+        assert land.get_total_herb_weight() == herb_1.weight + herb_2.weight
 
+class TestJungle:
 
+    def test_jungle_instance(self):
+        j = Jungle()
+        assert isinstance(j, Landscape)
+        assert isinstance(j, Jungle)
+
+    def test_initial_fodder(self):
+        j = Jungle()
+        assert j.get_fodder() == j.landscape_parameters["J"]["f_max"]
+
+    def test_fodder_annual_refill(self):
+        j = Jungle()
+        j.fodder = 400
+        j.fodder_annual_refill()
+        assert j.get_fodder() == j.landscape_parameters["J"]["f_max"]
