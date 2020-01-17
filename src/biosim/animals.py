@@ -23,6 +23,7 @@ class Animals:
             self.weight = weight
 
         self.fitness_change()
+        #Check sepcies NameError
 
     def aging(self):
         self.age += 1
@@ -71,7 +72,7 @@ class Animals:
         sigma_birth = self.parameters["sigma_birth"]
 
         num_prob = min(1, gamma * self.fitness *
-                       (self.island.get_num_herb_on_loc(self.loc) - 1))
+                           (self.get_num_same_species(self.loc) - 1))
 
         weight_prob = (zeta * (w_birth + sigma_birth))
 
@@ -92,11 +93,7 @@ class Animals:
             elif self.__class__.__name__ == "Carnivore":
                 baby_animal = Carnivore(self.island, self.loc)
 
-            try:
-                weight_loss_by_birth = baby_animal.weight * xi
-
-            except NameError:
-                raise NameError("Animal must be of type Herbivore or Carnivore!")
+            weight_loss_by_birth = baby_animal.weight * xi
 
             if weight_loss_by_birth >= self.weight:
                 self.island.remove_pop_on_loc(self.loc, baby_animal)
@@ -143,8 +140,8 @@ class Animals:
     def relative_abundance(self, loc):
         F = self.parameters["F"]
         num_same_species = self.get_num_same_species(loc)
-        relative_fodder = self.get_relevant_fodder(loc)
-        relative_abundance = relative_fodder/((num_same_species + 1) * F)
+        relevant_fodder = self.get_relevant_fodder(loc)
+        relative_abundance = relevant_fodder/((num_same_species + 1) * F)
         return relative_abundance
 
     def propensity(self, loc):
