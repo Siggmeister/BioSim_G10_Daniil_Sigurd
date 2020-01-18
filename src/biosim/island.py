@@ -105,6 +105,7 @@ class Island:
 
         for i, line in enumerate(geo_list):
             for j, landscape_code in enumerate(line):
+                landscape_code = landscape_code.upper()
                 if landscape_code == "O":
                     geo = Ocean()
                 elif landscape_code == "J":
@@ -115,6 +116,8 @@ class Island:
                     geo = Savannah()
                 elif landscape_code == "D":
                     geo = Desert()
+                else:
+                    raise ValueError("Geography string must consist of only O, J, M, S, D")
                 island_dict[(i, j)] = geo
 
         return island_dict
