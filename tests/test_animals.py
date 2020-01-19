@@ -13,7 +13,16 @@ class TestAnimals:
 
     @pytest.fixture(autouse=True)
     def setup(self):
+        spes_geogr_1 = """\
+                       OOOO
+                       OOJO
+                       OOOO"""
 
+        self.spes_geogr_2 = """\
+                               OOOO
+                               OJJO
+                               OOOO"""
+        self.spes_island = Island(spes_geogr_1)
         self.i = Island()
         self.loc = (0,0)
         stnd_herb = Herbivore(island=self.i, loc=self.loc)
@@ -317,12 +326,66 @@ class TestAnimals:
         assert h.total_propensity(loc_list) == 4
 
     def test_probabilities_returns_none_surrounded_by_ocean(self):
-        pass
-class TestHerbivore:
+        loc = (1,2)
+        h = Herbivore(self.spes_island, loc)
+        loc_list = h.get_potential_coordinates()
 
-    @pytest.fixture(autouse=True)
-    def setup(self):
-        pass
+        assert h.probabilities(loc_list) is None
+
+    def test_probabilities_returns_correct_prob_list(self):
+        i = Island()
+        loc = (3,7)
+        c = Carnivore(i, loc)
+        loc_list = c.get_potential_coordinates()
+        prob_list = [0.25, 0.25, 0.25, 0.25]
+
+        assert c.probabilities(loc_list) == prob_list
+
+    def test_destination_is_none_surrounded_by_ocean(self):
+        loc = (1, 2)
+        h = Herbivore(self.spes_island, loc)
+        loc_list = h.get_potential_coordinates()
+
+        assert h.destination(loc_list) is None
+
+    @patch.object(Herbivore, 'probabilities')
+    def test_destination_gives_correct_coordinate(self, mocker):
+        mocker.return_value = [1, 0, 0, 0]
+        i = Island()
+        loc = (2,8)
+        h = Herbivore(i, loc)
+        loc_list = h.get_potential_coordinates()
+        assert h.destination(loc_list) == loc_list[0]
+        mocker.return_value = [0, 1, 0, 0]
+        assert h.destination(loc_list) == loc_list[1]
+
+    @patch.object(Herbivore, 'will_move')
+    def test_migration_removes_pop_from_loc_and_adds_to_odder(self, mocker):
+        mocker.return_value = True
+        loc_with_one_place_to_move = (1, 1)
+        i = Island(self.spes_geogr_2)
+        h = Herbivore(i, loc_with_one_place_to_move)
+        old_loc = h.get_loc()
+        h.migrate()
+        new_loc = h.get_loc()
+
+        assert i.get_num_herb_on_loc(old_loc) == 0
+        assert i.get_num_herb_on_loc(new_loc) == 1
+        assert old_loc != new_loc
+
+    @patch.object(Herbivore, 'destination')
+    def test_migration_does_not_happen_if_destination_none(self, mocker):
+        mocker.return_value = None
+        i = Island()
+        loc = (2,7)
+        h = Herbivore(i, loc)
+        old_loc = h.get_loc()
+        h.migrate()
+        new_loc = h.get_loc()
+        assert old_loc == new_loc #SJEKK GJENNOM HVORFOR DU IKKE FÅR 100%
+
+
+class TestHerbivore:
 
     def test_fodder_eaten_for_full_landscapes(self):
         jungle_loc = (2,7)
@@ -370,4 +433,6 @@ class TestHerbivore:
 
 
 class TestCarnivore:
-    pass
+
+    def test_kill_herb(self):
+
