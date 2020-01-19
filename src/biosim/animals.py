@@ -255,7 +255,7 @@ class Carnivore(Animals):
     parameters = {"w_birth": 6.0,
                                             "sigma_birth": 1.0,
                                             "beta": 0.75,
-                                            "eta": 0.0125,
+                                            "eta": 0.125,
                                             "a_half": 60.0,
                                             "phi_age": 0.4,
                                             "w_half": 4.0,
