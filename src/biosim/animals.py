@@ -3,13 +3,26 @@
 
 import numpy as np
 import random
-
-
+from math import exp
 
 class Animals:
+    """SUMMARY
+
+    :param island: A handle to the :class:'src.biosim.island.Island'
+    island object that makes up the geography?
+    :type island: class:'src.biosim.island.Island'
+    :param loc: Indicates the coordinates of the animal
+    :type loc: tuple
+    :param age: Indicates the age of the animal, defaults to 0
+    :type age: str, optional
+    :param weight: Indicates the weight of the animal, defaults to None
+    :type weight: float, optional
+    """
     parameters = None
 
     def __init__(self, island, loc, age=0, weight=None):
+        """Constructor method.
+        """
         self.age = age
         self.loc = loc
         self.island = island
@@ -26,25 +39,50 @@ class Animals:
         #Check sepcies NameError
 
     def aging(self):
+        """Adds a year to the self.age variable.
+        """
         self.age += 1
 
     def get_loc(self):
+        """Returns the coordinates of the animal.
+
+        :return: A tuple with x and y coordinates.
+        :rtype: tuple
+        """
         return self.loc
 
     def get_fitness(self):
+        """Returns the fitness of the animal.
+
+        :return: Fitness of the animal
+        :rtype: float
+        """
         return self.fitness
 
     @classmethod
     def param_changer(cls, new_params):
-         cls.parameters.update(new_params)
+        """Changes the parameters of either Herbivore or Carnivore class.
+
+        :param new_params: Dictionary containing the new parameter
+        :type new_params: dict
+        """
+        cls.parameters.update(new_params)
 
     def set_birth_weight(self):
+        """Sets the animals birth-weight to a float
+        between the two given parameters.
+
+        :return: A float between w_birth and sigma_birth
+        :rtype: float
+        """
         w_birth = self.parameters["w_birth"]
         sigma_birth = self.parameters["sigma_birth"]
 
         return np.random.normal(w_birth, sigma_birth)
 
     def fitness_change(self):
+        """Changes the fitness according to a formula using given parameters.
+        """
         phi_age = self.parameters["phi_age"]
         a_half = self.parameters["a_half"]
         phi_weight = self.parameters["phi_weight"]
@@ -52,20 +90,33 @@ class Animals:
 
         if self.weight > 0:
             self.fitness = ((1 /
-                            (1 + np.exp(phi_age *
+                            (1 + exp(phi_age *
                             (self.age - a_half)))) *
-                            (1 / (1 + np.exp(-(phi_weight *
+                            (1 / (1 + exp(-(phi_weight *
                             (self.weight - w_half))))))
         else:
             self.fitness = 0
 
     def weight_gain(self, consumption):
+        """Gains weight according to a formula using given parameters
+        and the input consumption.
+
+        :param consumption: float containing the amount of fodder
+        the animal consumes
+        :type consumption: float
+        """
         beta = self.parameters["beta"]
 
         self.weight += consumption * beta
         self.fitness_change()
 
     def can_birth_occur(self):
+        """Checks if birth of animal can occur according to two
+        probability formulas.
+
+        :return: True if birth can occur, and False if birth can not occur
+        :rtype: bool
+        """
         gamma = self.parameters["gamma"]
         zeta = self.parameters["zeta"]
         w_birth = self.parameters["w_birth"]
@@ -85,6 +136,9 @@ class Animals:
             return False
 
     def birth(self):
+        """Creates an instance of either class Herbivore or Carnivore.
+        If the birth does not occur, the class instance gets removed from pop
+        """
         xi = self.parameters["xi"]
 
         if self.can_birth_occur():
@@ -99,12 +153,20 @@ class Animals:
                 self.island.remove_pop_on_loc(self.loc, baby_animal)
 
     def annual_weight_loss(self):
+        """Subtracts weight from animal according to formula.
+        Changes fitness accordingly.
+        """
         eta = self.parameters["eta"]
 
         self.weight -= eta * self.weight
         self.fitness_change()
 
     def death(self):
+        """Checks if death occurs according to formula and a probability.
+
+        :return: True if death occurs, and False if death does not occur
+        :rtype: bool
+        """
         omega = self.parameters["omega"]
         death_prob = omega * (1 - self.fitness)
 
@@ -118,6 +180,11 @@ class Animals:
             return False
 
     def will_move(self):
+        """Checks whether or not the animal is able to move
+
+        :return: True if animal can move, False if animal can not move
+        :rtype: bool
+        """
         mu = self.parameters["mu"]
 
         if random.random() <= mu * self.fitness:
@@ -126,18 +193,42 @@ class Animals:
             return False
 
     def get_relevant_fodder(self, loc):
+        """Checks if animal is a Herbivore or a Carnivore and with that
+        information returns the relevant fodder
+
+        :param loc: Indicates the coordinate of the animal
+        :type loc: tuple
+        :return: If Herbivore: number of fodder on loc, if Carnivore:
+        total weight of Herbivores on that loc.
+        :rtype: float
+        """
         if self.__class__.__name__ == "Herbivore":
             return self.island.get_fodder_on_loc(loc)
         elif self.__class__.__name__ == "Carnivore":
             return self.island.get_total_herb_weight_on_loc(loc)
 
     def get_num_same_species(self, loc):
+        """Checks if animal is a Herbivore or Carnivore and with that
+        information returns number of animals of same species
+
+        :param loc: Indicates the coordinate of the animal
+        :type loc: tuple
+        :return: Number of same species animals on loc
+        :rtype: int
+        """
         if self.__class__.__name__ == "Herbivore":
             return self.island.get_num_herb_on_loc(loc)
         elif self.__class__.__name__ == "Carnivore":
             return self.island.get_num_carn_on_loc(loc)
 
     def relative_abundance(self, loc):
+        """Returns the relative abundance using given formula
+
+        :param loc: Indicates the coordinate of the animal
+        :type loc: tuple
+        :return: Returns relative abundance on given loc
+        :rtype: float
+        """
         F = self.parameters["F"]
         num_same_species = self.get_num_same_species(loc)
         relevant_fodder = self.get_relevant_fodder(loc)
@@ -145,6 +236,13 @@ class Animals:
         return relative_abundance
 
     def propensity(self, loc):
+        """Returns the propensity according to given formula
+
+        :param loc: Indicates the coordinate of the animal
+        :type loc: tuple
+        :return: Returns propensity on given loc
+        :rtype: int or float
+        """
         lambda_ = self.parameters["lambda"]
         relative_abundance = self.relative_abundance(loc)
         cell_type = self.island.get_cell_type(loc)
@@ -152,9 +250,14 @@ class Animals:
         if cell_type == "Mountain" or cell_type == "Ocean":
             return 0
         else:
-            return np.exp(lambda_ * relative_abundance)
+            return exp(lambda_ * relative_abundance)
 
     def get_potential_coordinates(self):
+        """Returns a list of potential nearby coordinates
+
+        :return: List of 4 tuples that are possible to move to
+        :rtype: list
+        """
         loc_1 = (self.loc[0] + 1, self.loc[1])
         loc_2 = (self.loc[0] - 1, self.loc[1])
         loc_3 = (self.loc[0], self.loc[1] + 1)
@@ -163,12 +266,24 @@ class Animals:
         return loc_list
 
     def total_propensity(self, loc_list):
+        """Returns the sum of the propensity of the neighbouring coordinates
+
+        :param loc_list: List of 4 tuples that are possible to move to
+        :type loc_list: list
+        :return: Sum of propensities
+        :rtype: float
+        """
         total_propensity = 0
         for loc in loc_list:
             total_propensity += self.propensity(loc)
         return total_propensity
 
     def probabilities(self, loc_list):
+        """
+
+        :param loc_list:
+        :return:
+        """
         probability_list = []
         total_propensity = self.total_propensity(loc_list)
         if total_propensity == 0:
@@ -192,9 +307,7 @@ class Animals:
         if self.will_move():
             loc_list = self.get_potential_coordinates()
             destination = self.destination(loc_list)
-            if destination is None:
-                pass
-            else:
+            if destination is not None:
                 self.island.remove_pop_on_loc(self.loc, self)
                 self.island.add_pop_on_loc(destination, self)
                 self.loc = destination
@@ -279,7 +392,7 @@ class Carnivore(Animals):
         if self.fitness <= herb_fitness:
             kill_prob = 0
         elif 0 < fitness_diff < DeltaPhiMax:
-            kill_prob = (self.fitness - herb_fitness)/DeltaPhiMax
+            kill_prob = fitness_diff/DeltaPhiMax
         else:
             kill_prob = 1
 
@@ -292,23 +405,24 @@ class Carnivore(Animals):
         herbs_in_loc = self.island.get_herb_list_on_loc(self.loc)
         herbs_in_loc.sort(key=lambda herb: herb.fitness) # Tries to kill the herbivore with the lowest fitness first
         desired_weight = self.parameters["F"]
-        killed_weight = 0
+        eaten_weight = 0
         index = 0
 
-        while killed_weight < desired_weight and index < len(herbs_in_loc):
+        while eaten_weight < desired_weight and index < len(herbs_in_loc):
             herb = herbs_in_loc[index]
             if self.kill_herb(herb):
                 last_kill = herb.weight
-                appetite_weight = self.appetite_checker(killed_weight, desired_weight, last_kill)
-                killed_weight += last_kill
+                appetite_weight = self.appetite_checker(
+                    eaten_weight, desired_weight, last_kill)
+                eaten_weight += appetite_weight
                 self.weight_gain(appetite_weight)
                 herb.eaten()
             index += 1
 
     @staticmethod
-    def appetite_checker(eaten_weight, desired_weight, kill_weight):
-        if eaten_weight + kill_weight > desired_weight:
+    def appetite_checker(eaten_weight, desired_weight, last_kill):
+        if eaten_weight + last_kill > desired_weight:
             appetite_weight = desired_weight - eaten_weight
             return appetite_weight
         else:
-            return kill_weight
+            return last_kill

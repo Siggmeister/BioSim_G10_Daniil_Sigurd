@@ -4,9 +4,10 @@ __author__ = 'Daniil Efremov'
 __email__ = 'daniil.vitalevich.efremov@nmbu.no'
 
 from src.biosim.animals import Herbivore, Carnivore
-from src.biosim.island import *
+from src.biosim.island import Island
 import pytest
 from mock import patch
+
 
 
 class TestAnimals:
@@ -31,6 +32,7 @@ class TestAnimals:
 
         self.herb_w_0 = Herbivore(island=self.i, loc=self.loc, weight = 0)
         self.herb_w_5 = Herbivore(island=self.i, loc=self.loc, weight = 5)
+        self.herb_w_200 = Herbivore(island=self.i, loc=self.loc, weight=200)
 
         self.carn_w_0 = Carnivore(island=self.i, loc=self.loc, weight=0)
         self.carn_w_5 = Carnivore(island=self.i, loc=self.loc, weight=5)
@@ -88,12 +90,14 @@ class TestAnimals:
 
     def test_fitness_change_for_set_weight(self):
         self.herb_w_5.fitness_change()
+        self.herb_w_200.fitness_change()
         self.carn_w_5.fitness_change()
         self.carn_w_7.fitness_change()
         self.herb_w_0.fitness_change()
         self.carn_w_0.fitness_change()
 
         assert self.herb_w_5.fitness == pytest.approx(0.377, 0.01)
+        assert self.herb_w_200.fitness == pytest.approx(0.998, 0.01)
         assert self.carn_w_5.fitness == pytest.approx(0.598, 0.01)
         assert self.carn_w_7.fitness == pytest.approx(0.768, 0.01)
         assert self.herb_w_0.fitness == 0
@@ -374,8 +378,11 @@ class TestAnimals:
         assert old_loc != new_loc
 
     @patch.object(Herbivore, 'destination')
-    def test_migration_does_not_happen_if_destination_none(self, mocker):
-        mocker.return_value = None
+    @patch.object(Herbivore, 'will_move')
+    def test_migration_does_not_happen_if_destination_none(
+            self, mocker_1, mocker_2):
+        mocker_1.return_value = None
+        mocker_2.return_value = True
         i = Island()
         loc = (2,7)
         h = Herbivore(i, loc)
@@ -412,6 +419,16 @@ class TestHerbivore:
 
         assert s_1.fodder_eaten() == 5
 
+    def test_feed_raises_fitness(self):
+        loc = (2, 7)
+        i = Island()
+        h = Herbivore(i, loc)
+        old_fitness = h.fitness
+        h.feed()
+        new_fitness = h.fitness
+
+        assert old_fitness < new_fitness
+
     def test_fodder_eaten_raises_error(self):
         jungle_loc = (2, 7)
         Island._param_changer("J", {"f_max" : -100})
@@ -434,5 +451,66 @@ class TestHerbivore:
 
 class TestCarnivore:
 
-    def test_kill_herb(self):
+    def test_kill_herb_false_if_fitness_too_low(self):
+        i = Island()
+        loc = (2, 7)
+        c = Carnivore(i, loc, weight=0)
+        h = Herbivore(i, loc, weight=100)
 
+        assert not c.kill_herb(h)
+
+    def test_kill_herb_true_if_prob_1(self, mocker):
+        mocker.patch('random.random', return_value=0)
+        i = Island()
+        loc = (2, 7)
+        c = Carnivore(i, loc, weight=100)
+        h = Herbivore(i, loc, weight=0)
+
+        assert c.kill_herb(h)
+
+    def test_kill_herb_true_if_DeltaPhiMax_is_low(self):
+        i = Island()
+        loc = (2, 7)
+        c = Carnivore(i, loc, weight=100)
+        h = Herbivore(i, loc, weight=0)
+        c.param_changer({"DeltaPhiMax": 0})
+
+        assert c.kill_herb(h)
+
+    def test_appetite_checker_gives_correct_weight(self):
+        i = Island()
+        loc = (2, 7)
+        c = Carnivore(i, loc)
+        e_weight_1 = 30
+        d_weight_1 = 50
+        last_kill_1 = 100
+
+        e_weight_2 = 30
+        d_weight_2 = 50
+        last_kill_2 = 20
+
+        e_weight_3 = 30
+        d_weight_3 = 50
+        last_kill_3 = 5
+
+        assert c.appetite_checker(e_weight_1, d_weight_1, last_kill_1) == 20
+        assert c.appetite_checker(e_weight_2, d_weight_2, last_kill_2) == 20
+        assert c.appetite_checker(e_weight_3, d_weight_3, last_kill_3) == 5
+
+    @patch.object(Carnivore, 'kill_herb')
+    def test_feed_gains_weight_properly(self, mocker):
+        mocker.return_value = True
+        i = Island()
+        loc = (2, 7)
+        h = Herbivore(i, loc, weight=40)
+        c = Carnivore(i, loc, weight=100)
+        old_weight = c.weight
+        c.feed()
+        new_weight = old_weight + (h.weight * c.parameters["beta"])
+        assert c.weight == new_weight
+
+    def test_type_checker(self):
+        i = Island()
+        h = Herbivore(i, (1,1))
+
+        assert type(h.total_propensity([(2, 1), (2, 3)])) == 1
