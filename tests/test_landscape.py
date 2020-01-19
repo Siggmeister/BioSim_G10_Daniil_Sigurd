@@ -164,7 +164,7 @@ class TestDesert:
 
 class TestOcean:
 
-    def test_desert_instance(self):
+    def test_ocean_instance(self):
         o = Ocean()
         assert isinstance(o, Landscape)
         assert isinstance(o, Ocean)
@@ -172,7 +172,7 @@ class TestOcean:
 
 class TestMountain:
 
-    def test_desert_instance(self):
+    def test_ocean_instance(self):
         m = Mountain()
         assert isinstance(m, Landscape)
         assert isinstance(m, Mountain)
