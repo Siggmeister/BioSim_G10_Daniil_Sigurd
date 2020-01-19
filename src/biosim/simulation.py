@@ -145,7 +145,7 @@ if __name__ == '__main__':
         {
             "loc": (2, 7),
             "pop": [
-                {"species": "Herbivore", "age": 5, "weight": 200}
+                {"species": "Herbivore", "age": 45, "weight": 200}
                 for _ in range(150)
             ],
         },
@@ -155,12 +155,13 @@ if __name__ == '__main__':
     carn_pop = [{
             "loc": (2, 7),
             "pop": [
-                {"species": "Carnivore", "age": 5, "weight": 20}
+                {"species": "Carnivore", "age": 55, "weight": 20}
                 for _ in range(20)
             ],
         }]
 
     s = BioSim(geogr, ini_herbs)
+    s.set_landscape_parameters("J", {"f_max": 700})
     for _ in range(100):
         s.simulate(1)
         print(len(s.island.get_all_herb_list()))
@@ -175,3 +176,6 @@ if __name__ == '__main__':
         print(len(s.island.get_all_carn_list()))
         print("")
     print(s.island.island_dict[(2,7)].__class__.__name__)
+    print("======================")
+    #print(s.island.get_all_herb_list()[0].fitness, s.island.get_all_herb_list()[0].weight)
+    #print(s.island.get_all_carn_list()[0].fitness, s.island.get_all_carn_list()[0].weight)
