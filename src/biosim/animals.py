@@ -14,7 +14,7 @@ class Animals:
     :param loc: Indicates the coordinates of the animal
     :type loc: tuple
     :param age: Indicates the age of the animal, defaults to 0
-    :type age: str, optional
+    :type age: int, optional
     :param weight: Indicates the weight of the animal, defaults to None
     :type weight: float, optional
     """
