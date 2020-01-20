@@ -2,6 +2,7 @@
 
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
+import textwrap
 
 
 class MapVisualiser:
@@ -21,6 +22,7 @@ class MapVisualiser:
     }
 
     def __init__(self, map_layout, map_ax, legend_ax):
+        map_layout = textwrap.dedent(map_layout)
         self.map_layout = map_layout
         self.map_ax = map_ax
         self.legend_ax = legend_ax
@@ -58,16 +60,16 @@ class MapVisualiser:
             label = self.map_labels[landscape]
             self.legend_ax.add_patch(
                 plt.Rectangle(
-                    (0.0, i * 0.2),
-                    width=0.1,
-                    height=0.1,
+                    (0.0, i * 0.1),
+                    width=0.05,
+                    height=0.05,
                     edgecolor=None,
                     facecolor=color,
                 )
             )
             self.legend_ax.text(
                 x=0.2,
-                y=0.05 + i * 0.2,
+                y=0.05 + i * 0.1,
                 s=self.map_labels[landscape],
                 verticalalignment="center",
                 weight="bold",
@@ -80,11 +82,22 @@ class MapVisualiser:
 
 if __name__ == "__main__":
     map_layout = """\
-OOOO
-OJSO
-OMDO
-OOOO
-"""
+                  OOOOOOOOOOOOOOOOOOOOO
+                  OOOOOOOOSMMMMJJJJJJJO
+                  OSSSSSJJJJMMJJJJJJJOO
+                  OSSSSSSSSSMMJJJJJJOOO
+                  OSSSSSJJJJJJJJJJJJOOO
+                  OSSSSSJJJDDJJJSJJJOOO
+                  OSSJJJJJDDDJJJSSSSOOO
+                  OOSSSSJJJDDJJJSOOOOOO
+                  OSSSJJJJJDDJJJJJJJOOO
+                  OSSSSJJJJDDJJJJOOOOOO
+                  OOSSSSJJJJJJJJOOOOOOO
+                  OOOSSSSJJJJJJJOOOOOOO
+                  OOOOOOOOOOOOOOOOOOOOO"""
+
+    map_layout = textwrap.dedent(map_layout)
+
     fig, (map_ax, legend_ax) = plt.subplots(1, 2)
     vis = MapVisualiser(map_layout, map_ax, legend_ax)
     vis.visualise()

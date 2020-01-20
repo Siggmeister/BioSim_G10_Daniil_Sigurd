@@ -10,6 +10,7 @@ from island import *
 from animals import *
 from annual_cycle import *
 from mapvisualiser import *
+import matplotlib.pyplot as plt
 
 class BioSim:
     def __init__(
@@ -45,9 +46,15 @@ class BioSim:
         where img_no are consecutive image numbers starting from 0.
         img_base should contain a path and beginning of a file name.
         """
-        self._visualise_geography(island_map)
+        #self._visualise_geography(island_map)
         self.island = Island(island_map)
+        self.cycle = AnnualCycle(self.island)
         self.add_population(ini_pop)
+        self.herbs = []
+        self.carns = []
+        self.last_year = 0
+        self.fig = plt.figure()
+        self.ax1 = self.fig.add_subplot(1, 1, 1)
 
     @staticmethod
     def _visualise_geography(map_layout):
@@ -89,8 +96,16 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
-        cycle = AnnualCycle(self.island)
-        cycle.run_cycle(num_years)
+        for _ in range(num_years):
+            self.cycle.run_cycle()
+            self.herbs.append(len(self.island.get_all_herb_list()))
+            self.carns.append(len(self.island.get_all_carn_list()))
+            self.last_year += 1
+            self.ax1.clear()
+            self.ax1.plot(range(1, self.last_year + 1), self.herbs)
+            self.ax1.plot(range(1, self.last_year + 1), self.carns)
+            self.fig.show()
+
 
     def add_population(self, population):
         """

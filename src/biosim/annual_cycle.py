@@ -8,7 +8,7 @@ class AnnualCycle:
 
     def __init__(self, island):
         self.island = island
-        self.num_cycles = 0
+        #self.num_cycles = 0
 
     def fodder_growth(self):
         self.island.fodder_annual_refill()
@@ -65,15 +65,13 @@ class AnnualCycle:
         for animal in all_herb + all_carn:
             animal.migrate()
 
-    def run_cycle(self, num_years):
-        for _ in range(num_years):
-            self.fodder_growth()
-            self.sort_by_fitness()
-            self.herb_feeding()
-            self.carn_feeding()
-            self.procreation_all()
-            self.migration()
-            self.aging()
-            self.weight_loss()
-            self.animal_death()
-            self.num_cycles += 1
+    def run_cycle(self):
+        self.fodder_growth()
+        self.sort_by_fitness()
+        self.herb_feeding()
+        self.carn_feeding()
+        self.procreation_all()
+        self.migration()
+        self.aging()
+        self.weight_loss()
+        self.animal_death()
