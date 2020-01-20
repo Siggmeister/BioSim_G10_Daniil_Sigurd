@@ -102,12 +102,12 @@ class BioSim:
         self.ax1.set_title('Island map', fontsize=10)
 
     def population_plot_update(self):
-        self.herbs.append(len(self.island.get_all_herb_list()))
-        self.carns.append(len(self.island.get_all_carn_list()))
-        self.last_year += 1
         self.ax2.clear()
         self.ax2.plot(range(1, self.last_year + 1), self.herbs)
         self.ax2.plot(range(1, self.last_year + 1), self.carns)
+        self.ax2.plot(range(1, self.last_year + 1), [sum(x) for x in zip(self.herbs, self.carns)])
+        self.ax2.set_title("Population map", fontsize=10)
+        self.fig.show()
 
 
     def simulate(self, num_years, vis_years=1, img_years=None):
@@ -123,8 +123,12 @@ class BioSim:
         self.island_map()
         for _ in range(num_years):
             self.cycle.run_cycle()
-            self.population_plot_update()
-            self.fig.show()
+            self.herbs.append(len(self.island.get_all_herb_list()))
+            self.carns.append(len(self.island.get_all_carn_list()))
+            self.last_year += 1
+            if self.last_year % vis_years == 0:
+                self.population_plot_update()
+                self.fig.show()
 
 
     def add_population(self, population):
@@ -221,5 +225,6 @@ if __name__ == '__main__':
         print("")
     print(s.island.island_dict[(2,7)].__class__.__name__)
     print("======================")
+    s.population_plot_update()
     #print(s.island.get_all_herb_list()[0].fitness, s.island.get_all_herb_list()[0].weight)
     #print(s.island.get_all_carn_list()[0].fitness, s.island.get_all_carn_list()[0].weight)
