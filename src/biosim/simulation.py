@@ -13,6 +13,7 @@ from mapvisualiser import *
 import matplotlib.pyplot as plt
 import textwrap
 import matplotlib.colors as mcolors
+import pandas as pd
 
 
 class BioSim:
@@ -56,7 +57,10 @@ class BioSim:
         self.add_population(ini_pop)
         self.herbs = []
         self.carns = []
-        self.last_year = 0
+        self._year = None
+        self._num_animals = None
+        self._num_animal_per_species = None
+        self._animal_distribution = None
         self.fig = plt.figure()
         self.ax1 = self.fig.add_subplot(221)
         self.ax2 = self.fig.add_subplot(222)
@@ -109,6 +113,10 @@ class BioSim:
         self.ax2.plot(range(1, self.last_year + 1), self.carns)
         self.ax2.plot(range(1, self.last_year + 1), [sum(x) for x in zip(self.herbs, self.carns)])
         plt.pause(1e-6)
+
+    def herbivore_distribution(self):
+        self.ax3.clear()
+        self.ax3.imshow(self.animal_distribution[:, ])
 
 
     def simulate(self, num_years, vis_years=1, img_years=None):
@@ -166,16 +174,28 @@ class BioSim:
     @property
     def num_animals(self):
         """Total number of animals on island."""
-
+        self._num_animals = len(self.island.get_all_herb_list() +
+                                len(self.island.get_all_carn_list()))
+        return self._num_animals
 
     @property
     def num_animals_per_species(self):
         """Number of animals per species in island, as dictionary."""
+        self._num_animal_per_species = {
+            "Herbivore" : len(self.island.get_all_herb_list()),
+            "Carnivore" : len(self.island.get_all_carn_list())
+        }
+        return self._num_animal_per_species
 
     @property
     def animal_distribution(self):
         """Pandas DataFrame with animal count per species for each cell on island."""
-
+        for loc in self.island.island_dict:
+            data = {loc : [self.island.get_num_herb_on_loc(loc),
+                           self.island.get_num_carn_on_loc(loc)]
+                    }
+        self._animal_distribution = pd.DataFrame(data)
+        return self._animal_distribution
     def make_movie(self):
         """Create MPEG4 movie from visualization images saved."""
 
