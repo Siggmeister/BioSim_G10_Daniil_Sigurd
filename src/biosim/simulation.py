@@ -9,6 +9,7 @@ __email__ = ""
 from island import *
 from animals import *
 from annual_cycle import *
+from mapvisualiser import *
 
 class BioSim:
     def __init__(
@@ -44,9 +45,16 @@ class BioSim:
         where img_no are consecutive image numbers starting from 0.
         img_base should contain a path and beginning of a file name.
         """
-
+        self._visualise_geography(island_map)
         self.island = Island(island_map)
         self.add_population(ini_pop)
+
+    @staticmethod
+    def _visualise_geography(map_layout):
+        fig, (map_ax, legend_ax) = plt.subplots(1, 2)
+        vis = MapVisualiser(map_layout, map_ax, legend_ax)
+        vis.visualise()
+        plt.show()
 
     def set_animal_parameters(self, species, params):
         """
