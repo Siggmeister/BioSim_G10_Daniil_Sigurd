@@ -8,8 +8,8 @@ from math import exp
 class Animals:
     """SUMMARY
 
-    :param island: A handle to the :class:'src.biosim.island.Island'
-    island object that makes up the geography?
+    :param island: An instance of the :class:'src.biosim.island.Island'
+    with data and methods, containing info about the geography.
     :type island: class:'src.biosim.island.Island'
     :param loc: Indicates the coordinates of the animal
     :type loc: tuple
@@ -180,7 +180,7 @@ class Animals:
             return False
 
     def will_move(self):
-        """Checks whether or not the animal is able to move
+        """Checks whether or not the animal is able to move.
 
         :return: True if animal can move, False if animal can not move
         :rtype: bool
@@ -194,7 +194,7 @@ class Animals:
 
     def get_relevant_fodder(self, loc):
         """Checks if animal is a Herbivore or a Carnivore and with that
-        information returns the relevant fodder
+        information returns the relevant fodder.
 
         :param loc: Indicates the coordinate of the animal
         :type loc: tuple
@@ -209,7 +209,7 @@ class Animals:
 
     def get_num_same_species(self, loc):
         """Checks if animal is a Herbivore or Carnivore and with that
-        information returns number of animals of same species
+        information returns number of animals of same species.
 
         :param loc: Indicates the coordinate of the animal
         :type loc: tuple
@@ -222,7 +222,7 @@ class Animals:
             return self.island.get_num_carn_on_loc(loc)
 
     def relative_abundance(self, loc):
-        """Returns the relative abundance using given formula
+        """Returns the relative abundance using given formula.
 
         :param loc: Indicates the coordinate of the animal
         :type loc: tuple
@@ -236,7 +236,7 @@ class Animals:
         return relative_abundance
 
     def propensity(self, loc):
-        """Returns the propensity according to given formula
+        """Returns the propensity according to given formula.
 
         :param loc: Indicates the coordinate of the animal
         :type loc: tuple
@@ -253,7 +253,7 @@ class Animals:
             return exp(lambda_ * relative_abundance)
 
     def get_potential_coordinates(self):
-        """Returns a list of potential nearby coordinates
+        """Returns a list of potential nearby coordinates.
 
         :return: List of 4 tuples that are possible to move to
         :rtype: list
@@ -266,7 +266,7 @@ class Animals:
         return loc_list
 
     def total_propensity(self, loc_list):
-        """Returns the sum of the propensity of the neighbouring coordinates
+        """Returns the sum of the propensity of the neighbouring coordinates.
 
         :param loc_list: List of 4 tuples that are possible to move to
         :type loc_list: list
@@ -279,10 +279,13 @@ class Animals:
         return total_propensity
 
     def probabilities(self, loc_list):
-        """
+        """Returns a list containing the probability of moving to each of the
+        coordinates.
 
-        :param loc_list:
-        :return:
+        :param loc_list: List of 4 tuples that are possible to move to
+        :type loc_list: list
+        :return: Probability list if there is a chance to move, None if not.
+        :rtype: list or NoneType
         """
         probability_list = []
         total_propensity = self.total_propensity(loc_list)
@@ -295,6 +298,14 @@ class Animals:
         return probability_list
 
     def destination(self, loc_list):
+        """Makes a random choice of which of the coordinates to move to
+        with respect to the probabilities.
+
+        :param loc_list: List of 4 tuples that are possible to move to
+        :type loc_list: list
+        :return: Coordinate to move to, if animal does not move returns None
+        :rtype: tuple or NoneType
+        """
         prob_list = self.probabilities(loc_list)
         if prob_list is None:
             return None
@@ -304,6 +315,9 @@ class Animals:
             return destination
 
     def migrate(self):
+        """If animal moves then it changes the animals coordinates to
+        the correct location.
+        """
         if self.will_move():
             loc_list = self.get_potential_coordinates()
             destination = self.destination(loc_list)
@@ -314,6 +328,18 @@ class Animals:
 
 
 class Herbivore(Animals):
+    """SUMMARY
+
+    :param island: An instance of the :class:'src.biosim.island.Island'
+    with data and methods, containing info about the geography.
+    :type island: class:'src.biosim.island.Island'
+    :param loc: Indicates the coordinates of the animal
+    :type loc: tuple
+    :param age: Indicates the age of the animal, defaults to 0
+    :type age: int, optional
+    :param weight: Indicates the weight of the animal, defaults to None
+    :type weight: float, optional
+    """
     parameters = {"w_birth": 8.0,
                   "sigma_birth": 1.5,
                   "beta": 0.9,
@@ -331,12 +357,22 @@ class Herbivore(Animals):
                   "F": 10.0}
 
     def __init__(self, island, loc, age=0, weight=None):
+        """Constructor method.
+        """
         super().__init__(island, loc, age, weight)
 
     def eaten(self):
+        """Removes the instance of itself from its location.
+        """
         self.island.remove_pop_on_loc(self.loc, self)
 
     def fodder_eaten(self):
+        """Returns the amount of fodder the Herbivore eats
+
+        :raises ValueError: If fodder is negative float.
+        :return: Returns amount of fodder eaten
+        :rtype: float or int
+        """
 
         available_fodder = self.island.get_fodder_on_loc(self.loc)
 
@@ -358,12 +394,27 @@ class Herbivore(Animals):
 
 
     def feed(self):
+        """Herbivore eats fodder, so the fodder gets subtracted from the
+        location, and the Herbivore gains weight accordingly.
+        """
         consumed_fodder = self.fodder_eaten()
         self.island.herb_eats_fodder_on_loc(self.loc, consumed_fodder)
         self.weight_gain(consumed_fodder)
 
 
 class Carnivore(Animals):
+    """SUMMARY
+
+    :param island: An instance of the :class:'src.biosim.island.Island'
+    with data and methods, containing info about the geography.
+    :type island: class:'src.biosim.island.Island'
+    :param loc: Indicates the coordinates of the animal
+    :type loc: tuple
+    :param age: Indicates the age of the animal, defaults to 0
+    :type age: int, optional
+    :param weight: Indicates the weight of the animal, defaults to None
+    :type weight: float, optional
+    """
 
     parameters = {"w_birth": 6.0,
                                             "sigma_birth": 1.0,
@@ -383,9 +434,20 @@ class Carnivore(Animals):
                                             "DeltaPhiMax": 10.0}
 
     def __init__(self, island, loc, age=0, weight=None):
+        """Constructor method.
+        """
         super().__init__(island, loc, age, weight)
 
     def kill_herb(self, herb):
+        """Checks if the Carnivore kills a Herbivore using a parameter
+        and the fitness of both the animals.
+
+        :param herb: An instance of the class:'src.biosim.animals.Herbivore'
+        containing info about the Herbivore.
+        :type herb: class:'src.biosim.animals.Herbivore'
+        :return: True if Carnivore kills Herbivore, False if not
+        :rtype: bool
+        """
         DeltaPhiMax = self.parameters["DeltaPhiMax"]
         herb_fitness = herb.get_fitness()
         fitness_diff = self.fitness - herb_fitness
@@ -402,6 +464,10 @@ class Carnivore(Animals):
             return False
 
     def feed(self):
+        """
+
+        :return:
+        """
         herbs_in_loc = self.island.get_herb_list_on_loc(self.loc)
         herbs_in_loc.sort(key=lambda herb: herb.fitness) # Tries to kill the herbivore with the lowest fitness first
         desired_weight = self.parameters["F"]

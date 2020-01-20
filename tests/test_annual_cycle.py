@@ -38,7 +38,7 @@ class TestAnnualCycle:
         assert full_jungle > refillable_jungle
         assert full_jungle == refilled_jungle
 
-    def test_sort_by_fitness_sorts_correctly(self):
+    def test_sort_by_fitness_sorts(self):
         loc_1 = (2, 7)
         loc_2 = (2, 9)
         i = Island()
@@ -209,12 +209,3 @@ class TestAnnualCycle:
 
         assert h.get_loc() == new_loc
         assert c.get_loc() == new_loc
-
-
-
-
-
-
-
-
-

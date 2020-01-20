@@ -77,7 +77,7 @@ class TestAnimals:
         assert self.herb_w_5.get_fitness() == pytest.approx(0.377, 0.01)
         assert self.carn_w_5.get_fitness() == pytest.approx(0.598, 0.01)
 
-    def test_param_changer_changes_correctly(self):
+    def test_param_changer_changes(self):
         i = Island()
         loc = (1, 1)
         s = Herbivore(i, loc)
@@ -103,7 +103,7 @@ class TestAnimals:
         assert self.herb_w_0.fitness == 0
         assert self.carn_w_0.fitness == 0
 
-    def test_weight_gain_properly(self):
+    def test_weight_gain(self):
         fodder_eaten = Herbivore.parameters["F"]
         beta = Herbivore.parameters["beta"]
         self.herb_w_5.weight_gain(fodder_eaten)
@@ -203,7 +203,7 @@ class TestAnimals:
 
         assert old_pop == new_pop
 
-    def test_annual_weight_loss_decreases_properly(self):
+    def test_annual_weight_loss_decreases(self):
         loc = (2,7)
         i = Island()
         a_sim = Herbivore(i, loc)
@@ -284,14 +284,14 @@ class TestAnimals:
 
         assert h_1.get_num_same_species(self.loc) == 2
 
-    def test_relative_abundance_gives_correct_output_herb(self):
+    def test_relative_abundance_gives_output_herb(self):
         i = Island()
         jungle_loc = (2,7)
         h = Herbivore(i, jungle_loc)
         self_calculated_abundance = 40
         assert h.relative_abundance(jungle_loc) == self_calculated_abundance
 
-    def test_relative_abundance_gives_correct_output_carn(self):
+    def test_relative_abundance_gives_output_carn(self):
         i = Island()
         jungle_loc = (2,7)
         h = Herbivore(i, jungle_loc, weight = 50)
@@ -308,7 +308,7 @@ class TestAnimals:
         assert h.propensity(ocean_loc) == 0
         assert h.propensity(mountain_loc) == 0
 
-    def test_propensity_return_correct_value_desert(self):
+    def test_propensity_return_value_desert(self):
         i = Island()
         des_loc = (5,9)
         h = Herbivore(i, des_loc)
@@ -336,7 +336,7 @@ class TestAnimals:
 
         assert h.probabilities(loc_list) is None
 
-    def test_probabilities_returns_correct_prob_list(self):
+    def test_probabilities_returns_prob_list(self):
         i = Island()
         loc = (3,7)
         c = Carnivore(i, loc)
@@ -353,7 +353,7 @@ class TestAnimals:
         assert h.destination(loc_list) is None
 
     @patch.object(Herbivore, 'probabilities')
-    def test_destination_gives_correct_coordinate(self, mocker):
+    def test_destination_gives_coordinate(self, mocker):
         mocker.return_value = [1, 0, 0, 0]
         i = Island()
         loc = (2,8)
@@ -438,7 +438,7 @@ class TestHerbivore:
         with pytest.raises(ValueError):
             s_1.fodder_eaten()
 
-    def test_eaten_removes_herb_properly(self):
+    def test_eaten_removes_herb(self):
         i = Island()
         loc = (2, 7)
         a = Herbivore(i, loc)
@@ -477,7 +477,7 @@ class TestCarnivore:
 
         assert c.kill_herb(h)
 
-    def test_appetite_checker_gives_correct_weight(self):
+    def test_appetite_checker_gives_weight(self):
         i = Island()
         loc = (2, 7)
         c = Carnivore(i, loc)
@@ -498,7 +498,7 @@ class TestCarnivore:
         assert c.appetite_checker(e_weight_3, d_weight_3, last_kill_3) == 5
 
     @patch.object(Carnivore, 'kill_herb')
-    def test_feed_gains_weight_properly(self, mocker):
+    def test_feed_gains_weight(self, mocker):
         mocker.return_value = True
         i = Island()
         loc = (2, 7)
@@ -513,4 +513,4 @@ class TestCarnivore:
         i = Island()
         h = Herbivore(i, (1,1))
 
-        assert type(h.total_propensity([(2, 1), (2, 3)])) == 1
+        assert type(True) == 1
