@@ -105,6 +105,8 @@ class BioSim:
 
     def population_plot_update(self):
         self.ax2.clear()
+        self.herbs.append(len(self.island.get_all_herb_list()))
+        self.carns.append(len(self.island.get_all_carn_list()))
         self.ax2.plot(range(1, self.last_year + 1), self.herbs)
         self.ax2.plot(range(1, self.last_year + 1), self.carns)
         self.ax2.plot(range(1, self.last_year + 1), [sum(x) for x in zip(self.herbs, self.carns)])
@@ -158,10 +160,6 @@ class BioSim:
     def year(self):
         """Last year simulated."""
         return self.year
-
-    @year.setter
-    def year(self):
-        self.year += 1
 
     @property
     def num_animals(self):
