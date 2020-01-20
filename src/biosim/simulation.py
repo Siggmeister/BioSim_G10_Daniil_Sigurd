@@ -54,7 +54,7 @@ class BioSim:
         self.carns = []
         self.last_year = 0
         self.fig = plt.figure()
-        self.ax1 = self.fig.add_subplot(1, 1, 1)
+        self.ax1 = self.fig.add_subplot(3, 3, 1)
 
     @staticmethod
     def _visualise_geography(map_layout):
@@ -101,10 +101,12 @@ class BioSim:
             self.herbs.append(len(self.island.get_all_herb_list()))
             self.carns.append(len(self.island.get_all_carn_list()))
             self.last_year += 1
-            self.ax1.clear()
-            self.ax1.plot(range(1, self.last_year + 1), self.herbs)
-            self.ax1.plot(range(1, self.last_year + 1), self.carns)
-            self.fig.show()
+            if self.last_year % vis_years == 0:
+                self.ax1.clear()
+                self.ax1.plot(range(1, self.last_year + 1), self.herbs)
+                self.ax1.plot(range(1, self.last_year + 1), self.carns)
+                self.ax1.plot(range(1, self.last_year + 1), [sum(x) for x in zip(self.herbs, self.carns)])
+                self.fig.show()
 
 
     def add_population(self, population):
@@ -132,6 +134,7 @@ class BioSim:
     @property
     def year(self):
         """Last year simulated."""
+
 
     @property
     def num_animals(self):
@@ -185,15 +188,15 @@ if __name__ == '__main__':
 
     s = BioSim(geogr, ini_herbs)
     s.set_landscape_parameters("J", {"f_max": 700})
-    for _ in range(100):
-        s.simulate(1)
+    for _ in range(1):
+        s.simulate(100, vis_years=5)
         print(len(s.island.get_all_herb_list()))
         print("-----------------")
         print(len(s.island.get_all_carn_list()))
         print("")
     s.add_population(carn_pop)
-    for _ in range(200):
-        s.simulate(1)
+    for _ in range(1):
+        s.simulate(300 ,vis_years=5)
         print(len(s.island.get_all_herb_list()))
         print("-----------------")
         print(len(s.island.get_all_carn_list()))
