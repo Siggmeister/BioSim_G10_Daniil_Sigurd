@@ -42,6 +42,7 @@ class Animals:
         """Adds a year to the self.age variable.
         """
         self.age += 1
+        self.fitness_change()
 
     def get_loc(self):
         """Returns the coordinates of the animal.
