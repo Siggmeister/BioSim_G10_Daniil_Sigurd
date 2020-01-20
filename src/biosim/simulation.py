@@ -12,6 +12,8 @@ from annual_cycle import *
 from mapvisualiser import *
 import matplotlib.pyplot as plt
 import textwrap
+import matplotlib.colors as mcolors
+
 
 class BioSim:
     def __init__(
@@ -47,7 +49,6 @@ class BioSim:
         where img_no are consecutive image numbers starting from 0.
         img_base should contain a path and beginning of a file name.
         """
-        #self._visualise_geography(island_map)
         island_map = textwrap.dedent(island_map)
         self._island_map = island_map
         self.island = Island(self._island_map)
@@ -59,6 +60,7 @@ class BioSim:
         self.fig = plt.figure()
         self.ax1 = self.fig.add_subplot(221)
         self.ax2 = self.fig.add_subplot(222)
+        self.ax2.set_title("Population map", fontsize=10)
         self.ax3 = self.fig.add_subplot(223)
         self.ax4 = self.fig.add_subplot(224)
 
@@ -106,8 +108,7 @@ class BioSim:
         self.ax2.plot(range(1, self.last_year + 1), self.herbs)
         self.ax2.plot(range(1, self.last_year + 1), self.carns)
         self.ax2.plot(range(1, self.last_year + 1), [sum(x) for x in zip(self.herbs, self.carns)])
-        self.ax2.set_title("Population map", fontsize=10)
-        self.fig.show()
+        plt.pause(1e-6)
 
 
     def simulate(self, num_years, vis_years=1, img_years=None):
@@ -156,7 +157,11 @@ class BioSim:
     @property
     def year(self):
         """Last year simulated."""
+        return self.year
 
+    @year.setter
+    def year(self):
+        self.year += 1
 
     @property
     def num_animals(self):
@@ -210,21 +215,11 @@ if __name__ == '__main__':
 
     s = BioSim(geogr, ini_herbs)
     s.set_landscape_parameters("J", {"f_max": 700})
-    for _ in range(1):
-        s.simulate(100, vis_years=5)
-        print(len(s.island.get_all_herb_list()))
-        print("-----------------")
-        print(len(s.island.get_all_carn_list()))
-        print("")
+
+    s.simulate(100, vis_years=5)
     s.add_population(carn_pop)
-    for _ in range(1):
-        s.simulate(300 ,vis_years=5)
-        print(len(s.island.get_all_herb_list()))
-        print("-----------------")
-        print(len(s.island.get_all_carn_list()))
-        print("")
-    print(s.island.island_dict[(2,7)].__class__.__name__)
+    s.simulate(300 ,vis_years=5)
     print("======================")
-    s.population_plot_update()
-    #print(s.island.get_all_herb_list()[0].fitness, s.island.get_all_herb_list()[0].weight)
-    #print(s.island.get_all_carn_list()[0].fitness, s.island.get_all_carn_list()[0].weight)
+    for _ in range(1000):
+        s.fig.show()
+

@@ -71,7 +71,7 @@ class AnnualCycle:
         self.herb_feeding()
         self.carn_feeding()
         self.procreation_all()
-        #self.migration()
+        self.migration()
         self.aging()
         self.weight_loss()
         self.animal_death()
