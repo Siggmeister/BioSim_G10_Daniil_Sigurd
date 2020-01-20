@@ -11,6 +11,7 @@ from animals import *
 from annual_cycle import *
 from mapvisualiser import *
 import matplotlib.pyplot as plt
+import textwrap
 
 class BioSim:
     def __init__(
@@ -47,21 +48,20 @@ class BioSim:
         img_base should contain a path and beginning of a file name.
         """
         #self._visualise_geography(island_map)
-        self.island = Island(island_map)
+        island_map = textwrap.dedent(island_map)
+        self._island_map = island_map
+        self.island = Island(self._island_map)
         self.cycle = AnnualCycle(self.island)
         self.add_population(ini_pop)
         self.herbs = []
         self.carns = []
         self.last_year = 0
         self.fig = plt.figure()
-        self.ax1 = self.fig.add_subplot(3, 3, 1)
+        self.ax1 = self.fig.add_subplot(221)
+        self.ax2 = self.fig.add_subplot(222)
+        self.ax3 = self.fig.add_subplot(223)
+        self.ax4 = self.fig.add_subplot(224)
 
-    @staticmethod
-    def _visualise_geography(map_layout):
-        fig, (map_ax, legend_ax) = plt.subplots(1, 2)
-        vis = MapVisualiser(map_layout, map_ax, legend_ax)
-        vis.visualise()
-        plt.show()
 
     def set_animal_parameters(self, species, params):
         """
@@ -86,6 +86,30 @@ class BioSim:
 
         self.island._param_changer(landscape, params)
 
+    def island_map(self):
+        color_code = {
+            "O": mcolors.to_rgba("navy"),
+            "J": mcolors.to_rgba("forestgreen"),
+            "S": mcolors.to_rgba("#e1ab62"),
+            "D": mcolors.to_rgba("salmon"),
+            "M": mcolors.to_rgba("lightslategrey"),
+        }
+
+        kart_rgb = [[color_code[column] for column in row]
+                    for row in self._island_map.splitlines()]
+
+        self.ax1.imshow(kart_rgb)
+        self.ax1.set_title('Island map', fontsize=10)
+
+    def population_plot_update(self):
+        self.herbs.append(len(self.island.get_all_herb_list()))
+        self.carns.append(len(self.island.get_all_carn_list()))
+        self.last_year += 1
+        self.ax2.clear()
+        self.ax2.plot(range(1, self.last_year + 1), self.herbs)
+        self.ax2.plot(range(1, self.last_year + 1), self.carns)
+
+
     def simulate(self, num_years, vis_years=1, img_years=None):
         """
         Run simulation while visualizing the result.
@@ -96,17 +120,11 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
+        self.island_map()
         for _ in range(num_years):
             self.cycle.run_cycle()
-            self.herbs.append(len(self.island.get_all_herb_list()))
-            self.carns.append(len(self.island.get_all_carn_list()))
-            self.last_year += 1
-            if self.last_year % vis_years == 0:
-                self.ax1.clear()
-                self.ax1.plot(range(1, self.last_year + 1), self.herbs)
-                self.ax1.plot(range(1, self.last_year + 1), self.carns)
-                self.ax1.plot(range(1, self.last_year + 1), [sum(x) for x in zip(self.herbs, self.carns)])
-                self.fig.show()
+            self.population_plot_update()
+            self.fig.show()
 
 
     def add_population(self, population):
