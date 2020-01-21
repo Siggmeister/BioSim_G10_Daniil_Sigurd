@@ -126,7 +126,15 @@ class BioSim:
         self.ax3.clear()
         dfh = self.animal_distribution
         dfh = dfh.drop("Carnivores", 1)
-        heat = sns.heatmap(dfh , ax=self.ax3)
+        dfh = dfh.pivot(index="i", columns="j", values="Herbivores")
+        self.ax3 = sns.heatmap(dfh, cbar=True, ax=self.ax3)
+
+    def carnivore_distribution_update(self):
+        self.ax4.cla()
+        dfc = self.animal_distribution
+        dfc = dfc.drop("Herbivores", 1)
+        dfc = dfc.pivot(index="i", columns="j", values="Carnivores")
+        sns.heatmap(dfc, cbar=False, ax=self.ax4)
 
 
     def simulate(self, num_years, vis_years=1, img_years=None):
@@ -146,6 +154,7 @@ class BioSim:
             if self.year % vis_years == 0:
                 self.population_plot_update()
                 self.herbivore_distribution_update()
+                self.carnivore_distribution_update()
                 self.fig.show()
 
 
@@ -240,10 +249,9 @@ if __name__ == '__main__':
     s = BioSim(geogr, ini_herbs)
     s.set_landscape_parameters("J", {"f_max": 700})
 
-    s.simulate(100, vis_years=5)
+    s.simulate(100, vis_years=3)
     s.add_population(carn_pop)
-    s.simulate(300 ,vis_years=5)
+    s.simulate(300 ,vis_years=3)
     print("======================")
-    for _ in range(1000):
-        s.fig.show()
+
 
