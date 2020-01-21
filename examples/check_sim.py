@@ -17,7 +17,7 @@ __email__ = "hans.ekkehard.plesser@nmbu.no"
 
 
 if __name__ == "__main__":
-    plt.ion()
+    #plt.ion()
 
     geogr = """\
                OOOOOOOOOOOOOOOOOOOOO
@@ -74,6 +74,9 @@ if __name__ == "__main__":
     sim.add_population(population=ini_carns)
     sim.simulate(num_years=100, vis_years=1, img_years=2000)
 
-    plt.savefig("check_sim.pdf")
+    #plt.savefig("check_sim.pdf")
 
-    input("Press ENTER")
+    #input("Press ENTER")
+
+    print(len(sim.island.get_all_herb_list()))
+    print(len(sim.island.get_all_carn_list()))

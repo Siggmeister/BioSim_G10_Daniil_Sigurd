@@ -1,16 +1,25 @@
 
 class Landscape:
+    """This is the base class for all the different types
+     of landscape classes occurring in the island geography.
+    """
     landscape_parameters = {"J": {"f_max": 800.0},
                             "S": {"f_max": 300.0,
                                   "alpha": 0.3}}
 
     def __init__(self):
+        """Constructor method.
+        """
         self.herb_pop_list = []
         self.carn_pop_list = []
         self.available = None
         self.fodder = 0
 
     def add_pop(self, animal):
+        """Adds an animal instance to the appropriate animal list.
+
+        :param animal: A handle to a :class:'animals.Animals' object being either of t
+        """
         if animal.__class__.__name__ == "Herbivore":
             self.herb_pop_list.append(animal)
         elif animal.__class__.__name__ == "Carnivore":
