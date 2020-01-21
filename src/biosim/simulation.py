@@ -64,11 +64,10 @@ class BioSim:
         self._year = 0
         self._num_animals = None
         self._num_animal_per_species = None
-        self._animal_distribution = None
+        self._animal_distribution = 0
         self.fig = plt.figure()
         self.ax1 = self.fig.add_subplot(221)
         self.ax2 = self.fig.add_subplot(222)
-        self.ax2.set_title("Population map", fontsize=10)
         self.ax3 = self.fig.add_subplot(223)
         self.ax4 = self.fig.add_subplot(224)
 
