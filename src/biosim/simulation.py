@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 import textwrap
 import matplotlib.colors as mcolors
 import pandas as pd
+import seaborn as sns
+
 
 
 class BioSim:
@@ -55,9 +57,11 @@ class BioSim:
         self.island = Island(self._island_map)
         self.cycle = AnnualCycle(self.island)
         self.add_population(ini_pop)
-        self.herbs = []
-        self.carns = []
-        self._year = None
+        self._herbs = []
+        self._carns = []
+        self._animals = []
+        self._vis_years = []
+        self._year = 0
         self._num_animals = None
         self._num_animal_per_species = None
         self._animal_distribution = None
@@ -109,16 +113,21 @@ class BioSim:
 
     def population_plot_update(self):
         self.ax2.clear()
-        self.herbs.append(len(self.island.get_all_herb_list()))
-        self.carns.append(len(self.island.get_all_carn_list()))
-        self.ax2.plot(range(1, self.last_year + 1), self.herbs)
-        self.ax2.plot(range(1, self.last_year + 1), self.carns)
-        self.ax2.plot(range(1, self.last_year + 1), [sum(x) for x in zip(self.herbs, self.carns)])
+        animal_dict = self.num_animals_per_species
+        self._herbs.append(animal_dict["Herbivore"])
+        self._carns.append(animal_dict["Carnivore"])
+        self._animals.append(self.num_animals)
+        self._vis_years.append(self.year)
+        self.ax2.plot(self._vis_years, self._herbs)
+        self.ax2.plot(self._vis_years, self._carns)
+        self.ax2.plot(self._vis_years, self._animals)
         plt.pause(1e-6)
 
-    def herbivore_distribution(self):
+    def herbivore_distribution_update(self):
         self.ax3.clear()
-        self.ax3.imshow(self.animal_distribution[:, ])
+        dfh = self.animal_distribution
+        dfh = dfh.drop("Carnivores", 1)
+        heat = sns.heatmap(dfh , ax=self.ax3)
 
 
     def simulate(self, num_years, vis_years=1, img_years=None):
@@ -134,11 +143,10 @@ class BioSim:
         self.island_map()
         for _ in range(num_years):
             self.cycle.run_cycle()
-            self.herbs.append(len(self.island.get_all_herb_list()))
-            self.carns.append(len(self.island.get_all_carn_list()))
-            self.last_year += 1
-            if self.last_year % vis_years == 0:
+            self._year += 1
+            if self.year % vis_years == 0:
                 self.population_plot_update()
+                self.herbivore_distribution_update()
                 self.fig.show()
 
 
@@ -167,13 +175,14 @@ class BioSim:
     @property
     def year(self):
         """Last year simulated."""
-        return self.year
+        return self._year
+
 
     @property
     def num_animals(self):
         """Total number of animals on island."""
-        self._num_animals = len(self.island.get_all_herb_list() +
-                                len(self.island.get_all_carn_list()))
+        self._num_animals = len(self.island.get_all_herb_list()) + \
+                            len(self.island.get_all_carn_list())
         return self._num_animals
 
     @property
@@ -188,12 +197,9 @@ class BioSim:
     @property
     def animal_distribution(self):
         """Pandas DataFrame with animal count per species for each cell on island."""
-        for loc in self.island.island_dict:
-            data = {loc : [self.island.get_num_herb_on_loc(loc),
-                           self.island.get_num_carn_on_loc(loc)]
-                    }
-        self._animal_distribution = pd.DataFrame(data)
-        return self._animal_distribution
+        df = pd.DataFrame(self.island.island_data, columns=["i", "j", "Herbivores", "Carnivores"])
+        return df
+
     def make_movie(self):
         """Create MPEG4 movie from visualization images saved."""
 

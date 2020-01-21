@@ -96,6 +96,17 @@ class Island:
             if geo != "O":
                 raise ValueError("The edges of the map must be all ocean type!")
 
+    @property
+    def island_data(self):
+        island_data = []
+        for loc in self.island_dict:
+            i, j = loc[0], loc[1]
+            herb_count = self.get_num_herb_on_loc(loc)
+            carn_count = self.get_num_carn_on_loc(loc)
+            island_data.append([i, j, herb_count, carn_count])
+        return island_data
+
+
 
     @staticmethod
     def _island_dict_maker(geo_string):
@@ -125,3 +136,4 @@ class Island:
     @staticmethod
     def _param_changer(landscape, new_param):
         Landscape.param_changer(landscape, new_param)
+
