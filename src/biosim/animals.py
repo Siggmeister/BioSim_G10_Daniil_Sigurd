@@ -465,9 +465,8 @@ class Carnivore(Animals):
             return False
 
     def feed(self):
-        """
-
-        :return:
+        """Feeds a single Carnivore. Updates the Carnivore weight and
+        removes the Herbivore if it is eaten.
         """
         herbs_in_loc = self.island.get_herb_list_on_loc(self.loc)
         herbs_in_loc.sort(key=lambda herb: herb.fitness) # Tries to kill the herbivore with the lowest fitness first
@@ -488,6 +487,19 @@ class Carnivore(Animals):
 
     @staticmethod
     def appetite_checker(eaten_weight, desired_weight, last_kill):
+        """Checks if the Herbivores weight is higher than the desired weight,
+        and returns the amount of food the Carnivore eats.
+
+        :param eaten_weight: The amount of food the Carnivore has eaten before
+        before the last Herb-kill
+        :type eaten_weight: float
+        :param desired_weight: The amount of food the Carnivore wants to eat
+        :type desired_weight: float
+        :param last_kill: The weight of the dead Herbivore
+        :type last_kill: float
+        :return: Amount of food Carnivore eats
+        :rtype: float
+        """
         if eaten_weight + last_kill > desired_weight:
             appetite_weight = desired_weight - eaten_weight
             return appetite_weight
