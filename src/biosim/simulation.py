@@ -127,7 +127,7 @@ class BioSim:
         dfh = self.animal_distribution
         dfh = dfh.drop("Carnivores", 1)
         dfh = dfh.pivot(index="i", columns="j", values="Herbivores")
-        self.ax3 = sns.heatmap(dfh, cbar=True, ax=self.ax3)
+        sns.heatmap(dfh, cbar=False, ax=self.ax3)
 
     def carnivore_distribution_update(self):
         self.ax4.cla()
