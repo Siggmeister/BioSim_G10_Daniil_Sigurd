@@ -5,7 +5,7 @@ import numpy as np
 
 
 class Island:
-    """SUMMARY
+    """Island class. Manages the whole Island of Landscape cells.
     """
 
     default_geogr = """\
@@ -24,7 +24,7 @@ class Island:
                OOOOOOOOOOOOOOOOOOOOO"""
 
     def __init__(self, geo_string=None):
-        """SUMMARY
+        """Island class. Manages the whole Island of Landscape cells.
 
         :param geo_string: Multi-line string specifying island geography
         :type geo_string: str, optional

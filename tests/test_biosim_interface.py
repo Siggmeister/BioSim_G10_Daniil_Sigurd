@@ -160,6 +160,8 @@ def test_add_population(plain_sim):
     )
 
 def test_add_pop_outside_map(plain_sim):
+    """Test that add_population raises a ValueError if population is placed outside of map.
+    """
     with pytest.raises(ValueError):
         plain_sim.add_population(
         [
@@ -173,6 +175,8 @@ def test_add_pop_outside_map(plain_sim):
     )
 
 def test_add_pop_wrong_dict_keys(plain_sim):
+    """Test that add_population raises a ValueError if the dictionaries in the list contain the wrong keys.
+    """
     with pytest.raises(ValueError):
         plain_sim.add_population(
             [
@@ -188,6 +192,9 @@ def test_add_pop_wrong_dict_keys(plain_sim):
         )
 
 def test_add_pop_illegal_cell(plain_sim):
+    """Test that add_population raises a ValueError if population is placed an
+       illegal cell (Mountain and Ocean)
+       """
     with pytest.raises(ValueError):
         plain_sim.add_population(
             [
@@ -202,6 +209,9 @@ def test_add_pop_illegal_cell(plain_sim):
         )
 
 def test_add_pop_wrong_animal_dict(plain_sim):
+    """Test that add_population raises a ValueError if the dictionaries containing the animal data
+       have the wrong keys.
+    """
     with pytest.raises(ValueError):
         plain_sim.add_population(
             [
@@ -216,6 +226,8 @@ def test_add_pop_wrong_animal_dict(plain_sim):
         )
 
 def test_add_pop_negative_age(plain_sim):
+    """Test that add_population raises a ValueError if a negative age value is submitted
+    """
     with pytest.raises(ValueError):
         plain_sim.add_population(
         [
@@ -230,6 +242,9 @@ def test_add_pop_negative_age(plain_sim):
     )
 
 def test_add_pop_negative_weight(plain_sim):
+    """Test that add_population raises a ValueError" if a negative weight value
+       is submitted.
+    """
     with pytest.raises(ValueError):
         plain_sim.add_population(
         [

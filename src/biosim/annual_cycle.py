@@ -5,18 +5,17 @@ __email__ = 'daniil.vitalevich.efremov@nmbu.no'
 
 
 class AnnualCycle:
-    """SUMMARY
+    """Annual cycle class. Manages all the yearly events on the island.
     """
 
     def __init__(self, island):
-        """SUMMARY
+        """Annual cycle class. Manages all the yearly events on the island.
 
         :param island: An instance of the :class:'src.biosim.island.Island'
         with data and methods, containing info about the geography.
         :type island: class:'src.biosim.island.Island'
         """
         self.island = island
-        #self.num_cycles = 0
 
     def fodder_growth(self):
         """Refills fodder depending on Landscape-type.

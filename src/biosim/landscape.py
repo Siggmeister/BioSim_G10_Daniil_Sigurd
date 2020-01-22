@@ -121,8 +121,12 @@ class Landscape:
 
 
 class Jungle(Landscape):
+    """Jungle class containing specific parameters, attributes and methods for Jungle terrain.
+    """
 
     def __init__(self):
+        """Constructor method.
+        """
         super().__init__()
         self.available = True
         self.fodder = Landscape.landscape_parameters["J"]["f_max"]
@@ -134,8 +138,12 @@ class Jungle(Landscape):
 
 
 class Savannah(Landscape):
+    """Savannah class containing specific parameters, attributes and methods for Savannah terrain.
+    """
 
     def __init__(self):
+        """Constructor method.
+        """
         super().__init__()
         self.available = True
         self.fodder = Landscape.landscape_parameters["S"]["f_max"]
@@ -149,21 +157,32 @@ class Savannah(Landscape):
 
 
 class Desert(Landscape):
+    """Desert class containing specific parameters, attributes and methods for Desert terrain.
+     """
 
     def __init__(self):
+        """Constructor method.
+        """
         super().__init__()
         self.available = True
 
 
 class Mountain(Landscape):
+    """Mountain class containing specific parameters, attributes and methods for Mountain terrain.
+    """
 
     def __init__(self):
+        """Constructor method.
+        """
         super().__init__()
         self.available = False
 
 
 class Ocean(Landscape):
-
+    """Ocean class containing specific parameters, attributes and methods for Ocean terrain.
+    """
     def __init__(self):
+        """Constructor method.
+        """
         super().__init__()
         self.available = False
