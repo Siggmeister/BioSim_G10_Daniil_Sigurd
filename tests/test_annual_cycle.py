@@ -1,30 +1,30 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'Daniil Efremov'
-__email__ = 'daniil.vitalevich.efremov@nmbu.no'
+__author__ = 'Daniil Efremov', 'Sigurd Grøtan'
+__email__ = 'daniil.vitalevich.efremov@nmbu.no', 'sgrotan@nmbu.no'
 
 from island import Island
-from animals import Herbivore, Carnivore, Animals
+from animals import Herbivore, Carnivore
 from annual_cycle import AnnualCycle
 import pytest
 from mock import patch
 
 
 class TestAnnualCycle:
-
-
-    @pytest.fixture(autouse=True)
-    def setup(self):
-        self.i = Island()
-
+    """SUMMARY
+    """
 
     def test_cycle_instance(self):
+        """Test to show that cycle is an instance for the class AnnualCycle
+        """
         i = Island()
         cycle = AnnualCycle(i)
 
         assert isinstance(cycle, AnnualCycle)
 
     def test_fodder_growth_refills_fodder(self):
+        """Test to show that fodder_growth refills fodder on location
+        """
         i = Island()
         loc = (2,7)
         h = Herbivore(i, loc)
@@ -39,6 +39,9 @@ class TestAnnualCycle:
         assert full_jungle == refilled_jungle
 
     def test_sort_by_fitness_sorts(self):
+        """Manual test to show that sort_by_fitness sorts all animals on all
+        locations.
+        """
         loc_1 = (2, 7)
         loc_2 = (2, 9)
         i = Island()
@@ -53,6 +56,9 @@ class TestAnnualCycle:
         assert sorted_list == manually_sorted_list
 
     def test_herb_feeding_changes_weight_for_all_herbs(self):
+        """Test to show that herb_feeding changes weight for all Herbivores on
+        all locations
+        """
         i = Island()
         cycle = AnnualCycle(i)
         loc_1 = (2, 7)
@@ -69,6 +75,9 @@ class TestAnnualCycle:
         assert old_weight_2 < new_weight_2
 
     def test_carn_feeding_changes_weight_for_all_carns(self, mocker):
+        """Test to show that carn_feeding changes weight for all Carnivores on
+        all locations
+        """
         mocker.patch('random.random', return_value=0)
         i = Island()
         cycle = AnnualCycle(i)
@@ -88,6 +97,9 @@ class TestAnnualCycle:
         assert old_weight_2 < new_weight_2
 
     def test_procreation_herb_adds_herb_pop(self, mocker):
+        """Test to show that procreation_herb adds a Herbivore instance
+        for every location needed.
+        """
         mocker.patch('random.random', return_value=0)
         i = Island()
         cycle = AnnualCycle(i)
@@ -107,6 +119,9 @@ class TestAnnualCycle:
         assert old_num_loc_2 < new_num_loc_2
 
     def test_procreation_carn_adds_carn_pop(self, mocker):
+        """Test to show that procreation_carn adds a Carnivore instance
+        for every location needed.
+        """
         mocker.patch('random.random', return_value=0)
         i = Island()
         cycle = AnnualCycle(i)
@@ -126,6 +141,9 @@ class TestAnnualCycle:
         assert old_num_loc_2 < new_num_loc_2
 
     def test_procreation_all_adds_all_pop(self, mocker):
+        """Test to show that procreation_all adds instances of both
+        Carnivore and Herbivore for all locations.
+        """
         mocker.patch('random.random', return_value=0)
         i = Island()
         cycle = AnnualCycle(i)
@@ -145,6 +163,9 @@ class TestAnnualCycle:
         assert old_num_loc_2 < new_num_loc_2
 
     def test_aging_adds_1_year_to_all_animals(self):
+        """Test to show that aging adds a year to every animal on every
+        location
+        """
         i = Island()
         cycle = AnnualCycle(i)
         loc_1 = (2, 7)
@@ -160,6 +181,9 @@ class TestAnnualCycle:
             assert animal.age == 1
 
     def test_weight_loss_changes_for_all_animals(self, mocker):
+        """Test to show that weight_loss changes weight for all animals
+        on all locations.
+        """
         mocker.patch('random.random', return_value=0)
         i = Island()
         cycle = AnnualCycle(i)
@@ -174,8 +198,9 @@ class TestAnnualCycle:
         assert c_1.weight < old_weight_1
         assert h_1.weight < old_weight_2
 
-
     def test_animal_death_removes_all_dead_animals(self, mocker):
+        """Test to show that death removes all dead animals from all locations
+        """
         mocker.patch('random.random', return_value=0)
         i = Island()
         cycle = AnnualCycle(i)
@@ -193,6 +218,8 @@ class TestAnnualCycle:
     @patch.object(Herbivore, 'will_move')
     @patch.object(Carnivore, 'will_move')
     def test_migration_moves_all_animals(self, mocker_1, mocker_2):
+        """Test to show that migration moves all animals for all locations
+        """
         mocker_1.return_value = True
         mocker_2.return_value = True
         geogr = """\

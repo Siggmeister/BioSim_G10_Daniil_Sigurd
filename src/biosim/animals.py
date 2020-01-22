@@ -1,28 +1,30 @@
 # -*- coding: utf-8 -*-
 
+__author__ = 'Daniil Efremov', 'Sigurd Grøtan'
+__email__ = 'daniil.vitalevich.efremov@nmbu.no', 'sgrotan@nmbu.no'
 
-import numpy as np
+
 import random
 from math import exp
-from island import *
+
 
 class Animals:
-    """SUMMARY
-
-    :param island: An instance of the :class:'src.biosim.island.Island'
-    with data and methods, containing info about the geography.
-    :type island: class:'src.biosim.island.Island'
-    :param loc: Indicates the coordinates of the animal
-    :type loc: tuple
-    :param age: Indicates the age of the animal, defaults to 0
-    :type age: int, optional
-    :param weight: Indicates the weight of the animal, defaults to None
-    :type weight: float, optional
+    """
     """
     parameters = None
 
     def __init__(self, island, loc, age=0, weight=None):
-        """Constructor method.
+        """SUMMARY
+
+        :param island: An instance of the :class:'src.biosim.island.Island'
+        with data and methods, containing info about the geography.
+        :type island: class:'src.biosim.island.Island'
+        :param loc: Indicates the coordinates of the animal
+        :type loc: tuple
+        :param age: Indicates the age of the animal, defaults to 0
+        :type age: int, optional
+        :param weight: Indicates the weight of the animal, defaults to None
+        :type weight: float, optional
         """
         self.age = age
         self.loc = loc
@@ -37,7 +39,6 @@ class Animals:
             self.weight = weight
 
         self.fitness_change()
-        #Check sepcies NameError
 
     def aging(self):
         """Adds a year to the self.age variable.

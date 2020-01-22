@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'Daniil Efremov'
-__email__ = 'daniil.vitalevich.efremov@nmbu.no'
+__author__ = 'Daniil Efremov', 'Sigurd Grøtan'
+__email__ = 'daniil.vitalevich.efremov@nmbu.no', 'sgrotan@nmbu.no'
 
 from src.biosim.animals import Herbivore, Carnivore
 from src.biosim.island import Island
