@@ -15,6 +15,10 @@ import textwrap
 import matplotlib.colors as mcolors
 import pandas as pd
 import seaborn as sns
+import numpy as np
+import random as rd
+from matplotlib.widgets import Button
+import subprocess
 
 
 
@@ -52,24 +56,70 @@ class BioSim:
         where img_no are consecutive image numbers starting from 0.
         img_base should contain a path and beginning of a file name.
         """
+        rd.seed(seed)
+        np.random.seed(seed)
+
         island_map = textwrap.dedent(island_map)
         self._island_map = island_map
         self.island = Island(self._island_map)
         self.cycle = AnnualCycle(self.island)
         self.add_population(ini_pop)
+
+        self._n_rows = len(island_map.splitlines())
+        self._n_columns = len(island_map.splitlines()[0]) # LAG METHOD
+
+        self._img_base = img_base
+        self._img_fmt = img_fmt
+
+        self._herbivore_line = None
+        self._carnivore_line = None
+
         self._herbs = []
         self._carns = []
         self._animals = []
         self._vis_years = []
+
+        self._slwidth = 0.08  # Width of sliders and buttons
+        self._spos1 = 0.6  # x-placement of sliders col 1
+        self._spos2 = 0.8
+
+
         self._year = 0
+        self._final_year = None
+        self._img_ctr = 0
+
         self._num_animals = None
         self._num_animal_per_species = None
-        self._animal_distribution = 0
-        self.fig = plt.figure()
-        self.ax1 = self.fig.add_subplot(221)
-        self.ax2 = self.fig.add_subplot(222)
-        self.ax3 = self.fig.add_subplot(223)
-        self.ax4 = self.fig.add_subplot(224)
+        self._animal_distribution = None
+        self._max_animals = None
+
+        self._fig = None
+        self._map_ax = None
+        self._animal_ax = None
+        self._herb_dist_ax = None
+        self._carn_dist_ax = None
+        self._herb_dist_plot = None
+        self._carn_dist_plot = None
+
+        self._ax_pause = None
+        self._w_pause = None
+        self._ax_interrupt = None
+        self._w_interrupt = None
+
+        self._paused = False
+        self._interrupt = False
+
+        if ymax_animals is not None:
+            self._ymax_animals = ymax_animals
+        else:
+            self._ymax_animals = None
+
+        if cmax_animals is not None:
+            self._cmax_herbivore = cmax_animals['Herbivore']
+            self._cmax_carnivore = cmax_animals['Carnivore']
+        else:
+            self._cmax_herbivore = 300
+            self._cmax_carnivore = 100
 
 
     def set_animal_parameters(self, species, params):
@@ -96,6 +146,7 @@ class BioSim:
         self.island._param_changer(landscape, params)
 
     def island_map(self):
+        self._map_ax = self._fig.add_axes([0.05, 0.7, 0.25, 0.25])
         color_code = {
             "O": mcolors.to_rgba("navy"),
             "J": mcolors.to_rgba("forestgreen"),
@@ -107,34 +158,133 @@ class BioSim:
         kart_rgb = [[color_code[column] for column in row]
                     for row in self._island_map.splitlines()]
 
-        self.ax1.imshow(kart_rgb)
-        self.ax1.set_title('Island map', fontsize=10)
+        self._map_ax.imshow(kart_rgb)
+        self._map_ax.set_title('Island map', fontsize=18)
 
-    def population_plot_update(self):
-        self.ax2.clear()
-        animal_dict = self.num_animals_per_species
-        self._herbs.append(animal_dict["Herbivore"])
-        self._carns.append(animal_dict["Carnivore"])
-        self._animals.append(self.num_animals)
-        self._vis_years.append(self.year)
-        self.ax2.plot(self._vis_years, self._herbs)
-        self.ax2.plot(self._vis_years, self._carns)
-        self.ax2.plot(self._vis_years, self._animals)
-        plt.pause(1e-6)
+    def _setup_graphics(self):
 
-    def herbivore_distribution_update(self):
-        self.ax3.clear()
-        dfh = self.animal_distribution
-        dfh = dfh.drop("Carnivores", 1)
-        dfh = dfh.pivot(index="i", columns="j", values="Herbivores")
-        sns.heatmap(dfh, cbar=False, ax=self.ax3)
+        if self._fig is None:
+            self._fig = plt.figure(figsize=(18, 12))
 
-    def carnivore_distribution_update(self):
-        self.ax4.cla()
-        dfc = self.animal_distribution
-        dfc = dfc.drop("Herbivores", 1)
-        dfc = dfc.pivot(index="i", columns="j", values="Carnivores")
-        sns.heatmap(dfc, cbar=False, ax=self.ax4)
+        if self._map_ax is None:
+            self.island_map()
+
+        if self._animal_ax is None:
+            self._animal_ax = self._fig.add_axes([0.4, 0.4, 0.5, 0.5])
+
+            if self._ymax_animals is not None:
+                self._animal_ax.set_ylim(0, self._ymax_animals)
+
+            else:
+                self._max_animals = self.num_animals
+                self._animal_ax.set_ylim(0, self._max_animals * 1.1) #OBS
+            self._animal_ax.set_title("Population\n\n ")
+            self._animal_ax.set_xlabel("# Years")
+            self._animal_ax.set_ylabel("# animals")
+
+        self._animal_ax.set_xlim(0, self._final_year + 1)
+
+        if self._herbivore_line is None:
+            herbivore_plot = self._animal_ax.plot(np.arange(0, self._final_year),
+                                                  np.full(self._final_year, np.nan),
+                                                  label='Herbivores')
+            self._herbivore_line = herbivore_plot[0]
+        else:
+            xdata, ydata = self._herbivore_line.get_data()
+            xnew = np.arange(xdata[-1] + 1, self._final_year)
+            if len(xnew) > 0:
+                ynew = np.full(xnew.shape, np.nan)
+                self._herbivore_line.set_data(np.hstack((xdata, xnew)),
+                                              np.hstack((ydata, ynew)))
+
+        if self._carnivore_line is None:
+            carnivore_plot = self._animal_ax.plot(np.arange(0, self._final_year),
+                                                  np.full(self._final_year, np.nan),
+                                                  label='Carnivores')
+            self._carnivore_line = carnivore_plot[0]
+        else:
+            xdata, ydata = self._carnivore_line.get_data()
+            xnew = np.arange(xdata[-1] + 1, self._final_year)
+            if len(xnew) > 0:
+                ynew = np.full(xnew.shape, np.nan)
+                self._carnivore_line.set_data(np.hstack((xdata, xnew)),
+                                              np.hstack((ydata, ynew)))
+
+        if self._herb_dist_ax is None:
+            self._herb_dist_ax = self._fig.add_axes([0.05, 0.4, 0.25, 0.25])
+            self._herb_dist_ax.set_title("Herbivore distribution")
+
+        if self._herb_dist_plot is None:
+            self._herb_dist_plot = self._herb_dist_ax.imshow(np.reshape(self.animal_distribution[
+                                                                            'Herbivore'].values,
+                                                                        newshape=(self._n_rows,
+                                                                                  self._n_columns)),
+                                                             interpolation='none',
+                                                             vmin=0.9, vmax=self._cmax_herbivore)
+            plt.colorbar(mappable=self._herb_dist_plot)
+        else:
+            self._herb_dist_plot.set_data(np.reshape(self.animal_distribution['Herbivore'].values,
+                                                     newshape=(self._n_rows, self._n_columns)))
+
+        if self._carn_dist_ax is None:
+            self._carn_dist_ax = self._fig.add_axes([0.05, 0.1, 0.25, 0.25])
+            self._carn_dist_ax.set_title("Carnivore distribution")
+
+        if self._carn_dist_plot is None:
+            self._carn_dist_plot = self._carn_dist_ax.imshow(np.reshape(self.animal_distribution[
+                                                                            'Carnivore'].values,
+                                                                        newshape=(self._n_rows,
+                                                                                  self._n_columns)),
+                                                             interpolation='none',
+                                                             vmin=0.9, vmax=self._cmax_carnivore)
+            plt.colorbar(mappable=self._carn_dist_plot)
+        else:
+            self._carn_dist_plot.set_data(np.reshape(self.animal_distribution[
+                                                         'Carnivore'].values,
+                                                     newshape=(self._n_rows, self._n_columns)))
+
+        # Button to pause/run
+        if self._ax_pause is None:
+            self._ax_pause = self._fig.add_axes([self._spos1, 0.10, self._slwidth, 0.03])
+            self._w_pause = Button(self._ax_pause, 'Pause/Run', hovercolor='0.975')
+            self._w_pause.on_clicked(self._change_pause_status)
+
+            # Button to interrupt
+        if self._ax_interrupt is None:
+            self._ax_interrupt = self._fig.add_axes([self._spos1, 0.05, self._slwidth, 0.03])
+            self._w_interrupt = Button(self._ax_interrupt,
+                                       'Interrupt',
+                                       hovercolor='0.975')
+            self._w_interrupt.on_clicked(self._stop_sim)
+
+    def _update_animal_ax(self):
+        ydata = self._herbivore_line.get_ydata()
+        ydata[self.year] = self.num_animals_per_species['Herbivore']
+        self._herbivore_line.set_ydata(ydata)
+
+        ydata = self._carnivore_line.get_ydata()
+        ydata[self.year] = self.num_animals_per_species['Carnivore']
+        self._carnivore_line.set_ydata(ydata)
+        self._animal_ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left',
+                               ncol=2, mode="expand", borderaxespad=0.)
+
+    def _update_heatmap_axes(self):
+        self._herb_dist_plot.set_data(np.reshape(a=self.animal_distribution['Herbivore'].values,
+                                                 newshape=(self._n_rows, self._n_columns)))
+        self._carn_dist_plot.set_data(np.reshape(a=self.animal_distribution['Carnivore'].values,
+                                                 newshape=(self._n_rows, self._n_columns)))
+
+    def _update_graphics(self):
+        """Updates graphics with current data."""
+        self._update_animal_ax()
+        self._update_heatmap_axes()
+        #self._update_text()
+        # ylimit for the animal ax:
+        if self._ymax_animals is None:
+            if self.num_animals > self._max_animals:
+                self._max_animals = self.num_animals
+                self._animal_ax.set_ylim(0, self._max_animals + 100)
+        plt.pause(1e-2)
 
 
     def simulate(self, num_years, vis_years=1, img_years=None):
@@ -147,15 +297,29 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
-        self.island_map()
-        for _ in range(num_years):
+        if img_years is None:
+            img_years = vis_years
+
+        self._final_year = self._year + num_years
+        self._setup_graphics()
+
+        while self.year < self._final_year:
+            if self.year % vis_years == 0:
+                self._update_graphics()
+
+            if self.year % img_years == 0:
+                #self._save_graphics()
+                pass
+
             self.cycle.run_cycle()
             self._year += 1
-            if self.year % vis_years == 0:
-                self.population_plot_update()
-                self.herbivore_distribution_update()
-                self.carnivore_distribution_update()
-                self.fig.show()
+
+            if self._interrupt:
+                break
+            while self._paused:
+                plt.pause(0.05)
+
+        self._interrupt = False
 
 
     def add_population(self, population):
@@ -197,19 +361,40 @@ class BioSim:
     def num_animals_per_species(self):
         """Number of animals per species in island, as dictionary."""
         self._num_animal_per_species = {
-            "Herbivore" : len(self.island.get_all_herb_list()),
-            "Carnivore" : len(self.island.get_all_carn_list())
+            "Herbivore": len(self.island.get_all_herb_list()),
+            "Carnivore": len(self.island.get_all_carn_list())
         }
         return self._num_animal_per_species
 
     @property
     def animal_distribution(self):
         """Pandas DataFrame with animal count per species for each cell on island."""
-        df = pd.DataFrame(self.island.island_data, columns=["i", "j", "Herbivores", "Carnivores"])
+        df = pd.DataFrame(self.island.island_data, columns=["row", "col", "Herbivore", "Carnivore"])
         return df
 
     def make_movie(self):
         """Create MPEG4 movie from visualization images saved."""
+
+    def _stop_sim(self, event):
+        """
+        Change self._paused flag when pause button is clicked
+        """
+        print('\nInterrupt button clicked')
+        print('    {}'.format(event))
+        self._interrupt = True
+
+    def _change_pause_status(self, event):
+        """
+        Change self._paused flag when pause button is clicked
+        """
+        print('\nPause button clicked')
+        print('    {}'.format(event))
+        if self._paused:
+            self._paused = False
+        else:
+            self._paused = True
+
+
 
 if __name__ == '__main__':
     geogr = """\
