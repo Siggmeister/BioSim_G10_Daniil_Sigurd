@@ -159,6 +159,89 @@ def test_add_population(plain_sim):
         ]
     )
 
+def test_add_pop_outside_map(plain_sim):
+    with pytest.raises(ValueError):
+        plain_sim.add_population(
+        [
+            {
+                "loc": (5, 5),
+                "pop": [
+                    {"species": "Herbivore", "age": 1, "weight": 10.0},
+                    {"species": "Carnivore", "age": 1, "weight": 10.0},
+                ],
+            }]
+    )
+
+def test_add_pop_wrong_dict_keys(plain_sim):
+    with pytest.raises(ValueError):
+        plain_sim.add_population(
+            [
+                {
+                    "money": 500,
+                    "loc": (1, 2),
+                    "pop": [
+                        {"species": "Herbivore", "age": 1, "weight": 10.0},
+                        {"species": "Carnivore", "age": 1, "weight": 10.0},
+                    ],
+                }
+            ]
+        )
+
+def test_add_pop_illegal_cell(plain_sim):
+    with pytest.raises(ValueError):
+        plain_sim.add_population(
+            [
+                {
+                    "loc": (0, 0),
+                    "pop": [
+                        {"species": "Herbivore", "age": 1, "weight": 10.0},
+                        {"species": "Carnivore", "age": 1, "weight": 10.0},
+                    ],
+                }
+            ]
+        )
+
+def test_add_pop_wrong_animal_dict(plain_sim):
+    with pytest.raises(ValueError):
+        plain_sim.add_population(
+            [
+                {
+                    "loc": (1, 2),
+                    "pop": [
+                        {"species": "Herbivore", "age": 1, "weight": 10.0},
+                        {"species": "Carnivore", "age": 1, "weight": 10.0, "height": 179},
+                    ],
+                }
+            ]
+        )
+
+def test_add_pop_negative_age(plain_sim):
+    with pytest.raises(ValueError):
+        plain_sim.add_population(
+        [
+            {
+                "loc": (1, 2),
+                "pop": [
+                    {"species": "Herbivore", "age": -4, "weight": 10.0},
+                    {"species": "Carnivore", "age": 1, "weight": 10.0},
+                ],
+            }
+        ]
+    )
+
+def test_add_pop_negative_weight(plain_sim):
+    with pytest.raises(ValueError):
+        plain_sim.add_population(
+        [
+            {
+                "loc": (1, 2),
+                "pop": [
+                    {"species": "Herbivore", "age": 4, "weight": -10.0},
+                    {"species": "Carnivore", "age": 1, "weight": -10},
+                ],
+            }
+        ]
+    )
 
 def test_simulate(plain_sim):
     """Test that simulation can be called with visualization step values"""
