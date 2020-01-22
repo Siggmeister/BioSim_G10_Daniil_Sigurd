@@ -430,15 +430,6 @@ class TestHerbivore:
 
         assert old_fitness < new_fitness
 
-    def test_fodder_eaten_raises_error(self):
-        jungle_loc = (2, 7)
-        Island._param_changer("J", {"f_max" : -100})
-        i_sim = Island()
-        s_1 = Herbivore(i_sim, jungle_loc)
-
-        with pytest.raises(ValueError):
-            s_1.fodder_eaten()
-
     def test_eaten_removes_herb(self):
         i = Island()
         loc = (2, 7)
