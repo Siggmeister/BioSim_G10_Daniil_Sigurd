@@ -15,7 +15,7 @@ class Landscape:
         self.fodder = 0
 
     def add_pop(self, animal):
-        """Adds an animal instance to the appropriate animal list.
+        """Adds an animal instance to the appropriate animal list on cell
 
         :param animal: An instance of either
         <class 'src.biosim.animals.Herbivore'> or
@@ -30,7 +30,7 @@ class Landscape:
             self.carn_pop_list.append(animal)
 
     def remove_pop(self, animal):
-        """Removes an animal instance of the appropriate animal list.
+        """Removes an animal instance of the appropriate animal list on cell
 
         :param animal: An instance of either
         <class 'src.biosim.animals.Herbivore'> or
@@ -51,7 +51,7 @@ class Landscape:
         pass
 
     def get_fodder(self):
-        """Returns fodder
+        """Returns fodder on cell.
 
         :return: Fodder
         :rtype: float
@@ -59,7 +59,8 @@ class Landscape:
         return self.fodder
 
     def herb_eats_fodder(self, fodder_eaten):
-        """Subtracts amount of fodder_eaten by Herbivore from initial fodder.
+        """Subtracts amount of fodder_eaten by Herbivore from initial fodder
+        on cell.
 
         :param fodder_eaten: Amount of fodder eaten by Herbivore
         :type fodder_eaten: float
@@ -67,7 +68,7 @@ class Landscape:
         self.fodder -= fodder_eaten
 
     def get_herb_pop_list(self):
-        """Returns population list for Herbivores.
+        """Returns population list for Herbivores on cell.
 
         :return: Herbivore population list
         :rtype: list
@@ -75,7 +76,7 @@ class Landscape:
         return self.herb_pop_list
 
     def get_carn_pop_list(self):
-        """Returns population list for Carnivores.
+        """Returns population list for Carnivores on cell.
 
         :return: Carnivore population list
         :rtype: list
@@ -108,7 +109,8 @@ class Landscape:
     def get_total_herb_weight(self):
         """Returns the total weight of Herbivores on cell.
 
-        :return:
+        :return: Total weight of Herbivores
+        :rtype: float
         """
         total_weight = 0
         for herb in self.get_herb_pop_list():
@@ -117,30 +119,47 @@ class Landscape:
 
     @classmethod
     def param_changer(cls, landscape, new_params):
+        """Changes parameters for the cells in landscape.
+
+        :param landscape: One letter string containing the landscape_code
+        for either Jungle or Savannah.
+        :type landscape: str
+        :param new_params: dictionary containing the parameters to change
+        :type new_params: dict
+        """
         Landscape.landscape_parameters[landscape].update(new_params)
 
 
 class Jungle(Landscape):
+    """SUMMARY
+    """
 
     def __init__(self):
+        """SUMMARY
+        """
         super().__init__()
-        self.available = True
         self.fodder = Landscape.landscape_parameters["J"]["f_max"]
 
     def fodder_annual_refill(self):
         """Overrides the initial fodder_refill method from Landscape
-        parent-class"""
+        parent-class, and sets the fodder to max-value for jungle"""
         self.fodder = Landscape.landscape_parameters["J"]["f_max"]
 
 
 class Savannah(Landscape):
+    """SUMMARY
+    """
 
     def __init__(self):
+        """SUMMARY
+        """
         super().__init__()
-        self.available = True
         self.fodder = Landscape.landscape_parameters["S"]["f_max"]
 
     def fodder_annual_refill(self):
+        """Overrides the initial fodder_refill method from Landscape
+        parent-class, and changes the fodder according to formula.
+        """
         f_max_savannah = Landscape.landscape_parameters["S"]["f_max"]
         alpha = Landscape.landscape_parameters["S"]["alpha"]
         self.fodder += (alpha * (f_max_savannah-self.fodder))
@@ -149,21 +168,30 @@ class Savannah(Landscape):
 
 
 class Desert(Landscape):
+    """SUMMARY
+    """
 
     def __init__(self):
+        """SUMMARY
+        """
         super().__init__()
-        self.available = True
 
 
 class Mountain(Landscape):
+    """SUMMARY
+    """
 
     def __init__(self):
+        """SUMMARY
+        """
         super().__init__()
-        self.available = False
 
 
 class Ocean(Landscape):
+    """SUMMARY
+    """
 
     def __init__(self):
+        """SUMMARY
+        """
         super().__init__()
-        self.available = False
