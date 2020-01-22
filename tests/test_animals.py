@@ -513,4 +513,4 @@ class TestCarnivore:
         i = Island()
         h = Herbivore(i, (1,1))
 
-        assert type(True) == 1
+        assert type(h) == 1

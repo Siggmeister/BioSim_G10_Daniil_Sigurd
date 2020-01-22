@@ -5,6 +5,8 @@ __email__ = 'daniil.vitalevich.efremov@nmbu.no'
 
 
 class AnnualCycle:
+    """SUMMARY
+    """
 
     def __init__(self, island):
         """SUMMARY

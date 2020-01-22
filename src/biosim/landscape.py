@@ -66,8 +66,8 @@ class Landscape:
         return total_weight
 
     @classmethod
-    def param_changer(cls, landscape, new_param):
-        Landscape.landscape_parameters[landscape].update(new_param)
+    def param_changer(cls, landscape, new_params):
+        Landscape.landscape_parameters[landscape].update(new_params)
 
 
 class Jungle(Landscape):
