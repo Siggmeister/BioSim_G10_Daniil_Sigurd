@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+
+__author__ = 'Daniil Efremov', 'Sigurd Grøtan'
+__email__ = 'daniil.vitalevich.efremov@nmbu.no', 'sgrotan@nmbu.no'
+
 import textwrap
 from landscape import *
 import numpy as np
@@ -165,7 +169,8 @@ class Island:
         :param loc: Indicates the coordinates in island
         :type loc: tuple
         :return: Total Herbivore weight on loc
-        :rtype: float"""
+        :rtype: float
+        """
         return self.island_dict[loc].get_total_herb_weight()
 
     def get_cell_type(self, loc):
@@ -261,6 +266,18 @@ class Island:
 
     @staticmethod
     def _param_changer(landscape, new_params):
+        """Calls on param_changer method from Landscape-class to change
+        parameters used to created the Landscape cells in the island map.
+
+        :param landscape: One letter string containing the landscape_code
+        for either Jungle or Savannah.
+        :type landscape: str
+        :param new_params: dictionary containing the parameters to change
+        :type new_params: dict
+        :raise ValueError: If the parameter does not exist in default-list
+        :raise ValueError: If one of the parameters that are not supposed to
+        be a negative number, gets set to a negative number
+        """
 
         params_non_negative = ["f_max"]
         for key in new_params:

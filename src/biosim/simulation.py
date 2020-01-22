@@ -6,19 +6,18 @@
 __author__ = ""
 __email__ = ""
 
-from island import *
+import random as rd
+import subprocess
+import textwrap
+
+import matplotlib.colors as mcolors
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from matplotlib.widgets import Button
+
 from animals import *
 from annual_cycle import *
-import matplotlib.pyplot as plt
-import textwrap
-import matplotlib.colors as mcolors
-import pandas as pd
-import seaborn as sns
-import numpy as np
-import random as rd
-from matplotlib.widgets import Button
-import subprocess
-from pathlib import Path
 
 _FFMPEG_BINARY = r"C:\Users\Sigur\Downloads\ffmpeg-20200115-0dc0837-win64-static\ffmpeg-20200115-0dc0837-win64-static\bin\ffmpeg.exe"
 

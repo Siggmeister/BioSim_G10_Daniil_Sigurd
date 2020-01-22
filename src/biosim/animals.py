@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 
+__author__ = 'Daniil Efremov', 'Sigurd Grøtan'
+__email__ = 'daniil.vitalevich.efremov@nmbu.no', 'sgrotan@nmbu.no'
 
-import numpy as np
+
 import random
 from math import exp
-from island import *
+
 
 class Animals:
     """Base class for the animal sublasses Herbivore and Carnivore.
        Manages shared attributes and methods for the animals.
        Should not be called.
+    """
     """
     parameters = None
 
@@ -39,7 +42,6 @@ class Animals:
             self.weight = weight
 
         self.fitness_change()
-        #Check sepcies NameError
 
     def aging(self):
         """Adds a year to the self.age variable.
