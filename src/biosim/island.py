@@ -287,3 +287,10 @@ class Island:
                                  .format(key))
 
         Landscape.param_changer(landscape, new_params)
+
+    @property
+    def locations(self):
+        return set(self.island_dict.keys())
+
+
+
