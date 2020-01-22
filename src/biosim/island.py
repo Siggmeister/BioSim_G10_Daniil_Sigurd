@@ -138,9 +138,10 @@ class Island:
             self.island_dict[loc].sort_pop_by_fitness()
 
     def get_all_herb_list(self):
-        """
+        """Returns list containing all Herbivores on island
 
-        :return:
+        :return: List with all Herbivores
+        :rtype: list
         """
         all_herb_list = []
         for loc in self.island_dict:
@@ -148,19 +149,45 @@ class Island:
         return all_herb_list
 
     def get_all_carn_list(self):
+        """Returns list containing all Carnivores on island
+
+        :return: List with all Carnivores
+        :rtype: list
+        """
         all_carn_list = []
         for loc in self.island_dict:
             all_carn_list.extend(self.get_carn_list_on_loc(loc))
         return all_carn_list
 
     def get_total_herb_weight_on_loc(self, loc):
+        """Returns the total Herbivore weight on location
+
+        :param loc: Indicates the coordinates in island
+        :type loc: tuple
+        :return: Total Herbivore weight on loc
+        :rtype: float"""
         return self.island_dict[loc].get_total_herb_weight()
 
     def get_cell_type(self, loc):
+        """Returns cell type on location
+
+        :param loc: Indicates the coordinates in island
+        :type loc: tuple
+        :return: Cell type
+        :rtype: str
+        """
         return self.island_dict[loc].__class__.__name__
 
     @staticmethod
     def _check_geo_string(geo_string):
+        """ Checks if the geo_string is of correct shape, and if the edges of
+        the map is of Ocean type. Raises value error if not.
+
+        :param geo_string: Multi-line string specifying island geography
+        :type geo_string: str
+        :raises ValueError: If map is not of rectangular shape
+        :raises ValueError: If the edges of the map are not Ocean type
+        """
         geo_string = textwrap.dedent(geo_string)
         geo_list = [list(line) for line in geo_string.splitlines()]
         for line in geo_list:
@@ -180,6 +207,12 @@ class Island:
 
     @property
     def island_data(self):
+        """Returns a nested list containing x coordinate, y coordinate,
+        Herbivore-count on loc and Carnivore-count on loc
+
+        :return: Nested list with data
+        :rtype: list
+        """
         island_data = []
         for loc in self.island_dict:
             i, j = loc[0], loc[1]
@@ -192,6 +225,17 @@ class Island:
 
     @staticmethod
     def _island_dict_maker(geo_string):
+        """Turns geo_string into a readable format and creates a dictionary
+        containing x, y coordinates as key, and an instance of one of the five
+        landscape subclasses as value.
+
+        :param geo_string: Multi-line string specifying island geography
+        :type geo_string: str
+        :raise ValueError: If geo_string does not contain correct letters
+        :return: Dict with location as key, and instance of landscape subclass
+        as value
+        :rtype: dict
+        """
         geo_string = textwrap.dedent(geo_string)
         geo_list = [list(line) for line in geo_string.splitlines()]
         island_dict = {}
@@ -230,6 +274,3 @@ class Island:
                                  .format(key))
 
         Landscape.param_changer(landscape, new_params)
-
-
-

@@ -5,6 +5,7 @@ __email__ = 'daniil.vitalevich.efremov@nmbu.no'
 
 from src.biosim.animals import Herbivore, Carnivore
 from src.biosim.island import Island
+from src.biosim.landscape import *
 import pytest
 from mock import patch
 
@@ -512,5 +513,6 @@ class TestCarnivore:
     def test_type_checker(self):
         i = Island()
         h = Herbivore(i, (1,1))
+        l = Landscape()
 
-        assert type(h) == 1
+        assert type(l.get_herb_pop_list()) == 1
