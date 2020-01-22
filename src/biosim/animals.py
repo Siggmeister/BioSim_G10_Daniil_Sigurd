@@ -6,6 +6,7 @@ __email__ = 'daniil.vitalevich.efremov@nmbu.no', 'sgrotan@nmbu.no'
 
 import random
 from math import exp
+import numpy as np
 
 
 class Animals:
@@ -13,7 +14,7 @@ class Animals:
        Manages shared attributes and methods for the animals.
        Should not be called.
     """
-    """
+
     parameters = None
 
     def __init__(self, island, loc, age=0, weight=None):

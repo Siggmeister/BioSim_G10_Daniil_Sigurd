@@ -4,7 +4,7 @@ __author__ = 'Daniil Efremov', 'Sigurd Grøtan'
 __email__ = 'daniil.vitalevich.efremov@nmbu.no', 'sgrotan@nmbu.no'
 
 from src.biosim.island import Island
-from animals import Carnivore, Herbivore
+from src.biosim.animals import Carnivore, Herbivore
 from src.biosim.landscape import *
 import pytest
 

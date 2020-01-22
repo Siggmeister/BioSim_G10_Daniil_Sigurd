@@ -7,6 +7,7 @@ __author__ = ""
 __email__ = ""
 
 import random as rd
+import shutil
 import subprocess
 import textwrap
 
@@ -18,8 +19,10 @@ from matplotlib.widgets import Button
 
 from animals import *
 from annual_cycle import *
+from island import *
 
-_FFMPEG_BINARY = r"C:\Users\Sigur\Downloads\ffmpeg-20200115-0dc0837-win64-static\ffmpeg-20200115-0dc0837-win64-static\bin\ffmpeg.exe"
+
+_FFMPEG_BINARY = r"ffmpeg"
 
 
 
@@ -413,6 +416,8 @@ class BioSim:
             raise RuntimeError("No filename defined.")
 
         if movie_fmt == 'mp4':
+            if shutil.which('ffmpeg') is None:
+                raise RuntimeError("FFMPEG is not installed")
             try:
                 # Parameters chosen according to http://trac.ffmpeg.org/wiki/Encode/H.264,
                 # section "Compatibility"
@@ -422,6 +427,7 @@ class BioSim:
                                        '-profile:v', 'baseline',
                                        '-level', '3.0',
                                        '-pix_fmt', 'yuv420p',
+                                       '-vf', 'pad=ceil(iw/2)*2:ceil(ih/2)*2',
                                        '{}.{}'.format(self._img_base,
                                                       movie_fmt)])
             except subprocess.CalledProcessError as err:
