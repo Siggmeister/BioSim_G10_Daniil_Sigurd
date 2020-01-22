@@ -5,6 +5,7 @@ __email__ = 'daniil.vitalevich.efremov@nmbu.no'
 
 from src.biosim.animals import Herbivore, Carnivore
 from src.biosim.island import Island
+from src.biosim.landscape import *
 import pytest
 from mock import patch
 
@@ -429,15 +430,6 @@ class TestHerbivore:
 
         assert old_fitness < new_fitness
 
-    def test_fodder_eaten_raises_error(self):
-        jungle_loc = (2, 7)
-        Island._param_changer("J", {"f_max" : -100})
-        i_sim = Island()
-        s_1 = Herbivore(i_sim, jungle_loc)
-
-        with pytest.raises(ValueError):
-            s_1.fodder_eaten()
-
     def test_eaten_removes_herb(self):
         i = Island()
         loc = (2, 7)
@@ -512,5 +504,6 @@ class TestCarnivore:
     def test_type_checker(self):
         i = Island()
         h = Herbivore(i, (1,1))
+        l = Landscape()
 
-        assert type(h) == 1
+        assert type(l.get_herb_pop_list()) == 1

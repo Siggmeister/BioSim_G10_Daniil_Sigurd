@@ -12,13 +12,17 @@ class Landscape:
         """
         self.herb_pop_list = []
         self.carn_pop_list = []
-        self.available = None
         self.fodder = 0
 
     def add_pop(self, animal):
         """Adds an animal instance to the appropriate animal list.
 
-        :param animal: A handle to a :class:'animals.Animals' object being either of t
+        :param animal: An instance of either
+        <class 'src.biosim.animals.Herbivore'> or
+        <class 'src.biosim.animals.Carnivore'>
+        with data and methods, containing info about the animal.
+        :type animal: <class 'src.biosim.animals.Herbivore'> or
+        <class 'src.biosim.animals.Carnivore'>
         """
         if animal.__class__.__name__ == "Herbivore":
             self.herb_pop_list.append(animal)
@@ -26,40 +30,86 @@ class Landscape:
             self.carn_pop_list.append(animal)
 
     def remove_pop(self, animal):
+        """Removes an animal instance of the appropriate animal list.
+
+        :param animal: An instance of either
+        <class 'src.biosim.animals.Herbivore'> or
+        <class 'src.biosim.animals.Carnivore'>
+        with data and methods, containing info about the animal.
+        :type animal: <class 'src.biosim.animals.Herbivore'> or
+        <class 'src.biosim.animals.Carnivore'>
+        """
         if animal.__class__.__name__ == "Herbivore":
             self.herb_pop_list.remove(animal)
         elif animal.__class__.__name__ == "Carnivore":
             self.carn_pop_list.remove(animal)
 
     def fodder_annual_refill(self):
+        """Empty fodder_refill method being passed to all subclasses of
+        Landscape.
+        """
         pass
 
     def get_fodder(self):
+        """Returns fodder
+
+        :return: Fodder
+        :rtype: float
+        """
         return self.fodder
 
-    def get_availability(self):
-        return self.available
-
     def herb_eats_fodder(self, fodder_eaten):
+        """Subtracts amount of fodder_eaten by Herbivore from initial fodder.
+
+        :param fodder_eaten: Amount of fodder eaten by Herbivore
+        :type fodder_eaten: float
+        """
         self.fodder -= fodder_eaten
 
     def get_herb_pop_list(self):
+        """Returns population list for Herbivores.
+
+        :return: Herbivore population list
+        :rtype: list
+        """
         return self.herb_pop_list
 
     def get_carn_pop_list(self):
+        """Returns population list for Carnivores.
+
+        :return: Carnivore population list
+        :rtype: list
+        """
         return self.carn_pop_list
 
     def get_num_herb(self):
+        """Returns number of Herbivores on cell.
+
+        :return: Number of Herbivores
+        :rtype: int
+        """
         return len(self.herb_pop_list)
 
     def get_num_carn(self):
+        """Returns number of Carnivores on cell.
+
+        :return: Number of Carnivores
+        :rtype: int
+        """
         return len(self.carn_pop_list)
 
     def sort_pop_by_fitness(self):
+        """Sorts all animals by fitness. Updates the carnivore and herbivore
+        pop list to be sorted.
+        """
         self.herb_pop_list.sort(key=lambda herb: herb.fitness, reverse=True)
         self.carn_pop_list.sort(key=lambda carn: carn.fitness, reverse=True)
 
     def get_total_herb_weight(self):
+        """Returns the total weight of Herbivores on cell.
+
+        :return:
+        """
         total_weight = 0
         for herb in self.get_herb_pop_list():
             total_weight += herb.weight
@@ -78,6 +128,8 @@ class Jungle(Landscape):
         self.fodder = Landscape.landscape_parameters["J"]["f_max"]
 
     def fodder_annual_refill(self):
+        """Overrides the initial fodder_refill method from Landscape
+        parent-class"""
         self.fodder = Landscape.landscape_parameters["J"]["f_max"]
 
 

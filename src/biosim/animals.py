@@ -67,6 +67,8 @@ class Animals:
 
         :param new_params: Dictionary containing the changed parameter
         :type new_params: dict
+        :raises ValueError: If the key does not exist in parameters
+        :raises ValueError: If selected parameters contains negative value
         """
         params_non_negative = ["w_birth", "sigma_birth", "gamma", "xi", "F"]
         for key in new_params:
@@ -384,7 +386,6 @@ class Herbivore(Animals):
     def fodder_eaten(self):
         """Returns the amount of fodder the Herbivore eats
 
-        :raises ValueError: If fodder is negative float.
         :return: Returns amount of fodder eaten
         :rtype: float or int
         """
@@ -401,9 +402,6 @@ class Herbivore(Animals):
 
         elif available_fodder == 0:
             fodder_eaten = 0
-
-        else:
-            raise ValueError
 
         return fodder_eaten
 
