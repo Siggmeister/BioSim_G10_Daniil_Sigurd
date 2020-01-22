@@ -231,5 +231,9 @@ class Island:
 
         Landscape.param_changer(landscape, new_params)
 
+    @property
+    def locations(self):
+        return set(self.island_dict.keys())
+
 
 
