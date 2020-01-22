@@ -4,6 +4,7 @@
 import numpy as np
 import random
 from math import exp
+from island import *
 
 class Animals:
     """SUMMARY
@@ -64,10 +65,23 @@ class Animals:
     def param_changer(cls, new_params):
         """Changes the parameters of either Herbivore or Carnivore class.
 
-        :param new_params: Dictionary containing the new parameter
+        :param new_params: Dictionary containing the changed parameter
         :type new_params: dict
         """
+        params_non_negative = ["w_birth", "sigma_birth", "gamma", "xi", "F"]
+        for key in new_params:
+            if key not in cls.parameters:
+                raise ValueError("Can not change parameter "
+                                 "'{0}' since the parameter does "
+                                 "not exist in default-list".format(key))
+
+            if key in params_non_negative and new_params[key] < 0:
+                raise ValueError("Parameter {0} must be a nonnegative value."
+                                 .format(key))
+
         cls.parameters.update(new_params)
+
+
 
     def set_birth_weight(self):
         """Sets the animals birth-weight to a float
@@ -505,3 +519,4 @@ class Carnivore(Animals):
             return appetite_weight
         else:
             return last_kill
+

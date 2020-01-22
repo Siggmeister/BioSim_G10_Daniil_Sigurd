@@ -9,7 +9,6 @@ __email__ = ""
 from island import *
 from animals import *
 from annual_cycle import *
-from mapvisualiser import *
 import matplotlib.pyplot as plt
 import textwrap
 import matplotlib.colors as mcolors
@@ -330,19 +329,47 @@ class BioSim:
         """
 
         for loc_dict in population:
+
+            element_list = ["loc", "pop"]
+            for element in element_list:
+                if element not in loc_dict:
+                    raise ValueError("The population-input should have"
+                                     " the elements 'loc' and 'pop'")
+
             loc = loc_dict["loc"]
+
+            if loc not in self.island.island_dict:
+                raise ValueError("The location {0} does not exist "
+                                 "in the given Island".format(loc))
+
             cell_type = self.island.get_cell_type(loc)
             if cell_type == "Ocean" or cell_type == "Mountain":
-                raise ValueError("Animal can not be placed in mountain or ocean!")
+                raise ValueError("Animal can not be placed "
+                                 "in mountain or ocean!")
 
             for animal_dict in loc_dict["pop"]:
+                element_list = ["species", "age", "weight"]
+                for element in element_list:
+                    if element not in animal_dict:
+                        raise ValueError("pop should have the elements"
+                                         " 'species', 'age' and 'weight'")
+
                 age = animal_dict["age"]
                 weight = animal_dict["weight"]
+                if age < 0 or not isinstance(age, int):
+                    raise ValueError("The age needs to be a positive integer")
+                if weight < 0 or not isinstance(weight, (int, float)):
+                    raise ValueError("The weight needs to be a positive number")
 
                 if animal_dict["species"] == "Herbivore":
                     Herbivore(self.island, loc, age, weight)
                 elif animal_dict["species"] == "Carnivore":
                     Carnivore(self.island, loc, age, weight)
+                else:
+                    raise ValueError("The species must be of either"
+                                     " Herbivore or Carnivore")
+
+
 
     @property
     def year(self):
@@ -432,11 +459,11 @@ if __name__ == '__main__':
         }]
 
     s = BioSim(geogr, ini_herbs)
-    s.set_landscape_parameters("J", {"f_max": 700})
+    #s.set_landscape_parameters("J", {"f_max": 700})
 
-    s.simulate(100, vis_years=3)
-    s.add_population(carn_pop)
-    s.simulate(300 ,vis_years=3)
-    print("======================")
+    #s.simulate(100, vis_years=1)
+    #s.add_population(carn_pop)
+    #s.simulate(300 ,vis_years=1)
+
 
 

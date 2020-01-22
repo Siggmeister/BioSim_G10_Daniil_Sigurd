@@ -5,6 +5,8 @@ import numpy as np
 
 
 class Island:
+    """SUMMARY
+    """
 
     default_geogr = """\
                OOOOOOOOOOOOOOOOOOOOO
@@ -22,44 +24,124 @@ class Island:
                OOOOOOOOOOOOOOOOOOOOO"""
 
     def __init__(self, geo_string=None):
+        """SUMMARY
+
+        :param geo_string: Multi-line string specifying island geography
+        :type geo_string: str, optional
+        """
         if geo_string is None:
             geo_string = Island.default_geogr
         self._check_geo_string(geo_string)
         self.island_dict = self._island_dict_maker(geo_string)
 
     def fodder_annual_refill(self):
+        """Refills fodder on every location in island
+        """
         for loc in self.island_dict:
             self.island_dict[loc].fodder_annual_refill()
 
     def get_fodder_on_loc(self, loc):
+        """Returns fodder on location
+
+        :param loc: Indicates the coordinates in island
+        :type loc: tuple
+        :return: Fodder on input location
+        :rtype: float or int
+        """
         return self.island_dict[loc].get_fodder()
 
     def get_herb_list_on_loc(self, loc):
+        """Returns the Herbivore list on location
+
+        :param loc: Indicates the coordinates in island
+        :type loc: tuple
+        :return: List of Herbivore on location
+        :rtype: list
+        """
         return self.island_dict[loc].get_herb_pop_list()
 
     def get_carn_list_on_loc(self, loc):
+        """Returns the Carnivore list on location
+
+        :param loc: Indicates the coordinates in island
+        :type loc: tuple
+        :return: List of Carnivore on location
+        :rtype: list
+        """
         return self.island_dict[loc].get_carn_pop_list()
 
     def add_pop_on_loc(self, loc, animal):
+        """Adds the input animal-instance of either Herbivore or Carnivore
+        class to location
+
+        :param loc: Indicates the coordinates in island
+        :type loc: tuple
+        :param animal: An instance of either
+        <class 'src.biosim.animals.Herbivore'> or
+        <class 'src.biosim.animals.Carnivore'>
+        with data and methods, containing info about the animal.
+        :type animal: <class 'src.biosim.animals.Herbivore'> or
+        <class 'src.biosim.animals.Carnivore'>
+        """
         self.island_dict[loc].add_pop(animal)
 
     def remove_pop_on_loc(self, loc, animal):
+        """Removes the input animal-instance of either Herbivore or Carnivore
+        class from location
+
+        :param loc: Indicates the coordinates in island
+        :type loc: tuple
+        :param animal: An instance of either
+        <class 'src.biosim.animals.Herbivore'> or
+        <class 'src.biosim.animals.Carnivore'>
+        with data and methods, containing info about the animal.
+        :type animal: <class 'src.biosim.animals.Herbivore'> or
+        <class 'src.biosim.animals.Carnivore'>
+        """
+
         self.island_dict[loc].remove_pop(animal)
 
     def get_num_herb_on_loc(self, loc):
+        """Returns number of Herbivores on location
+
+        :param loc: Indicates the coordinates in island
+        :type loc: tuple
+        :return: Number of Herbivores on loc
+        :rtype: int
+        """
         return self.island_dict[loc].get_num_herb()
 
     def get_num_carn_on_loc(self, loc):
+        """Returns number of Carnivores on the location
+
+        :param loc: Indicates the coordinates in island
+        :type loc: tuple
+        :return: Number of Carnivores on loc
+        :rtype: int
+        """
         return self.island_dict[loc].get_num_carn()
 
     def herb_eats_fodder_on_loc(self, loc, fodder_eaten):
+        """Subtracts amount of fodder the Herbivores has eaten from location
+
+        :param loc: Indicates the coordinates in island
+        :type loc: tuple
+        :param fodder_eaten: Amount of fodder eaten by Herbivore
+        :type fodder_eaten: float
+        """
         self.island_dict[loc].herb_eats_fodder(fodder_eaten)
 
     def sort_all_animals_by_fitness(self):
+        """Sorts all animals in island by fitness.
+        """
         for loc in self.island_dict:
             self.island_dict[loc].sort_pop_by_fitness()
 
     def get_all_herb_list(self):
+        """
+
+        :return:
+        """
         all_herb_list = []
         for loc in self.island_dict:
             all_herb_list.extend(self.get_herb_list_on_loc(loc))
@@ -134,6 +216,20 @@ class Island:
         return island_dict
 
     @staticmethod
-    def _param_changer(landscape, new_param):
-        Landscape.param_changer(landscape, new_param)
+    def _param_changer(landscape, new_params):
+
+        params_non_negative = ["f_max"]
+        for key in new_params:
+            if key not in Landscape.landscape_parameters[landscape]:
+                raise ValueError("Can not change parameter "
+                                 "'{0}' since the parameter does "
+                                 "not exist in default-list".format(key))
+
+            if key in params_non_negative and new_params[key] < 0:
+                raise ValueError("Parameter {0} must be a nonnegative value."
+                                 .format(key))
+
+        Landscape.param_changer(landscape, new_params)
+
+
 
