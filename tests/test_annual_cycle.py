@@ -11,8 +11,6 @@ from mock import patch
 
 
 class TestAnnualCycle:
-    """SUMMARY
-    """
 
     def test_cycle_instance(self):
         """Test to show that cycle is an instance for the class AnnualCycle

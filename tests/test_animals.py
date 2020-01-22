@@ -11,13 +11,9 @@ from mock import patch
 
 
 class TestAnimals:
-    """SUMMARY
-    """
 
     @pytest.fixture(autouse=True)
     def setup(self):
-        """SUMMARY
-        """
         spes_geogr_1 = """\
                        OOOO
                        OOJO
@@ -500,8 +496,6 @@ class TestAnimals:
 
 
 class TestHerbivore:
-    """SUMMARY
-    """
 
     def test_fodder_eaten_for_full_landscapes(self):
         """Test to show that fodder eaten returns the optimal fodder for
@@ -560,8 +554,6 @@ class TestHerbivore:
 
 
 class TestCarnivore:
-    """SUMMARY
-    """
 
     def test_kill_herb_false_if_fitness_too_low(self):
         """Test to show that kill_herb returns False if the Carnivore-fitness
