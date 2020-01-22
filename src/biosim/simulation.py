@@ -337,29 +337,25 @@ class BioSim:
 
         for loc_dict in population:
 
-            element_list = ["loc", "pop"]
-            for element in element_list:
-                if element not in loc_dict:
-                    raise ValueError("The population-input should have"
-                                     " the elements 'loc' and 'pop'")
+            if set(loc_dict.keys()) != {"loc", "pop"}:
+                raise ValueError("The population-input should have"
+                                 " the elements 'loc' and 'pop'")
 
             loc = loc_dict["loc"]
 
-            if loc not in self.island.island_dict:
+            if loc not in self.island.locations:
                 raise ValueError("The location {0} does not exist "
                                  "in the given Island".format(loc))
 
             cell_type = self.island.get_cell_type(loc)
-            if cell_type == "Ocean" or cell_type == "Mountain":
+            if cell_type in {"Ocean", "Mountain"}:
                 raise ValueError("Animal can not be placed "
                                  "in mountain or ocean!")
 
             for animal_dict in loc_dict["pop"]:
-                element_list = ["species", "age", "weight"]
-                for element in element_list:
-                    if element not in animal_dict:
-                        raise ValueError("pop should have the elements"
-                                         " 'species', 'age' and 'weight'")
+                if set(animal_dict.keys()) != {"species", "age", "weight"}:
+                    raise ValueError("pop should have the elements"
+                                     " 'species', 'age' and 'weight'")
 
                 age = animal_dict["age"]
                 weight = animal_dict["weight"]
@@ -375,8 +371,6 @@ class BioSim:
                 else:
                     raise ValueError("The species must be of either"
                                      " Herbivore or Carnivore")
-
-
 
     @property
     def year(self):
