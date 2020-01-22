@@ -1,3 +1,9 @@
 pytest
 tox
 numpy
+pandas
+matplotlib.pyplot
+matplotlib.widgets
+shutil
+subprocess
+textwrap

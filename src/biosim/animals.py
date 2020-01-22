@@ -1,28 +1,35 @@
 # -*- coding: utf-8 -*-
 
+__author__ = 'Daniil Efremov', 'Sigurd Grøtan'
+__email__ = 'daniil.vitalevich.efremov@nmbu.no', 'sgrotan@nmbu.no'
 
-import numpy as np
+
 import random
 from math import exp
+import numpy as np
+
 
 class Animals:
-    """SUMMARY
-
-    :param island: An instance of the :class:'src.biosim.island.Island'
-    with data and methods, containing info about the geography.
-    :type island: class:'src.biosim.island.Island'
-    :param loc: Indicates the coordinates of the animal
-    :type loc: tuple
-    :param age: Indicates the age of the animal, defaults to 0
-    :type age: int, optional
-    :param weight: Indicates the weight of the animal, defaults to None
-    :type weight: float, optional
+    """Base class for the animal sublasses Herbivore and Carnivore.
+       Manages shared attributes and methods for the animals.
+       Should not be called.
     """
+
     parameters = None
 
     def __init__(self, island, loc, age=0, weight=None):
-        """Constructor method.
-        """
+        """Base class for the animal sublasses Herbivore and Carnivore.
+
+            :param island: An instance of the :class:'src.biosim.island.Island'
+            with data and methods, containing info about the geography.
+            :type island: class:'src.biosim.island.Island'
+            :param loc: Indicates the coordinates of the animal
+            :type loc: tuple
+            :param age: Indicates the age of the animal, defaults to 0
+            :type age: int, optional
+            :param weight: Indicates the weight of the animal, defaults to None
+            :type weight: float, optional
+            """
         self.age = age
         self.loc = loc
         self.island = island
@@ -36,7 +43,6 @@ class Animals:
             self.weight = weight
 
         self.fitness_change()
-        #Check sepcies NameError
 
     def aging(self):
         """Adds a year to the self.age variable.
@@ -64,10 +70,25 @@ class Animals:
     def param_changer(cls, new_params):
         """Changes the parameters of either Herbivore or Carnivore class.
 
-        :param new_params: Dictionary containing the new parameter
+        :param new_params: Dictionary containing the changed parameter
         :type new_params: dict
+        :raises ValueError: If the key does not exist in parameters
+        :raises ValueError: If selected parameters contains negative value
         """
+        params_non_negative = ["w_birth", "sigma_birth", "gamma", "xi", "F"]
+        for key in new_params:
+            if key not in cls.parameters:
+                raise ValueError("Can not change parameter "
+                                 "'{0}' since the parameter does "
+                                 "not exist in default-list".format(key))
+
+            if key in params_non_negative and new_params[key] < 0:
+                raise ValueError("Parameter {0} must be a nonnegative value."
+                                 .format(key))
+
         cls.parameters.update(new_params)
+
+
 
     def set_birth_weight(self):
         """Sets the animals birth-weight to a float
@@ -329,17 +350,7 @@ class Animals:
 
 
 class Herbivore(Animals):
-    """SUMMARY
-
-    :param island: An instance of the :class:'src.biosim.island.Island'
-    with data and methods, containing info about the geography.
-    :type island: class:'src.biosim.island.Island'
-    :param loc: Indicates the coordinates of the animal
-    :type loc: tuple
-    :param age: Indicates the age of the animal, defaults to 0
-    :type age: int, optional
-    :param weight: Indicates the weight of the animal, defaults to None
-    :type weight: float, optional
+    """Herbivore class. Contains specific parameters, attributes, and methods for herbivores.
     """
     parameters = {"w_birth": 8.0,
                   "sigma_birth": 1.5,
@@ -358,7 +369,18 @@ class Herbivore(Animals):
                   "F": 10.0}
 
     def __init__(self, island, loc, age=0, weight=None):
-        """Constructor method.
+
+        """Herbivore class, contains specific parameters, attributes and methods for herbivores.
+
+        :param island: An instance of the :class:'src.biosim.island.Island'
+        with data and methods, containing info about the geography.
+        :type island: class:'src.biosim.island.Island'
+        :param loc: Indicates the coordinates of the animal
+        :type loc: tuple
+        :param age: Indicates the age of the animal, defaults to 0
+        :type age: int, optional
+        :param weight: Indicates the weight of the animal, defaults to None
+        :type weight: float, optional
         """
         super().__init__(island, loc, age, weight)
 
@@ -370,7 +392,6 @@ class Herbivore(Animals):
     def fodder_eaten(self):
         """Returns the amount of fodder the Herbivore eats
 
-        :raises ValueError: If fodder is negative float.
         :return: Returns amount of fodder eaten
         :rtype: float or int
         """
@@ -388,9 +409,6 @@ class Herbivore(Animals):
         elif available_fodder == 0:
             fodder_eaten = 0
 
-        else:
-            raise ValueError
-
         return fodder_eaten
 
 
@@ -404,17 +422,7 @@ class Herbivore(Animals):
 
 
 class Carnivore(Animals):
-    """SUMMARY
-
-    :param island: An instance of the :class:'src.biosim.island.Island'
-    with data and methods, containing info about the geography.
-    :type island: class:'src.biosim.island.Island'
-    :param loc: Indicates the coordinates of the animal
-    :type loc: tuple
-    :param age: Indicates the age of the animal, defaults to 0
-    :type age: int, optional
-    :param weight: Indicates the weight of the animal, defaults to None
-    :type weight: float, optional
+    """Carnivore class, contains specific parameters, attributes and methods for carnivores.
     """
 
     parameters = {"w_birth": 6.0,
@@ -435,7 +443,17 @@ class Carnivore(Animals):
                                             "DeltaPhiMax": 10.0}
 
     def __init__(self, island, loc, age=0, weight=None):
-        """Constructor method.
+        """Carnivore class, contains specific parameters, attributes and methods for carnivores.
+
+        :param island: An instance of the :class:'src.biosim.island.Island'
+        with data and methods, containing info about the geography.
+        :type island: class:'src.biosim.island.Island'
+        :param loc: Indicates the coordinates of the animal
+        :type loc: tuple
+        :param age: Indicates the age of the animal, defaults to 0
+        :type age: int, optional
+        :param weight: Indicates the weight of the animal, defaults to None
+        :type weight: float, optional
         """
         super().__init__(island, loc, age, weight)
 
@@ -505,3 +523,4 @@ class Carnivore(Animals):
             return appetite_weight
         else:
             return last_kill
+

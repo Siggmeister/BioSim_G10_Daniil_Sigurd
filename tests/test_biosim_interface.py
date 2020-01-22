@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+__author__ = 'Daniil Efremov', 'Sigurd Grøtan'
+__email__ = 'daniil.vitalevich.efremov@nmbu.no', 'sgrotan@nmbu.no'
+
 """
 Test set for BioSim class interface for INF200 January 2019.
 
@@ -24,7 +27,7 @@ import glob
 import os
 import os.path
 
-from biosim.simulation import BioSim
+from src.biosim.simulation import BioSim
 
 
 def test_empty_island():
@@ -113,14 +116,14 @@ def test_initial_population():
         island_map="OOOO\nOJSO\nOOOO",
         ini_pop=[
             {
-                "loc": (2, 2),
+                "loc": (1, 2),
                 "pop": [
                     {"species": "Herbivore", "age": 1, "weight": 10.0},
                     {"species": "Carnivore", "age": 1, "weight": 10.0},
                 ],
             },
             {
-                "loc": (2, 3),
+                "loc": (1, 1),
                 "pop": [
                     {"species": "Herbivore", "age": 1, "weight": 10.0},
                     {"species": "Carnivore", "age": 1, "weight": 10.0},
@@ -143,14 +146,14 @@ def test_add_population(plain_sim):
     plain_sim.add_population(
         [
             {
-                "loc": (2, 2),
+                "loc": (1, 2),
                 "pop": [
                     {"species": "Herbivore", "age": 1, "weight": 10.0},
                     {"species": "Carnivore", "age": 1, "weight": 10.0},
                 ],
             },
             {
-                "loc": (2, 3),
+                "loc": (1, 1),
                 "pop": [
                     {"species": "Herbivore", "age": 1, "weight": 10.0},
                     {"species": "Carnivore", "age": 1, "weight": 10.0},
@@ -159,6 +162,104 @@ def test_add_population(plain_sim):
         ]
     )
 
+def test_add_pop_outside_map(plain_sim):
+    """Test that add_population raises a ValueError if population is placed outside of map.
+    """
+    with pytest.raises(ValueError):
+        plain_sim.add_population(
+        [
+            {
+                "loc": (5, 5),
+                "pop": [
+                    {"species": "Herbivore", "age": 1, "weight": 10.0},
+                    {"species": "Carnivore", "age": 1, "weight": 10.0},
+                ],
+            }]
+    )
+
+def test_add_pop_wrong_dict_keys(plain_sim):
+    """Test that add_population raises a ValueError if the dictionaries in the list contain the wrong keys.
+    """
+    with pytest.raises(ValueError):
+        plain_sim.add_population(
+            [
+                {
+                    "money": 500,
+                    "loc": (1, 2),
+                    "pop": [
+                        {"species": "Herbivore", "age": 1, "weight": 10.0},
+                        {"species": "Carnivore", "age": 1, "weight": 10.0},
+                    ],
+                }
+            ]
+        )
+
+def test_add_pop_illegal_cell(plain_sim):
+    """Test that add_population raises a ValueError if population is placed an
+       illegal cell (Mountain and Ocean)
+       """
+    with pytest.raises(ValueError):
+        plain_sim.add_population(
+            [
+                {
+                    "loc": (0, 0),
+                    "pop": [
+                        {"species": "Herbivore", "age": 1, "weight": 10.0},
+                        {"species": "Carnivore", "age": 1, "weight": 10.0},
+                    ],
+                }
+            ]
+        )
+
+def test_add_pop_wrong_animal_dict(plain_sim):
+    """Test that add_population raises a ValueError if the dictionaries containing the animal data
+       have the wrong keys.
+    """
+    with pytest.raises(ValueError):
+        plain_sim.add_population(
+            [
+                {
+                    "loc": (1, 2),
+                    "pop": [
+                        {"species": "Herbivore", "age": 1, "weight": 10.0},
+                        {"species": "Carnivore", "age": 1, "weight": 10.0, "height": 179},
+                    ],
+                }
+            ]
+        )
+
+def test_add_pop_negative_age(plain_sim):
+    """Test that add_population raises a ValueError if a negative age value is submitted
+    """
+    with pytest.raises(ValueError):
+        plain_sim.add_population(
+        [
+            {
+                "loc": (1, 2),
+                "pop": [
+                    {"species": "Herbivore", "age": -4, "weight": 10.0},
+                    {"species": "Carnivore", "age": 1, "weight": 10.0},
+                ],
+            }
+        ]
+    )
+
+def test_add_pop_negative_weight(plain_sim):
+    """Test that add_population raises a ValueError" if a negative weight value
+       is submitted.
+    """
+    with pytest.raises(ValueError):
+        plain_sim.add_population(
+        [
+            {
+                "loc": (1, 2),
+                "pop": [
+                    {"species": "Herbivore", "age": 4, "weight": -10.0},
+                    {"species": "Carnivore", "age": 1, "weight": -10},
+                ],
+            }
+        ]
+    )
 
 def test_simulate(plain_sim):
     """Test that simulation can be called with visualization step values"""
@@ -203,14 +304,14 @@ def test_get_animal_distribution(plain_sim):
     plain_sim.add_population(
         [
             {
-                "loc": (2, 2),
+                "loc": (1, 2),
                 "pop": [
                     {"species": "Herbivore", "age": 1, "weight": 10.0},
                     {"species": "Carnivore", "age": 1, "weight": 10.0},
                 ],
             },
             {
-                "loc": (2, 3),
+                "loc": (1, 1),
                 "pop": [
                     {"species": "Herbivore", "age": 1, "weight": 10.0},
                     {"species": "Herbivore", "age": 1, "weight": 10.0},
@@ -225,10 +326,10 @@ def test_get_animal_distribution(plain_sim):
     assert set(data.columns) == {"Row", "Col", "Herbivore", "Carnivore"}
 
     data.set_index(["Row", "Col"], inplace=True)
-    assert data.loc[(2, 2)].Herbivore == 1
-    assert data.loc[(2, 2)].Carnivore == 1
-    assert data.loc[(2, 3)].Herbivore == 2
-    assert data.loc[(2, 3)].Carnivore == 0
+    assert data.loc[(1, 2)].Herbivore == 1
+    assert data.loc[(1, 2)].Carnivore == 1
+    assert data.loc[(1, 1)].Herbivore == 2
+    assert data.loc[(1, 1)].Carnivore == 0
 
     assert data.Herbivore.sum() == 3
     assert data.Carnivore.sum() == 1

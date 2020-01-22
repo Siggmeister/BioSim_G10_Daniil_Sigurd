@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'Daniil Efremov'
-__email__ = 'daniil.vitalevich.efremov@nmbu.no'
+__author__ = 'Daniil Efremov', 'Sigurd Grøtan'
+__email__ = 'daniil.vitalevich.efremov@nmbu.no', 'sgrotan@nmbu.no'
 
-from src.biosim.island import *
-from animals import *
+from src.biosim.island import Island
+from src.biosim.animals import Carnivore, Herbivore
 from src.biosim.landscape import *
 import pytest
 
@@ -12,10 +12,15 @@ import pytest
 class TestIsland:
 
     def test_island_instance(self):
+        """Tests if an instance of Island can be created.
+        """
         i = Island()
         assert isinstance(i, Island)
 
     def test_check_geo_string_not_surrounded_by_ocean(self):
+        """Tests that check geo string method raises ValueError if
+           the string is not surrounded by Ocean code.
+           """
         geo_string_1 = """\
                     OOOOOOOOOOOO
                     OOOJJSSSSMMM
@@ -25,6 +30,9 @@ class TestIsland:
             Island._check_geo_string(geo_string_1)
 
     def test_check_geo_string_not_rectangular(self):
+        """Tests that the geo string checker raises ValueError if the geo string
+           is non-rectangular
+        """
 
         geo_string_2 = """\
                     OOOOOOOOOOOO
@@ -35,6 +43,9 @@ class TestIsland:
             Island._check_geo_string(geo_string_2)
 
     def test_geo_string_works_with_upper_and_lower_case(self):
+        """Test that the island dict maker method passes when geo string is both
+           lower and upper case.
+        """
         geo_string = """\
                     OOOOOOOOoOOO
                     OOOJJSSSsMMO
@@ -44,6 +55,9 @@ class TestIsland:
         island_dict = Island._island_dict_maker(geo_string)
 
     def test_geo_string_with_wrong_code_letters(self):
+        """Test that island dict maker raises ValueError when it detects unknown landscape
+           code.
+           """
         geo_string = """\
                             OOOO
                             OSLO
@@ -53,6 +67,9 @@ class TestIsland:
             Island._island_dict_maker(geo_string)
 
     def test_fodder_annual_refill(self):
+        """Tests that fodder annual refill method raises the fodder in all Jungle and Savannah
+           cells.
+           """
         i = Island()
         for loc in i.island_dict:
             i.island_dict[loc].fodder = 0
@@ -66,12 +83,17 @@ class TestIsland:
                 assert loc_fodder == 0
 
     def test_get_fodder_on_loc(self):
+        """Tests if get fodder on loc method retrieves fodder attribute of cell on location.
+        """
         i = Island()
         j_loc = (2, 7)
         fodder_on_loc = i.island_dict[j_loc].fodder
         assert i.get_fodder_on_loc(j_loc) == fodder_on_loc
 
     def test_get_herb_list_on_loc(self):
+        """Tests if get herb list on loc method retrieves herb list attribute of
+           cell on locatrion.
+           """
         i = Island()
         loc = (1, 8)
         for _ in range(3):
@@ -81,6 +103,9 @@ class TestIsland:
         assert i.get_herb_list_on_loc(loc) == herb_list_manually
 
     def test_get_carn_list_on_loc(self):
+        """Tests if get carn list on loc method retrieves carn list attribute of
+        cell on locatrion.
+        """
         i = Island()
         loc = (1, 8)
         for _ in range(3):
@@ -90,6 +115,9 @@ class TestIsland:
         assert i.get_carn_list_on_loc(loc) == carn_list_manually
 
     def test_add_and_remove_pop_on_locs(self):
+        """Tests if the add and remove pop on loc methods can add and remove a sample of animals
+           in the pop lists.
+        """
         i = Island()
         loc_1 = (1, 8)
         loc_2 = (2, 7)
@@ -107,6 +135,9 @@ class TestIsland:
                 assert animal not in old_cell.carn_pop_list
 
     def test_get_num_animals_on_loc(self):
+        """Tests if the get animals on location method can return the number
+           of animals placed out on the map.
+           """
         i = Island()
         num_herb = 4
         num_carn = 3
@@ -120,6 +151,9 @@ class TestIsland:
         assert i.get_num_carn_on_loc(loc) == num_carn
 
     def test_sort_all_animals_by_fitness(self):
+        """Tests if the sort all animals by fitness method sorts a sample of animals placed
+           on a location by fitness.
+           """
         i = Island()
         loc = (2, 7)
         for _ in range(10):
@@ -137,6 +171,9 @@ class TestIsland:
         assert i.get_carn_list_on_loc(loc) == local_carn_list
 
     def test_get_total_herb_weight_on_loc(self):
+        """Tests if the get total herbivore weight on location method returns the same
+           weight as the weight of the herbivores times their number.
+           """
         i = Island()
         herb_weight = 50
         num_herb = 5
@@ -147,11 +184,17 @@ class TestIsland:
         assert i.get_total_herb_weight_on_loc(loc) == herb_weight * num_herb
 
     def test_get_cell_type(self):
+        """Tests if the get cell type method returns Jungle on a known
+           jungle location.
+           """
         i = Island()
         jungle_loc = (2, 7)
         assert i.get_cell_type(jungle_loc) == "Jungle"
 
     def test_herb_eats_fodder_on_loc(self):
+        """Tests if the fodder before eating is equal to the fodder after eating
+           in addition to the amount eaten.
+        """
         i = Island()
         j_loc = (2, 7)
         herb_amount = 10
@@ -161,6 +204,9 @@ class TestIsland:
         assert fodder_pre_eating == fodder_post_eating + herb_amount
 
     def test_get_all_herb_list(self):
+        """Tests that the get all herbivores list method returns a list that is equal in length
+           and contains the same elements as a list containing all the herbivores on the map.
+           """
         i = Island()
         herb_list = [Herbivore(i, (2, 7)), Herbivore(i, (1, 8)), Herbivore(i, (2, 1))]
         all_herbs = i.get_all_herb_list()
@@ -169,6 +215,9 @@ class TestIsland:
             assert herb in all_herbs
 
     def test_get_all_carn_list(self):
+        """Tests that the get all carnivores list method returns a list that is equal in length
+           and contains the same elements as a list containing all the carnivores on the map.
+        """
         i = Island()
         carn_list = [Carnivore(i, (2, 7)), Carnivore(i, (1, 8)), Carnivore(i, (2, 1))]
         all_carns = i.get_all_carn_list()
@@ -177,6 +226,9 @@ class TestIsland:
             assert carn in all_carns
 
     def test_param_changer(self):
+        """Tests that the parameter changer method in the Island class changes the parameters in
+           the Landscape class.
+        """
         i = Island()
         new_param = {"f_max": 700}
         landscape = "J"
