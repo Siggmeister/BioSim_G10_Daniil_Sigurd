@@ -18,6 +18,9 @@ import numpy as np
 import random as rd
 from matplotlib.widgets import Button
 import subprocess
+from pathlib import Path
+
+_FFMPEG_BINARY = r"C:\Users\Sigur\Downloads\ffmpeg-20200115-0dc0837-win64-static\ffmpeg-20200115-0dc0837-win64-static\bin\ffmpeg.exe"
 
 
 
@@ -73,11 +76,6 @@ class BioSim:
         self._herbivore_line = None
         self._carnivore_line = None
 
-        self._herbs = []
-        self._carns = []
-        self._animals = []
-        self._vis_years = []
-
         self._slwidth = 0.08  # Width of sliders and buttons
         self._spos1 = 0.6  # x-placement of sliders col 1
         self._spos2 = 0.8
@@ -117,8 +115,8 @@ class BioSim:
             self._cmax_herbivore = cmax_animals['Herbivore']
             self._cmax_carnivore = cmax_animals['Carnivore']
         else:
-            self._cmax_herbivore = 300
-            self._cmax_carnivore = 100
+            self._cmax_herbivore = 200
+            self._cmax_carnivore = 50
 
 
     def set_animal_parameters(self, species, params):
@@ -277,7 +275,6 @@ class BioSim:
         """Updates graphics with current data."""
         self._update_animal_ax()
         self._update_heatmap_axes()
-        #self._update_text()
         # ylimit for the animal ax:
         if self._ymax_animals is None:
             if self.num_animals > self._max_animals:
@@ -285,6 +282,16 @@ class BioSim:
                 self._animal_ax.set_ylim(0, self._max_animals + 100)
         plt.pause(1e-2)
 
+    def _save_graphics(self):
+        """Saves graphics to file if file name is given."""
+
+        if self._img_base is None:
+            return
+
+        plt.savefig('{base}_{num:05d}.{type}'.format(base=self._img_base,
+                                                     num=self._img_ctr,
+                                                     type=self._img_fmt))
+        self._img_ctr += 1  # Image counter += 1
 
     def simulate(self, num_years, vis_years=1, img_years=None):
         """
@@ -307,7 +314,7 @@ class BioSim:
                 self._update_graphics()
 
             if self.year % img_years == 0:
-                #self._save_graphics()
+                self._save_graphics()
                 pass
 
             self.cycle.run_cycle()
@@ -399,8 +406,35 @@ class BioSim:
         df = pd.DataFrame(self.island.island_data, columns=["row", "col", "Herbivore", "Carnivore"])
         return df
 
-    def make_movie(self):
-        """Create MPEG4 movie from visualization images saved."""
+    def make_movie(self, movie_fmt='mp4'):
+        """
+        Creates MPEG4 movie from visualization images saved.
+
+        .. :note:
+            Requires ffmpeg
+
+        The movie is stored as img_base + movie_fmt (Only mp4 is supported in the current version)
+        """
+
+        if self._img_base is None:
+            raise RuntimeError("No filename defined.")
+
+        if movie_fmt == 'mp4':
+            try:
+                # Parameters chosen according to http://trac.ffmpeg.org/wiki/Encode/H.264,
+                # section "Compatibility"
+                subprocess.check_call([_FFMPEG_BINARY,
+                                       '-i', '{}_%05d.png'.format(self._img_base),
+                                       '-y',
+                                       '-profile:v', 'baseline',
+                                       '-level', '3.0',
+                                       '-pix_fmt', 'yuv420p',
+                                       '{}.{}'.format(self._img_base,
+                                                      movie_fmt)])
+            except subprocess.CalledProcessError as err:
+                raise RuntimeError('ERROR: ffmpeg failed with: {}'.format(err))
+        else:
+            raise ValueError('Unknown movie format: ' + movie_fmt)
 
     def _stop_sim(self, event):
         """
@@ -443,27 +477,29 @@ if __name__ == '__main__':
         {
             "loc": (2, 7),
             "pop": [
-                {"species": "Herbivore", "age": 45, "weight": 200}
+                {"species": "Herbivore", "age": 5, "weight": 200}
                 for _ in range(150)
             ],
-        },
+        }
 
     ]
 
     carn_pop = [{
             "loc": (2, 7),
             "pop": [
-                {"species": "Carnivore", "age": 55, "weight": 20}
+                {"species": "Carnivore", "age": 5, "weight": 20}
                 for _ in range(20)
             ],
         }]
 
-    s = BioSim(geogr, ini_herbs)
-    #s.set_landscape_parameters("J", {"f_max": 700})
+    s = BioSim(geogr, ini_herbs, img_base=r"C:\Users\Sigur\OneDrive\Dokumenter\INF200\Phoetoes\BioSim")
+    s.set_landscape_parameters("J", {"f_max": 700})
 
-    #s.simulate(100, vis_years=1)
-    #s.add_population(carn_pop)
-    #s.simulate(300 ,vis_years=1)
+    s.simulate(10)
+    s.add_population(carn_pop)
+    s.simulate(100)
+    s.make_movie()
+    print("======================")
 
 
 
