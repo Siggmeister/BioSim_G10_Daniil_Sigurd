@@ -476,7 +476,7 @@ if __name__ == '__main__':
         {
             "loc": (2, 7),
             "pop": [
-                {"species": "Herbivore", "age": 5, "weight": 200}
+                {"species": "Herbivore", "age": 5, "weight": 20}
                 for _ in range(150)
             ],
         }
@@ -491,13 +491,14 @@ if __name__ == '__main__':
             ],
         }]
 
-    s = BioSim(geogr, ini_herbs, img_base=r"C:\Users\Sigur\OneDrive\Dokumenter\INF200\Phoetoes\BioSim")
-    s.set_landscape_parameters("J", {"f_max": 700})
+    s = BioSim(geogr, ini_herbs)
+    #s.set_landscape_parameters("J", {"f_max": 700})
 
-    s.simulate(10)
-    s.add_population(carn_pop)
+
     s.simulate(100)
-    s.make_movie()
+    s.add_population(carn_pop)
+    s.simulate(200)
+    #s.make_movie()
     print("======================")
 
 

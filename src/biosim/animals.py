@@ -171,8 +171,12 @@ class Animals:
 
             weight_loss_by_birth = baby_animal.weight * xi
 
+
             if weight_loss_by_birth >= self.weight:
                 self.island.remove_pop_on_loc(self.loc, baby_animal)
+            else:
+                self.weight -= weight_loss_by_birth
+                self.fitness_change()
 
     def annual_weight_loss(self):
         """Subtracts weight from animal according to formula.
@@ -426,21 +430,21 @@ class Carnivore(Animals):
     """
 
     parameters = {"w_birth": 6.0,
-                                            "sigma_birth": 1.0,
-                                            "beta": 0.75,
-                                            "eta": 0.125,
-                                            "a_half": 60.0,
-                                            "phi_age": 0.4,
-                                            "w_half": 4.0,
-                                            "phi_weight": 0.4,
-                                            "mu": 0.4,
-                                            "lambda": 1.0,
-                                            "gamma": 0.8,
-                                            "zeta": 3.5,
-                                            "xi": 1.1,
-                                            "omega": 0.9,
-                                            "F": 50.0,
-                                            "DeltaPhiMax": 10.0}
+                  "sigma_birth": 1.0,
+                  "beta": 0.75,
+                  "eta": 0.125,
+                  "a_half": 60.0,
+                  "phi_age": 0.4,
+                  "w_half": 4.0,
+                  "phi_weight": 0.4,
+                  "mu": 0.4,
+                  "lambda": 1.0,
+                  "gamma": 0.8,
+                  "zeta": 3.5,
+                  "xi": 1.1,
+                  "omega": 0.9,
+                  "F": 50.0,
+                  "DeltaPhiMax": 10.0}
 
     def __init__(self, island, loc, age=0, weight=None):
         """Carnivore class, contains specific parameters, attributes and methods for carnivores.
