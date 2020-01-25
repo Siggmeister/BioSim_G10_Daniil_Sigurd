@@ -491,14 +491,25 @@ if __name__ == '__main__':
             ],
         }]
 
-    s = BioSim(geogr, ini_herbs)
-    #s.set_landscape_parameters("J", {"f_max": 700})
+    sim = BioSim(geogr, ini_herbs, img_base=r"C:\Users\Sigur\OneDrive\Dokumenter\INF200\Simulation\BioSim")
+    sim.set_landscape_parameters("J", {"f_max": 700})
+    sim.set_animal_parameters("Herbivore", {"zeta": 3.2, "xi": 1.8})
+    sim.set_animal_parameters(
+        "Carnivore",
+        {
+            "a_half": 70,
+            "phi_age": 0.5,
+            "omega": 0.3,
+            "F": 65,
+            "DeltaPhiMax": 9.0,
+        },
+    )
 
 
     s.simulate(100)
     s.add_population(carn_pop)
     s.simulate(200)
-    #s.make_movie()
+    s.make_movie()
     print("======================")
 
 
